@@ -1,0 +1,260 @@
+﻿<style>
+    .nav-tabs .nav-link {
+        margin-bottom: -1px;
+        background: 0 0;
+        border: 1px solid transparent;
+        border-top-left-radius: .25rem;
+        border-top-right-radius: .25rem;
+        color: lightyellow;
+    }
+
+    .icon-padding {
+        padding-right: 10px;
+    }
+
+    .nav-link {
+        display: block;
+        padding: 0.5rem 0.5rem;
+        color: #4582ec;
+        text-decoration: none;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
+    }
+
+    span > i {
+        color: lightyellow;
+    }
+</style>
+
+
+<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">Quản lý bồi thường</a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<AuthorizeView>
+    <Authorized>
+        <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+            <ul class="nav flex-column">
+                <!--Setting master-->
+                @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("settingmaster"))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="settingmaster" @onclick="@(() => OnTitleChanged("Cài đặt hệ thống"))">
+                            <span aria-hidden="true" class="icon-padding">
+                                <i class="fas fa-cog" aria-hidden="true"></i>
+                            </span> Cài đặt hệ thống
+                        </NavLink>
+                    </li>
+                }
+
+                <!--Danh sách dịch vụ-->
+                @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("servicelist"))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="servicelist" @onclick="@(() => OnTitleChanged("Danh sách dịch vụ"))">
+                            <span aria-hidden="true" class="icon-padding">
+                                <i class="fas fa-cogs" aria-hidden="true"></i>
+                            </span> Danh sách dịch vụ
+                        </NavLink>
+                    </li>
+                }
+
+                <!--Danh sách tính năng-->
+                @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("functionlist"))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="functionlist" @onclick="@(() => OnTitleChanged("Danh sách tính năng"))">
+                            <span aria-hidden="true" class="icon-padding">
+                                <i class="fas fa-puzzle-piece" aria-hidden="true"></i>
+                            </span> Danh sách tính năng
+                        </NavLink>
+                    </li>
+                }
+
+                <!--Danh sách quyền-->
+                @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("rolelist"))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="rolelist" @onclick="@(() => OnTitleChanged("Danh sách quyền"))">
+                            <span aria-hidden="true" class="icon-padding">
+                                <i class="fas fa-th" aria-hidden="true"></i>
+                            </span> Danh sách quyền
+                        </NavLink>
+                    </li>
+                }
+
+                <!--Định nghĩa quyền-->
+                @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("roledetail"))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="roledetail" @onclick="@(() => OnTitleChanged("Định nghĩa quyền"))">
+                            <span aria-hidden="true" class="icon-padding">
+                                <i class="fas fa-user-shield" aria-hidden="true"></i>
+                            </span> Định nghĩa quyền
+                        </NavLink>
+                    </li>
+                }
+
+                <!--Tên danh sách-->
+                @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("listnamemaster"))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="listnamemaster" @onclick="@(() => OnTitleChanged("Tên danh sách"))">
+                            <span aria-hidden="true" class="icon-padding">
+                                <i class="fas fa-list-alt" aria-hidden="true"></i>
+                            </span> Tên danh sách
+                        </NavLink>
+                    </li>
+                }
+
+                <!--Danh sách tùy chọn-->
+                @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("optionlist"))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="optionlist" @onclick="@(() => OnTitleChanged("Danh sách tùy chọn"))">
+                            <span aria-hidden="true" class="icon-padding">
+                                <i class="fas fa-list-ol" aria-hidden="true"></i>
+                            </span> Danh sách tùy chọn
+                        </NavLink>
+                    </li>
+                }
+
+                <!--Account list-->
+                @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("useraccount"))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="useraccount" @onclick="@(() => OnTitleChanged("DS người dùng"))">
+                            <span aria-hidden="true" class="icon-padding">
+                                <i class="fas fa-user-plus" aria-hidden="true"></i>
+                            </span> DS người dùng
+                        </NavLink>
+                    </li>
+                }
+
+                <!--Danh sách chi nhanh-->
+                @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("branch-master"))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="branch-master" @onclick="@(() => OnTitleChanged("DS chi nhánh BM"))">
+                            <span aria-hidden="true" class="icon-padding">
+                                <i class="fas fa-map-marker" aria-hidden="true"></i>
+                            </span> DS chi nhánh BM
+                        </NavLink>
+                    </li>
+                }
+
+                <!--Danh sách nơi sửa chữa-->
+                @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("repairer-master"))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="repairer-master" @onclick="@(() => OnTitleChanged("Nơi sửa chữa"))">
+                            <span aria-hidden="true" class="icon-padding">
+                                <i class="fas fa-car-crash" aria-hidden="true"></i>
+                            </span> Nơi sửa chữa
+                        </NavLink>
+                    </li>
+                }
+
+                <!--Yêu cầu-->
+                @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("customer-request-list"))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="customer-request-list" @onclick="@(() => OnTitleChanged("Yêu cầu"))">
+                            <span aria-hidden="true" class="icon-padding">
+                                <i class="fas fa-comment-alt" aria-hidden="true"></i>
+                            </span> Yêu cầu
+                        </NavLink>
+                    </li>
+                }
+
+                <!--Tiếp nhận-->
+                @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("accept-request-list"))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="accept-request-list" @onclick="@(() => OnTitleChanged("Tiếp nhận"))">
+                            <span aria-hidden="true" class="icon-padding">
+                                <i class="fas fa-arrow-circle-down" aria-hidden="true"></i>
+                            </span> Tiếp nhận
+                        </NavLink>
+                    </li>
+                }
+
+                <!--Xử lý hồ sơ-->
+                @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("process-request-list"))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="process-request-list" @onclick="@(() => OnTitleChanged("Xử lý hồ sơ"))">
+                            <span aria-hidden="true" class="icon-padding">
+                                <i class="fas fa-bolt" aria-hidden="true"></i>
+                            </span> Xử lý
+                        </NavLink>
+                    </li>
+                }
+
+                <!--Báo giá sửa chữa-->
+                @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("repair-request-list"))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="repair-request-list" @onclick="@(() => OnTitleChanged("Báo giá sửa chữa"))">
+                            <span aria-hidden="true" class="icon-padding">
+                                <i class="fas fa-medkit" aria-hidden="true"></i>
+                            </span> Báo giá sửa chữa
+                        </NavLink>
+                    </li>
+                }
+
+                <!--Duyệt-->
+                @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("approve-request-list"))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="approve-request-list" @onclick="@(() => OnTitleChanged("Duyệt"))">
+                            <span aria-hidden="true" class="icon-padding">
+                                <i class="fas fa-check" aria-hidden="true"></i>
+                            </span> Duyệt
+                        </NavLink>
+                    </li>
+                }
+
+                <!--Chi trả-->
+                @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("payment-request-list"))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="payment-request-list" @onclick="@(() => OnTitleChanged("Chi trả"))">
+                            <span aria-hidden="true" class="icon-padding">
+                                <i class="fas fa-money" aria-hidden="true"></i>
+                            </span> Chi trả
+                        </NavLink>
+                    </li>
+                }
+
+            </ul>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = "";
+    [Parameter]
+    public EventCallback<string> TitleChanged { get; set; }
+    private async Task OnTitleChanged(string newValue)
+    {
+        await TitleChanged.InvokeAsync(newValue);
+    }
+    //
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+}

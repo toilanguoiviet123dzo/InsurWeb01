@@ -1,0 +1,35 @@
+﻿@using Blazored.Toast.Configuration
+@inherits LayoutComponentBase
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu @bind-Title="Title" />
+    </div>
+    <div class="main">
+        <div class="top-row px-4">
+            <div style="width:100%">
+                <div style="float:left">
+                    <h3>@Title</h3>
+                </div>
+                <div style="float:right">
+                    <LoginDisplay />
+                </div>
+            </div>
+        </div>
+        <div class="content px-0 px-lg-4">
+            @Body
+        </div>
+    </div>
+</div>
+<BlazoredToasts Position="ToastPosition.BottomRight"
+                Timeout="3"
+                IconType="IconType.FontAwesome"
+                SuccessClass="success-toast-override"
+                SuccessIcon="fa fa-thumbs-up"
+                ErrorIcon="fa fa-bug"
+                WarningIcon="fa fa-warning"
+                InfoIcon="fa fa-info"/>
+
+@code{
+    public string Title { get; set; } = "";
+}}

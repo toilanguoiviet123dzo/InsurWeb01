@@ -1,0 +1,404 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Gosu.Compensation.Services";
+import "google/protobuf/timestamp.proto";
+package grpcCompensationService;
+
+//Services
+service grpcCompensationService {    
+    //CompenRequest
+    rpc SaveCompenRequest (SaveCompenRequest_Request) returns (String_Response);
+    rpc GetCompenRequest (String_Request) returns (GetCompenRequest_Response);
+    rpc GetCompenRequestList (GetCompenRequestList_Request) returns (GetCompenRequestList_Response);
+    rpc UpdateTotalCompenRequest (UpdateTotalCompenRequest_Request) returns (Empty_Response);
+    rpc UpdateStatusCompenRequest (UpdateStatusCompenRequest_Request) returns (Empty_Response);
+
+    //RepairEstimation
+    rpc SaveRepairEstimation (SaveRepairEstimation_Request) returns (Empty_Response);
+    rpc GetRepairEstimation (String_Request) returns (GetRepairEstimation_Response);
+    rpc GetRefEstimationList (Empty_Request) returns (GetRefEstimationList_Response);
+
+    //AttachFiles
+    rpc SaveAttachFiles (SaveAttachFiles_Request) returns (Empty_Response);
+    rpc GetAttachFiles (String_Request) returns (GetAttachFiles_Response);
+    rpc GetAttachFileCount (GetAttachFileCount_Request) returns (Int_Response);
+
+    //RepairerMaster
+    rpc SaveRepairerMaster (SaveRepairerMaster_Request) returns (String_Response);
+    rpc GetRepairerMaster (Empty_Request) returns (GetRepairerMaster_Response);
+
+    //BranchMaster
+    rpc SaveBranchMaster (SaveBranchMaster_Request) returns (String_Response);
+    rpc GetBranchMaster (Empty_Request) returns (GetBranchMaster_Response);
+   
+}
+
+//======================================================
+// Common Messages
+//======================================================
+message UserCredential {
+    string Username = 1;
+    string RoleID = 2;
+    string AccessToken = 3;
+    string ApiKey = 4;
+}
+message Empty_Response {
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+}
+message Empty_Request {
+    UserCredential Credential = 1;
+}
+//
+message String_Request
+{
+    UserCredential Credential = 1;
+    //
+     string StringValue = 2;
+}
+message String_Response
+{
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+     string StringValue = 3;
+}
+message Int_Response
+{
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+     int32 IntValue = 3;
+}
+//
+//======================================================
+// Messages
+//======================================================
+message GetRefEstimationList_Response {
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    repeated grpcRefEstimationModel Records = 3;
+}
+message grpcRefEstimationModel {
+    string CompenNo = 1;
+    string ReqPersonName = 2;
+    string BranchName = 3;
+    string RepairerName = 4;
+    string TemplateName = 5;
+}
+
+message SaveBranchMaster_Request {
+    UserCredential Credential = 1;
+    //
+    grpcBranchMasterModel Record = 2;
+}
+message grpcBranchMasterModel {
+    string ID = 1;
+    string BranchID = 2;
+    string BranchName = 3;
+    string InternalID = 4;
+    string Discriptions = 5;
+    int32 DspOrder = 6;
+    bool Enabled = 7;
+    google.protobuf.Timestamp ModifiedOn = 8;
+    int32 UpdMode = 9;
+}
+message GetBranchMaster_Response {
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    repeated grpcBranchMasterModel Records = 3;
+}
+message UpdateTotalCompenRequest_Request {
+    UserCredential Credential = 1;
+    //
+    string CompenNo = 2;
+    double EstRepairPrice = 3;
+    double DealRepairPrice = 4;
+    double AprRepairPrice = 5;
+    double EstVAT = 80;
+    double DealVAT = 81;
+    double AprVAT = 82;
+}
+message UpdateStatusCompenRequest_Request {
+    UserCredential Credential = 1;
+    //
+    string CompenNo = 2;
+    bool IsUpdateAcceptStatus = 3;
+    bool AcceptStatus = 4;
+    bool IsUpdateCancelStatus = 5;
+    bool CancelStatus = 6;
+}
+
+
+message SaveRepairerMaster_Request {
+    UserCredential Credential = 1;
+    //
+    grpcRepairerMasterModel Record = 2;
+}
+message GetRepairerMaster_Response {
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    repeated grpcRepairerMasterModel Records = 3;
+}
+message grpcRepairerMasterModel {
+    string ID = 1;
+    string RepairerID = 2;
+    string RepairerName = 3;
+    string PhoneNo = 4;
+    string Email = 5;
+    string Address = 6;
+    string Notes = 7;
+    string EstPersonID = 8;
+    string EstPersonName = 9;
+    int32 Status = 10;
+    google.protobuf.Timestamp ModifiedOn = 11;
+    int32 UpdMode = 12;
+}
+
+message GetAttachFileCount_Request {
+    UserCredential Credential = 1;
+    //
+    string VoucherNo = 2;
+    int32 DocumentLevel = 3;
+}
+
+message SaveCompenRequest_Request {
+    UserCredential Credential = 1;
+    //
+    bool IsApproval = 2;
+    grpcCompenRequestModel CompenRequest = 3;
+    
+}
+message GetCompenRequest_Response {
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    grpcCompenRequestModel CompenRequest = 3;
+}
+message grpcCompenRequestModel {
+    string ID = 1;
+    string CustomerID = 2;
+    string CustomerName = 3;
+    string CompenNo = 4;
+    string InternalDocNo = 5;
+    google.protobuf.Timestamp CompenDateTime = 6;
+    string CarOwner = 7;
+    string PhoneNo = 8;
+    string LicensePlate = 9;
+    string BrandName = 10;
+    string CarType = 11;
+    string ManufactureYear = 12;
+    int32 SeatCount = 13;
+    string BusinessTarget = 14;
+    string CarRegisterNo = 15;
+    google.protobuf.Timestamp RegFromDate = 16;
+    google.protobuf.Timestamp RegToDate = 17;
+    string FirstYearReg = 18;
+    int32 Weight = 19;
+    string Driver = 20;
+    string DriveLicenseNo = 21;
+    string DriveLicenseLevel = 22;
+    google.protobuf.Timestamp LicenseFromDate = 23;
+    google.protobuf.Timestamp LicenseToDate = 24;
+    //Accident
+    google.protobuf.Timestamp AccidentDateTime = 25;
+    string AccidentPlace = 26;
+    string AccidentProcessor = 27;
+    string AccidentProgress = 28;
+    string AccidentReason = 29;
+    string DamageVolume = 30;
+    //InsuContract
+    string VCXContractNo = 31;
+    google.protobuf.Timestamp VCXFromDate = 32;
+    google.protobuf.Timestamp VCXToDate = 33;
+    string VCXPayStatus = 34;
+    google.protobuf.Timestamp VCXPayDate = 35;
+    string VCXContent = 36;
+    string VCXRules = 37;
+    string VCXDeduct = 38;
+    //
+    string TNDSContractNo = 39;
+    google.protobuf.Timestamp TNDSFromDate = 40;
+    google.protobuf.Timestamp TNDSToDate = 41;
+    string TNDSPayStatus = 42;
+    google.protobuf.Timestamp TNDSPayDate = 43;
+    string TNDSContent = 44;
+    //Accept
+    bool AcceptStatus = 45;
+    bool CancelStatus = 46;
+    google.protobuf.Timestamp AcceptDatetime = 47;
+    string AcceptPersonID = 48;
+    string AcceptPersonName = 49;
+    string AcceptNotes = 50;
+    //Estimation
+    bool EstReqStatus = 51;
+    bool EstDoneStatus = 52;
+    bool EstAprStatus = 53;
+    string EstPersonID = 54;
+    string EstPersonName = 55;
+    //Request
+    bool CompenStatus = 56;
+    google.protobuf.Timestamp ReqDateTime = 57;
+    string ReqPersonID = 58;
+    string ReqPersonName = 59;
+    string ReqContent = 60;
+    double EstDamageAmount = 61;
+    string CompenCalDescription = 62;
+    //Approve
+    bool AprStatus = 63;
+    google.protobuf.Timestamp AprDateTime = 64;
+    string AprPersonID = 65;
+    string AprPersonName = 66;
+    string AprContent = 67;
+    int32 ApproveLevel = 68;
+    //Repair
+    bool RepairStatus = 69;
+    bool AprRepairStatus = 70;
+    google.protobuf.Timestamp RepairDoneDatetime = 71;
+    string RepairerID = 72;
+    string RepairerName = 73;
+    string RepairNotes = 74;
+    //Pyament
+    bool PayStatus = 75;
+    google.protobuf.Timestamp PayDateTime = 76;
+    string PayPersonID = 77;
+    string PayPersonName = 78;
+    string PayContent = 79;
+    string PaymentTo = 80;
+    //Price
+    double EstRepairPrice = 81;
+    double DealRepairPrice = 82;
+    double AprRepairPrice = 83;
+    double DiscountRate = 84;
+    double DiscountAmount = 85;
+    double TipAmount = 86;
+    double CompensationPrice = 87;
+    double EstVAT = 88;
+    double DealVAT = 89;
+    double AprVAT = 90;
+    //Documents    
+    int32 DocumentLevel = 91;
+    bool IsPayForCustomer = 92;
+    //Branch
+    string BranchID = 93;
+    string BranchName = 94;
+    //
+    google.protobuf.Timestamp EstReqDateTime = 95;
+    google.protobuf.Timestamp EstDoneDateTime = 96;
+    google.protobuf.Timestamp EstAprDateTime = 97;
+    google.protobuf.Timestamp AprRepairDatetime = 98;
+    //
+    int32 UpdMode = 99;
+    google.protobuf.Timestamp ModifiedOn = 100;
+}
+message SaveRepairEstimation_Request {
+    UserCredential Credential = 1;
+    //
+    grpcRepairEstimationModel RepairEstimation = 2;
+}
+message GetRepairEstimation_Response {
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    grpcRepairEstimationModel RepairEstimation = 3;
+}
+message grpcRepairEstimationModel {
+    string ID = 1;
+    string CompenNo = 2;
+    string EstNo = 3;
+    google.protobuf.Timestamp EstDateTime = 4;
+    string EstContent = 5;
+    int32 ApproveLevel = 6;
+    repeated grpcEstGroupItemModel EstGroupItems = 7;
+    bool IsTemplate = 8;
+    //
+    string ReqPersonName = 9;
+    string BranchName = 10;
+    string RepairerName =11;
+    string TemplateName = 12;
+    //
+    google.protobuf.Timestamp ModifiedOn = 13;
+    int32 UpdMode = 14;
+}
+message grpcEstGroupItemModel {
+    int32 LineNo = 1;
+    google.protobuf.Timestamp IssueDateTime = 2;
+    string EstItem = 3;
+    double RepairPrice = 4;
+    double DealRepairPrice = 5;
+    double AprRepairPrice = 6;
+    double EstVAT = 7;
+    double DealVAT = 8;
+    double AprVAT = 9;
+    string RecNo = 10;
+    repeated grpcEstDetailItemModel EstDetailItems = 11;
+}
+message grpcEstDetailItemModel {
+    int32 LineNo = 1;
+    google.protobuf.Timestamp IssueDateTime = 2;
+    string EstItem = 3;
+    double Quantity = 4;
+    double UnitPrice = 5;
+    double Amount = 6;
+    double DealAmount = 7;
+    double AprAmount = 8;
+    double VatRate = 9;
+    double EstVAT = 10;
+    double DealVAT = 11;
+    double AprVAT =12;
+    string Notes = 13;
+    string RecNo = 14;
+}
+message SaveAttachFiles_Request {
+    UserCredential Credential = 1;
+    //
+    repeated grpcAttachFileModel AttachFiles = 2;
+}
+message grpcAttachFileModel {
+    string ID = 1;
+    string VoucherNo = 2;
+    google.protobuf.Timestamp IssueDateTime = 3;
+    string CategoryID = 4;
+    string CategoryName = 5;
+    string FileName = 6;
+    string Notes = 7;
+    string ResourceID = 8;
+    int32 DocumentLevel = 9;
+    string DocumentLevelName = 10;
+    string DataOwnerID = 11;
+    //
+    google.protobuf.Timestamp ModifiedOn = 12;
+    int32 UpdMode = 13;
+}
+message GetAttachFiles_Response {
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    repeated grpcAttachFileModel AttachFiles = 3;
+}
+message GetCompenRequestList_Request {
+    UserCredential Credential = 1;
+    //
+    string CustomerID = 2;
+    string EstPersonID = 3;
+    string ReqPersonID = 4;
+    string AprPersonID = 5;
+    string PayPersonID = 6;
+    string PhoneNo = 7;
+    string CarOwner = 8;
+    string CompenNo = 9;
+    string LicensePlate = 10;
+    int32 Status = 11;
+    google.protobuf.Timestamp StartDate = 12;
+    google.protobuf.Timestamp EndDate = 13;
+}
+message GetCompenRequestList_Response {
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    repeated grpcCompenRequestModel CompenRequests = 3;
+}
+
+

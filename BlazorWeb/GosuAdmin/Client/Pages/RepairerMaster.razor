@@ -1,0 +1,420 @@
+﻿@page "/repairer-master"
+@using Gosu.Admin.Services
+@using Gosu.Compensation.Services
+@using System.Collections.ObjectModel;
+@inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
+@inject grpcCompensationService.grpcCompensationServiceClient compensationServiceClient;
+@inject MasterService masterService;
+@inject IJSRuntime JsRuntime;
+@inject IToastService toastService
+
+<br />
+<div style="width:100%">
+    <DxDataGrid @ref="@grid"
+                Data="@DetailData"
+                ColumnResizeMode="DataGridColumnResizeMode.Component"
+                EditMode="DataGridEditMode.PopupEditForm"
+                PageSize="@PageRowCount"
+                ShowFilterRow="true"
+                HtmlRowDecoration="@OnHtmlRowDecoration"
+                HorizontalScrollBarMode="ScrollBarMode.Auto"
+                RowEditStart="@(dataRow => OnRowEditStarting(dataRow))"
+                RowInsertStart="@(() => OnRowEditStarting(null))">
+        <Columns>
+            <DxDataGridColumn Field="@nameof(RepairerMasterModel.RepairerID)"
+                              Caption="ID"
+                              Width="8rem" />
+            <DxDataGridColumn Field="@nameof(RepairerMasterModel.RepairerName)"
+                              Caption="Tên"
+                              Width="12rem" />
+            <DxDataGridColumn Field="@nameof(RepairerMasterModel.PhoneNo)"
+                              Caption="Phone"
+                              Width="8rem" />
+            <DxDataGridColumn Field="@nameof(RepairerMasterModel.Email)"
+                              Caption="Email"
+                              Width="15rem" />
+            <DxDataGridColumn Field="@nameof(RepairerMasterModel.Address)"
+                              Caption="Địa chỉ"
+                              Width="20rem" />
+            <DxDataGridColumn Field="@nameof(RepairerMasterModel.Notes)"
+                              Caption="Ghi chú"
+                              Width="10rem" />
+            <DxDataGridColumn Field="@nameof(RepairerMasterModel.EstPersonName)"
+                              Caption="Người phụ trách"
+                              Width="12rem" />
+            <DxDataGridColumn Field="@nameof(RepairerMasterModel.StatusName)"
+                              Caption="Trạng thái"
+                              Width="8rem" />
+            <DxDataGridDateEditColumn Field="@nameof(RepairerMasterModel.ModifiedOn)"
+                                      Caption="ModifiedOn"
+                                      DisplayFormat="dd/MM/yyyy HH:mm"
+                                      Width="10rem" />
+            <!--Command columns-->
+            <MyGridCommand Grid="grid"
+                           ShowAddnew="true"
+                           ShowEdit="true"
+                           ShowDelete="true"
+                           OnRowRemoving="@((context) => OnRowRemoving(context as RepairerMasterModel))" />
+        </Columns>
+        <EditFormTemplate>
+            <EditForm Model="@EditContext" Context="EditFormContext" OnValidSubmit="@UpdateRow">
+                <DataAnnotationsValidator />
+                <DxFormLayout>
+                    <DxFormLayoutItem Caption="ID: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxTextBox @bind-Text="@EditContext.RepairerID" />
+                            <ValidationMessage For="@(() => EditContext.RepairerID)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Tên: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxTextBox @bind-Text="@EditContext.RepairerName" />
+                            <ValidationMessage For="@(() => EditContext.RepairerName)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Phone: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxTextBox @bind-Text="@EditContext.PhoneNo" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Email: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxTextBox @bind-Text="@EditContext.Email" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Địa chỉ: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxTextBox @bind-Text="@EditContext.Address" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Ghi chú: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxTextBox @bind-Text="@EditContext.Notes" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Người phụ trách: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxComboBox @bind-Value="@EditContext.EstPersonID"
+                                        Data="@UserList"
+                                        AllowUserInput="true"
+                                        FilteringMode="DataGridFilteringMode.Contains"
+                                        TextFieldName="@nameof(UserAccountModel.Fullname)"
+                                        ValueFieldName="@nameof(UserAccountModel.UserName)"
+                                        SelectedItemChanged="@((UserAccountModel value) => {
+                                                                   EditContext.EstPersonID = value.UserName;
+                                                                   EditContext.EstPersonName = value.Fullname;
+                                                               })" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Hữu hiệu" ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxCheckBox @bind-Checked="@EditContext.BoolStatus" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <!--OK Cancel-->
+                    <MyGridEditFormOKCancel OnCancelClick="OnCancelEditRow" />
+                </DxFormLayout>
+            </EditForm>
+        </EditFormTemplate>
+    </DxDataGrid>
+</div>
+
+<ConfirmDialog Message="@ConfirmMessage" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
+
+@code{
+    private int PageRowCount = MyConstant.Grid_PageRowCount;
+    FormEditContext EditContext = null;
+    // Detail data
+    readonly ObservableCollection<RepairerMasterModel> DetailData = new ObservableCollection<RepairerMasterModel>();
+    // RoleList
+    private List<UserAccountModel> UserList = new List<UserAccountModel>();
+    private List<OptionListModel> ApproveLevelList = new List<OptionListModel>();
+    private List<OptionListModel> DocumentLevelList = new List<OptionListModel>();
+    // Popup
+    private string ConfirmMessage = "";
+    private string ConfirmAction = "";
+    private bool ConfirmVisible = false;
+    //
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        //Load master
+        await LoadMaster();
+
+        //Display data ..
+        await DisplayMain();
+    }
+    #region Load data
+    async Task LoadMaster()
+    {
+        //...
+        UserList= await masterService.Load_UserList();
+    }
+
+    async Task DisplayMain()
+    {
+        try
+        {
+            //Filter
+            var requestString = new Gosu.Compensation.Services.Empty_Request()
+            {
+                Credential = new Gosu.Compensation.Services.UserCredential()
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                }
+            };
+
+            //Get data from DB
+            DetailData.Clear();
+            var response = await compensationServiceClient.GetRepairerMasterAsync(requestString);
+            if (response != null && response.ReturnCode == 200)
+            {
+                foreach (var item in response.Records)
+                {
+                    RepairerMasterModel dataRow = new RepairerMasterModel();
+                    ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
+                    //Upd mode
+                    dataRow.UpdMode = 0;
+                    //StatusName
+                    if (dataRow.Status == 0)
+                    {
+                        dataRow.StatusName = "Vô hiệu";
+                    }
+                    //
+                    DetailData.Add(dataRow);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message, "Load dữ liệu thất bại.");
+        }
+    }
+    
+    #endregion
+
+    #region Save
+
+    void ConfirmHandler()
+    {
+        //Delete row
+        if (ConfirmAction == "DeleteRow")
+        {
+            DeleteRow();
+        }
+        //Close confirm delete popup
+        ConfirmVisible = false;
+        StateHasChanged();
+    }
+
+    //Save Row
+    async Task<bool> SaveRow(RepairerMasterModel saveRow)
+    {
+        try
+        {
+            //Request
+            var request = new SaveRepairerMaster_Request();
+            var Credential = new Gosu.Compensation.Services.UserCredential()
+            {
+                Username = WebUserCredential.Username,
+                RoleID = WebUserCredential.RoleID,
+                AccessToken = WebUserCredential.AccessToken,
+                ApiKey = WebUserCredential.ApiKey
+            };
+            request.Credential = Credential;
+            // Convert to DB row
+            request.Record = new grpcRepairerMasterModel();
+            ClassHelper.CopyPropertiesDataDateConverted(saveRow, request.Record);
+            // Call api
+            var response = await compensationServiceClient.SaveRepairerMasterAsync(request);
+            // Success
+            if (response == null || response.ReturnCode != GrpcReturnCode.OK)
+            {
+                toastService.ShowError("", "Lưu thất bại.");
+            }
+            else
+            {
+                //Update ID
+                saveRow.ID = response.StringValue;
+            }
+            //OK
+            return true;
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message, "Lưu thất bại.");
+        }
+        //
+        return false;
+    }
+    #endregion
+
+    #region Grid main
+    //Confirm delete
+    RepairerMasterModel DeletedRow = null;
+    void OnRowRemoving(RepairerMasterModel dataRow)
+    {
+        DeletedRow = dataRow;
+
+        //Show popup confirm
+        ConfirmMessage = "Xóa dòng?";
+        ConfirmAction = "DeleteRow";
+        ConfirmVisible = true;
+        StateHasChanged();
+    }
+
+    //Cancel edit
+    async Task OnCancelEditRow()
+    {
+        await grid.CancelRowEdit();
+        EditContext = null;
+    }
+
+    async void DeleteRow()
+    {
+        // Mark to delete on grid
+        DeletedRow.UpdMode = 3;
+
+        var saveResult = await SaveRow(DeletedRow);
+
+        // Refresh layout
+        if (saveResult)
+        {
+            await grid.Refresh();
+        }
+    }
+    //Update row
+    async Task UpdateRow()
+    {
+        // Update for edit field
+        EditContext.EditingRow.RepairerID = EditContext.RepairerID;
+        EditContext.EditingRow.RepairerName = EditContext.RepairerName;
+        EditContext.EditingRow.PhoneNo = EditContext.PhoneNo;
+        EditContext.EditingRow.Email = EditContext.Email;
+        EditContext.EditingRow.Address = EditContext.Address;
+        EditContext.EditingRow.Notes = EditContext.Notes;
+        EditContext.EditingRow.EstPersonID = EditContext.EstPersonID;
+        EditContext.EditingRow.EstPersonName = EditContext.EstPersonName;
+        //
+        EditContext.EditingRow.Status = 1;
+        EditContext.EditingRow.StatusName = "";
+        if (!EditContext.BoolStatus)
+        {
+            EditContext.EditingRow.Status = 0;
+            EditContext.EditingRow.StatusName = "Vô hiệu";
+        }
+        EditContext.EditingRow.ModifiedOn = DateTime.Now;
+
+        // Insert
+        if (EditContext.UpdMode == 1)
+        {
+            EditContext.EditingRow.UpdMode = 1;
+            DetailData.Add(EditContext.EditingRow);
+        }
+        else
+        {
+            //Update or update to restore delete record
+            EditContext.EditingRow.UpdMode = 2;
+        }
+
+        //Save row to DB
+        var saveResult = await SaveRow(EditContext.EditingRow);
+        if (saveResult)
+        {
+            // Close popup & refresh data
+            await grid.CancelRowEdit();
+            await grid.Refresh();
+        }
+    }
+    // Edit row model
+    DxDataGrid<RepairerMasterModel> grid;
+    class FormEditContext : RepairerMasterModel
+    {
+        public FormEditContext(RepairerMasterModel targetRow, int updMode)
+        {
+            //Backup editting row
+            EditingRow = targetRow;
+
+            //UpdMode
+            UpdMode = updMode;
+
+            //Edit context -> Editable data only
+            RepairerID = EditingRow.RepairerID;
+            RepairerName = EditingRow.RepairerName;
+            PhoneNo = EditingRow.PhoneNo;
+            Email = EditingRow.Email;
+            Address = EditingRow.Address;
+            Notes = EditingRow.Notes;
+            EstPersonID = EditingRow.EstPersonID;
+            EstPersonName = EditingRow.EstPersonName;
+            Status = EditingRow.Status;
+            BoolStatus = false;
+            if (Status == 1)
+            {
+                BoolStatus = true;
+            }
+        }
+        public bool BoolStatus { get; set; }
+        public RepairerMasterModel EditingRow { get; set; }
+    }
+
+    //Get data for edit/insert
+    void OnRowEditStarting(RepairerMasterModel editingRow)
+    {
+        // Insert row
+        if (editingRow == null)
+        {
+            editingRow = new RepairerMasterModel();
+            //
+            editingRow.UpdMode = -1;
+            //Init row here
+            editingRow.ModifiedOn = DateTime.Now;
+            editingRow.Status = 1;
+            //
+            EditContext = new FormEditContext(editingRow, 1);
+        }
+        else
+        {
+            //Update row
+            editingRow.UpdMode = 2;
+            EditContext = new FormEditContext(editingRow, 2);
+        }
+    }
+    // Color of edit data
+    void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<RepairerMasterModel> eventArgs)
+    {
+        MyColor myColor = new MyColor();
+        if (eventArgs.DataItem.UpdMode == 1)
+            eventArgs.Style += myColor.NewRowColor;
+        else if (eventArgs.DataItem.UpdMode == 2)
+            eventArgs.Style += myColor.EditRowColor;
+        else if (eventArgs.DataItem.UpdMode == 3)
+            eventArgs.Style += myColor.DeleteRowColor;
+
+        //Disable user
+        if (eventArgs.DataItem.Status == 0) eventArgs.Style += myColor.DisabledRowColor;
+    }
+    #endregion
+
+    #region Screen items
+
+    // Select RoleList
+    string GetRoleID;
+    string GetRoleName = "";
+    void RoleList_ItemChanged(RoleListModel item)
+    {
+        GetRoleName = "";
+        if (item != null)
+        {
+            GetRoleID = item.RoleID;
+            GetRoleName = item.RoleName ?? "";
+        }
+    }
+
+    #endregion
+    //
+}

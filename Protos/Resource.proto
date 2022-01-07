@@ -1,0 +1,73 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Gosu.Resource.Services";
+import "google/protobuf/timestamp.proto";
+package grpcResourceService;
+
+//Services
+service grpcResourceService {    
+    //ResourceFile
+    rpc SaveResourceFile (SaveResourceFile_Request) returns (String_Response);
+    rpc GetResourceFile (String_Request) returns (GetResourceFile_Response);
+   
+}
+//======================================================
+// Common Messages
+//======================================================
+message UserCredential {
+    string Username = 1;
+    string RoleID = 2;
+    string AccessToken = 3;
+    string ApiKey = 4;
+}
+message Empty_Response {
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+}
+message Empty_Request {
+    UserCredential Credential = 1;
+}
+//
+message String_Request
+{
+    UserCredential Credential = 1;
+    //
+     string StringValue = 2;
+}
+message String_Response
+{
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+     string StringValue = 3;
+}
+//
+//======================================================
+// Messages
+//======================================================
+message SaveResourceFile_Request {
+    UserCredential Credential = 1;
+    //
+    grpcResourceFileModel ResourceFile = 2;
+}
+message GetResourceFile_Response {
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    grpcResourceFileModel ResourceFile = 3;
+}
+message grpcResourceFileModel {
+    string ID = 1;
+    string ResourceID = 2;
+    string CategoryID = 3;
+    string FileName = 4;
+    string ServerFileName = 5;
+    bytes FileContent = 6;
+    int32 ArchiveMode = 7;
+    //
+    google.protobuf.Timestamp ModifiedOn = 8;
+    int32 UpdMode = 9;
+}
+
+
+
+

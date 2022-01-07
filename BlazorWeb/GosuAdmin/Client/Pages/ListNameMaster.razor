@@ -1,0 +1,304 @@
+﻿@page "/listnamemaster"
+@using Gosu.Admin.Services
+@using System.Collections.ObjectModel
+@inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
+@inject IJSRuntime JsRuntime;
+@inject IToastService toastService
+
+<br />
+<div style="width:100%">
+    <DxDataGrid @ref="@Grid"
+                Data="@DetailData"
+                EditMode="DataGridEditMode.PopupEditForm"
+                PageSize="20"
+                ShowFilterRow="true"
+                HtmlRowDecoration="@OnHtmlRowDecoration"
+                HorizontalScrollBarMode="ScrollBarMode.Auto"
+                RowInsertStart="@(() => OnRowEditStarting(null))"
+                RowEditStart="@(dataRow => OnRowEditStarting(dataRow))"
+                RowRemoving="@((dataRow) => OnRowRemoving(dataRow))">
+        <Columns>
+            <DxDataGridColumn Field="@nameof(OptionListHeaderModel.ID)"
+                              Visible="false" />
+            <DxDataGridColumn Field="@nameof(OptionListHeaderModel.ListCode)"
+                              Caption="Mã"
+                              Width="" />
+            <DxDataGridColumn Field="@nameof(OptionListHeaderModel.ListName)"
+                              Caption="Tên"
+                              Width="" />
+            <DxDataGridColumn Field="@nameof(OptionListHeaderModel.Description)"
+                              Caption="Ghi chú"
+                              Width="" />
+            <!--Command columns-->
+            <MyGridCommand Grid="Grid"
+                           ShowAddnew="true"
+                           ShowEdit="true"
+                           ShowDelete="true"
+                           OnRowRemoving="@((context) => OnRowRemoving(context as OptionListHeaderModel))" />
+            <DxDataGridCommandColumn Width="10%"></DxDataGridCommandColumn>
+        </Columns>
+        <EditFormTemplate>
+            <EditForm Model="@EditContext" Context="EditFormContext" OnValidSubmit="@UpdateRow">
+                <DataAnnotationsValidator />
+                <DxFormLayout>
+                    <DxFormLayoutItem Caption="Mã: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxTextBox @bind-Text="@EditContext.ListCode" />
+                            <ValidationMessage For="@(() => EditContext.ListCode)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Tên: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxTextBox @bind-Text="@EditContext.ListName" />
+                            <ValidationMessage For="@(() => EditContext.ListName)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Ghi chú: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxTextBox @bind-Text="@EditContext.Description" />
+                            <ValidationMessage For="@(() => EditContext.Description)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <!--OK Cancel-->
+                    <MyGridEditFormOKCancel OnCancelClick="OnCancelEditRow" />
+                </DxFormLayout>
+            </EditForm>
+        </EditFormTemplate>
+    </DxDataGrid>
+    <br />
+</div>
+
+<ConfirmDialog Message="@ConfirmMessage" @bind-Visible="@PopupVisible" confirm="@ConfirmHandler" />
+
+
+@code{
+    // Popup
+    private string ConfirmMessage = "";
+    private string ConfirmAction = "";
+    private bool PopupVisible = false;
+    // OptionListHeader
+    readonly ObservableCollection<OptionListHeaderModel> DetailData = new ObservableCollection<OptionListHeaderModel>();
+    // Init
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        // Display data ..
+        await DisplayMain();
+    }
+
+    #region Load data
+    // Load OptionListHeader
+    async Task DisplayMain()
+    {
+        try
+        {
+            var requestOptionListHeader = new Empty_Request()
+            {
+                Credential = new UserCredential()
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                }
+            };
+            //Get data from DB
+            DetailData.Clear();
+            var resOptionListHeader = await adminServiceClient.GetOptionListHeaderAsync(requestOptionListHeader);
+            if (resOptionListHeader != null && resOptionListHeader.ReturnCode == 200)
+            {
+                foreach (var item in resOptionListHeader.OptionListHeader)
+                {
+                    OptionListHeaderModel dataRow = new OptionListHeaderModel();
+                    ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
+                    // Set Updmode
+                    dataRow.UpdMode = 0;
+                    //
+                    DetailData.Add(dataRow);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message, "Load thất bại.");
+        }
+    }
+    #endregion
+
+    #region DataGrid
+    // Edit row model
+    DxDataGrid<OptionListHeaderModel> Grid;
+    FormEditContext EditContext = null;
+    class FormEditContext : OptionListHeaderModel
+    {
+        public FormEditContext(OptionListHeaderModel targetRow, int updMode)
+        {
+            //Backup editting row
+            EditingRow = targetRow;
+
+            //UpdMode
+            UpdMode = updMode;
+
+            //Edit context -> Editable data only
+            ListCode = EditingRow.ListCode;
+            ListName = EditingRow.ListName;
+            Description = EditingRow.Description;
+        }
+        public OptionListHeaderModel EditingRow { get; set; }
+    }
+    // Color of edit data
+    void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<OptionListHeaderModel> eventArgs)
+    {
+        MyColor myColor = new MyColor();
+        if (eventArgs.DataItem.UpdMode == 1)
+            eventArgs.Style += myColor.NewRowColor;
+        else if (eventArgs.DataItem.UpdMode == 2)
+            eventArgs.Style += myColor.EditRowColor;
+        else if (eventArgs.DataItem.UpdMode == 3)
+            eventArgs.Style += myColor.DeleteRowColor;
+    }
+    #endregion
+
+    #region CRUD
+    // Cancel edit
+    async Task OnCancelEditRow()
+    {
+        await Grid.CancelRowEdit();
+        EditContext = null;
+    }
+    // Show confirm delete SaveMain
+    OptionListHeaderModel DeletedRow = null;
+    void OnRowRemoving(OptionListHeaderModel dataRow)
+    {
+        DeletedRow = dataRow;
+        // Show popup confirm
+        ConfirmMessage = "Delete row?";
+        ConfirmAction = "DeleteRow";
+        PopupVisible = true;
+        StateHasChanged();
+    }
+
+    // Confirm Cancel, Delete, Save
+    void ConfirmHandler()
+    {
+        // Delete row main
+        if (ConfirmAction == "DeleteRow")
+        {
+            DeleteRow();
+        }
+
+        // Close confirm delete popup
+        PopupVisible = false;
+        StateHasChanged();
+    }
+
+    // Delete edit main
+    async void DeleteRow()
+    {
+        // Mark to delete on grid
+        DeletedRow.UpdMode = 3;
+
+        var saveResult = await SaveRow(DeletedRow);
+
+        // Refresh layout
+        if (saveResult)
+        {
+            await Grid.Refresh();
+        }
+    }
+    // Get data for edit/insert
+    void OnRowEditStarting(OptionListHeaderModel editingRow)
+    {
+        // Insert row
+        if (editingRow == null)
+        {
+            editingRow = new OptionListHeaderModel();
+            //
+            editingRow.UpdMode = -1;
+            //Init row here
+
+            //
+            EditContext = new FormEditContext(editingRow, 1);
+        }
+        else
+        {
+            //Update row
+            editingRow.UpdMode = 2;
+            EditContext = new FormEditContext(editingRow, 2);
+        }
+    }
+    // Update row
+    async Task UpdateRow()
+    {
+        // Update for edit field
+        EditContext.EditingRow.ListCode = EditContext.ListCode;
+        EditContext.EditingRow.ListName = EditContext.ListName;
+        EditContext.EditingRow.Description = EditContext.Description;
+
+        // Insert
+        if (EditContext.UpdMode == 1)
+        {
+            EditContext.EditingRow.UpdMode = 1;
+            DetailData.Add(EditContext.EditingRow);
+        }
+        else
+        {
+            //Update or update to restore delete record
+            EditContext.EditingRow.UpdMode = 2;
+        }
+
+        //Save row to DB
+        var saveResult = await SaveRow(EditContext.EditingRow);
+        if (saveResult)
+        {
+            // Close popup & refresh data
+            await Grid.CancelRowEdit();
+            await Grid.Refresh();
+        }
+    }
+
+    //Save Row
+    async Task<bool> SaveRow(OptionListHeaderModel saveRow)
+    {
+        try
+        {
+            //Request
+            SaveOptionListHeader_Request request = new SaveOptionListHeader_Request();
+            var Credential = new UserCredential()
+            {
+                Username = WebUserCredential.Username,
+                RoleID = WebUserCredential.RoleID,
+                AccessToken = WebUserCredential.AccessToken,
+                ApiKey = WebUserCredential.ApiKey
+            };
+            request.Credential = Credential;
+            // Convert to DB row
+            request.Record = new grpcOptionListHeader();
+            ClassHelper.CopyPropertiesDataDateConverted(saveRow, request.Record);
+            // Call api
+            var response = await adminServiceClient.SaveOptionListHeaderAsync(request);
+            // Success
+            if (response == null || response.ReturnCode != GrpcReturnCode.OK)
+            {
+                toastService.ShowError("", "Lưu thất bại.");
+            }
+            else
+            {
+                //Update ID
+                saveRow.ID = response.StringValue;
+            }
+            //OK
+            return true;
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message, "Lưu thất bại.");
+        }
+        //
+        return false;
+    }
+
+
+    #endregion
+}

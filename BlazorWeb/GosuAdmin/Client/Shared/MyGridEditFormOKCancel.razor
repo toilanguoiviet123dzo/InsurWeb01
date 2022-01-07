@@ -1,0 +1,17 @@
+﻿<DxFormLayoutItem ColSpanMd="12" Context="FormLayoutContext">
+    <Template>
+        <div class="text-center">
+            <DxButton RenderStyle="@ButtonRenderStyle.Success" style="width: 100px; font-size: 15px; margin-right: 10px" SubmitFormOnClick="true" Text="OK" />
+            <DxButton RenderStyle="@ButtonRenderStyle.Danger" style="width:100px; font-size:15px; margin-right:10px" @onclick="@(async () =>await OnCancelClickHandler())" Text="Cancel" />
+        </div>
+    </Template>
+</DxFormLayoutItem>
+
+@code {
+    [Parameter]
+    public EventCallback OnCancelClick { get; set; }
+    private async Task OnCancelClickHandler()
+    {
+        await OnCancelClick.InvokeAsync();
+    }
+}

@@ -1,0 +1,60 @@
+﻿@typeparam T
+<DxDataGridCommandColumn Width="@Width" VisibleIndex="VisibleIndex" Visible="ShowAddnew || ShowEdit || ShowDelete">
+    <HeaderCellTemplate>
+        <!--Addnew-->
+        @if (ShowAddnew)
+        {
+            <div class="text-center">
+                <a class="fa fa-plus" style="font-size:24px" @onclick="@(() => Grid.StartRowEdit(null))" href="javascript:void(0);"></a>
+            </div>
+        }
+    </HeaderCellTemplate>
+    <CellTemplate>
+        <div style="display:flex;justify-content:center">
+            <!--Edit-->
+            @if (ShowEdit)
+            {
+                <div class="text-center" style="width:2.5rem">
+                    <a class="fa fa-pencil" style="font-size:24px" @onclick="@(() => Grid.StartRowEdit(context))" href="javascript:void(0);"></a>
+                </div>
+            }
+            <!--Delete-->
+            @if (ShowDelete)
+            {
+                <div class="text-center" style="width: 2.5rem">
+                    <a class="fa fa-trash-o" style="font-size:24px; color:red" @onclick="@(() => OnRowRemovingHandler(context))" href="javascript:void(0);"></a>
+                </div>
+            }
+        </div>
+    </CellTemplate>
+</DxDataGridCommandColumn>
+
+@code {
+    [Parameter]
+    public DxDataGrid<T> Grid { get; set; }
+    [Parameter]
+    public int VisibleIndex { get; set; } = 0;
+    [Parameter]
+    public bool ShowAddnew { get; set; } = true;
+    [Parameter]
+    public bool ShowEdit { get; set; } = true;
+    [Parameter]
+    public bool ShowDelete { get; set; } = true;
+    [Parameter]
+    public EventCallback OnRowRemoving { get; set; }
+    private async Task OnRowRemovingHandler(Object newValue)
+    {
+        await OnRowRemoving.InvokeAsync(newValue);
+    }
+    //
+    private string Width = "6rem";
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        //Cal Width
+        double width = 0;
+        if (ShowEdit) width += 2.5;
+        if (ShowDelete) width += 2.5;
+        Width = $"{width}rem";
+    }
+}

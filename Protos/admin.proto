@@ -1,0 +1,462 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Gosu.Admin.Services";
+import "google/protobuf/timestamp.proto";
+package grpcAdminService;
+
+//Services
+service grpcAdminService {    
+    //Login
+    rpc GrpcLogin (GrpcLogin_Request) returns (GrpcLogin_Response);
+    //VoucherMaster
+    rpc GetVoucherNo (String_Request) returns (String_Response);
+    rpc CommitVoucherNo (CommitVoucherNo_Request) returns (String_Response);
+
+    //ServiceList
+    rpc SaveServiceList (SaveServiceList_Request) returns (Empty_Response);
+    rpc GetServiceList (Empty_Request) returns (GetServiceList_Response);
+    //OptionList
+    rpc SaveOptionList (SaveOptionList_Request) returns (String_Response);
+    rpc GetOptionList (String_Request) returns (GetOptionList_Response);    
+    //FunctionList
+    rpc SaveFunctionList (SaveFunctionList_Request) returns (Empty_Response);
+    rpc GetFunctionList (Empty_Request) returns (GetFunctionList_Response);     
+    //RoleList
+    rpc SaveRoleList (SaveRoleList_Request) returns (Empty_Response);
+    rpc GetRoleList (Empty_Request) returns (GetRoleList_Response);
+    //UserRole
+    rpc SaveUserRole (SaveUserRole_Request) returns (Empty_Response);
+    rpc GetUserRole (Empty_Request) returns (GetUserRole_Response);
+    //MenuGroup
+    rpc SaveMenuGroup (SaveMenuGroup_Request) returns (Empty_Response);
+    rpc GetMenuGroup (Empty_Request) returns (GetMenuGroup_Response);
+    //MenuDetail
+    rpc SaveMenuDetail (SaveMenuDetail_Request) returns (Empty_Response);
+    rpc GetMenuDetail (Empty_Request) returns (GetMenuDetail_Response);
+    //RoleDetail
+    rpc SaveRoleDetail (SaveRoleDetail_Request) returns (Empty_Response);
+    rpc GetRoleDetail (String_Request) returns (GetRoleDetail_Response);
+    rpc DeleteRoleDetail (DeleteRoleDetail_Request) returns (Empty_Response);    
+    //OptionListHeader
+    rpc SaveOptionListHeader (SaveOptionListHeader_Request) returns (String_Response);
+    rpc GetOptionListHeader (Empty_Request) returns (GetOptionListHeader_Response);
+    //SettingMaster
+    rpc SaveSettingMaster (SaveSettingMaster_Request) returns (Empty_Response);
+    rpc GetSettingMaster (Empty_Request) returns (GetSettingMaster_Response);
+    //UserAccount
+    rpc SaveUserAccount (SaveUserAccount_Request) returns (String_Response);
+    rpc GetUserAccount (String_Request) returns (GetUserAccount_Response);
+    //WebPushNotification
+    rpc SubscribeToNotifications (SubscribeToNotifications_Request) returns (Empty_Response);
+    rpc WebPushNotification (WebPushNotification_Request) returns (Empty_Response);
+    rpc GetNotificationSubscribe (String_Request) returns (GetNotificationSubscribe_Response);
+}
+
+//======================================================
+// Common Messages
+//======================================================
+message UserCredential {
+    string Username = 1;
+    string RoleID = 2;
+    string AccessToken = 3;
+    string ApiKey = 4;
+}
+message Empty_Response {
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+}
+message Empty_Request {
+    UserCredential Credential = 1;
+}
+//
+message String_Request
+{
+    UserCredential Credential = 1;
+    //
+     string StringValue = 2;
+}
+message String_Response
+{
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+     string StringValue = 3;
+}
+//
+//======================================================
+// Messages
+//======================================================
+message GetNotificationSubscribe_Response {
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    repeated grpcNotificationSubcribeModel Records = 3;
+}
+message grpcNotificationSubcribeModel {
+    string ID = 1;
+    int32 NotificationSubscriptionId = 2;
+    string UserId = 3;
+    string Url = 4;
+    string P256dh = 5;
+    string Auth = 6;
+}
+message SubscribeToNotifications_Request {
+    UserCredential Credential = 1;
+    //
+    int32 NotificationSubscriptionId = 2;
+    string UserId = 3;
+    string Url = 4;
+    string P256dh = 5;
+    string Auth = 6;
+}
+message WebPushNotification_Request {
+    UserCredential Credential = 1;
+    //
+    string UserName = 2;
+    string Messages = 3;
+    string Url = 4;
+}
+
+//GrpcLogin
+message CommitVoucherNo_Request {
+    UserCredential Credential = 1;
+    //
+    string VoucherCode = 2;
+    string VoucherNo = 3;
+}
+message GrpcLogin_Request
+{
+    UserCredential Credential = 1;
+    //
+    string UserName = 2;
+    string Password = 3;
+}
+message GrpcLogin_Response
+{
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    string UserName = 3;
+    string Fullname = 4;
+    string RoleID = 5;
+    int32 ApproveLevel = 6;
+    int32 DocumentLevel = 7;
+}
+message SaveOptionList_Request {
+    UserCredential Credential = 1;
+    //
+    grpcOptionList Record = 2;
+}
+//
+message GetOptionList_Response
+{
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    repeated grpcOptionList OptionList = 3;
+}
+message SaveServiceList_Request
+{
+    UserCredential Credential = 1;
+    //
+    repeated grpcServiceList ServiceList = 2;    
+}
+
+message GetServiceList_Response
+{
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    repeated grpcServiceList ServiceList = 3;    
+}
+
+
+message grpcServiceList
+{
+    string ID  = 1; 
+    string ServiceName  = 2; 
+    string Descriptions  = 3; 
+    string Host  = 4; 
+    int32 Port = 5; 
+    string Url = 6;    
+    google.protobuf.Timestamp CreatedOn = 7;
+    google.protobuf.Timestamp ModifiedOn = 8;
+    int32 UpdMode = 9;    
+}
+message grpcOptionList
+{
+    string ID  = 1; 
+    string ListCode  = 2;
+    string ItemCode  = 3; 
+    int32 IntCode  = 4; 
+    double DoubleCode  = 5; 
+    string ItemName  = 6; 
+    string DspOrder  = 7; 
+    string Description  = 8; 
+    google.protobuf.Timestamp CreatedOn  = 9; 
+    google.protobuf.Timestamp ModifiedOn  = 10;          
+    int32 UpdMode  = 11;     
+}
+//
+message SaveFunctionList_Request
+{
+    UserCredential Credential = 1;
+    //
+    repeated grpcFunctionList FunctionList = 2;
+}
+//
+message GetFunctionList_Response
+{
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    repeated grpcFunctionList FunctionList = 3;
+}
+//
+message grpcFunctionList
+{
+    string ID  = 1; 
+    string PageID  = 3; 
+    string PageName  = 4; 
+    string Discriptions  = 5; 
+    string F1 = 6; 
+    string F2  = 7; 
+    string F3  = 8; 
+    string F4  = 9; 
+    string F5  = 10;     
+    google.protobuf.Timestamp CreatedOn  = 11; 
+    google.protobuf.Timestamp ModifiedOn  = 12;          
+    int32 UpdMode  = 13;     
+}
+////
+message SaveRoleList_Request
+{
+    UserCredential Credential = 1;
+    //
+    repeated grpcRoleList RoleList = 2;
+}
+//
+message GetRoleList_Response
+{
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    repeated grpcRoleList RoleList = 3;
+}
+//
+message grpcRoleList
+{
+    string ID  = 1; 
+    string RoleID  = 3; 
+    string RoleName  = 4; 
+    string Discriptions  = 5;         
+    google.protobuf.Timestamp CreatedOn  = 6; 
+    google.protobuf.Timestamp ModifiedOn  = 7;          
+    int32 UpdMode  = 8;     
+    string DspOrder  = 9; 
+}
+
+//
+message SaveUserRole_Request
+{
+    UserCredential Credential = 1;
+    //
+    repeated grpcUserRole UserRoles = 2;
+}
+//
+message GetUserRole_Response
+{
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    repeated grpcUserRole UserRoles = 3;
+}
+//
+message grpcUserRole
+{
+    string ID  = 1; 
+    string UserName   = 2;
+    string RoleID  = 4;     
+    string Discriptions  = 5;         
+    google.protobuf.Timestamp CreatedOn  = 6; 
+    google.protobuf.Timestamp ModifiedOn  = 7;          
+    int32 UpdMode  = 8;     
+}
+//
+message SaveMenuGroup_Request
+{
+    UserCredential Credential = 1;
+    //
+    repeated grpcMenuGroup MenuGroups = 2;
+}
+//
+message GetMenuGroup_Response
+{
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    repeated grpcMenuGroup MenuGroups = 3;
+}
+//
+message grpcMenuGroup
+{
+    string ID  = 1; 
+    string GroupID   = 3;
+    string GroupName  = 4;     
+    int32 DisplayOrder  = 5;         
+    string IconUrl  = 6;
+    bool Enabled  = 7;
+    int32 UpdMode  = 8;     
+}
+//
+message SaveMenuDetail_Request
+{
+    UserCredential Credential = 1;
+    //
+    repeated grpcMenuDetail MenuDetails = 2;
+}
+//
+message GetMenuDetail_Response
+{
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    repeated grpcMenuDetail MenuDetails = 3;
+}
+//
+message grpcMenuDetail
+{
+    string ID  = 1; 
+    string GroupID   = 3;
+    string PageID  = 4;     
+    string PageName  = 5;     
+    string IconUrl  = 6;
+    int32 DisplayOrder  = 7;         
+    bool Enabled  = 8;
+    int32 UpdMode  = 9;     
+}
+//RoleDetail
+message SaveRoleDetail_Request
+{
+    UserCredential Credential = 1;
+    //
+    repeated grpcRoleDetail RoleDetail = 2;
+}
+message GetRoleDetail_Response
+{
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    repeated grpcRoleDetail RoleDetail = 3;
+}
+message grpcRoleDetail
+{
+    string ID = 1;
+    string RoleID = 3;
+    string PageID = 4;
+    string PageName = 5;
+    string Discriptions = 6;
+    bool F1 = 7;
+    bool F2 = 8;
+    bool F3 = 9;
+    bool F4 = 10;
+    bool F5 = 11;
+    google.protobuf.Timestamp CreatedOn = 12; 
+    google.protobuf.Timestamp ModifiedOn = 13;
+    int32 UpdMode = 14;
+}
+message DeleteRoleDetail_Request
+{
+    UserCredential Credential = 1;
+    //
+    string RoleID = 3;    
+}
+//OptionListHeader
+message SaveOptionListHeader_Request
+{
+    UserCredential Credential = 1;
+    //
+    grpcOptionListHeader Record = 2;
+}
+message GetOptionListHeader_Response
+{
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    repeated grpcOptionListHeader OptionListHeader = 3;
+}
+message grpcOptionListHeader
+{
+    string ID = 1;
+    string ListCode = 2;
+    int32 IntCode = 3;
+    double DoubleCode = 4;
+    string ListName = 5;
+    string Description = 6;
+    int32 UpdMode = 7;
+}
+message SaveSettingMaster_Request
+{
+    UserCredential Credential = 1;
+    //
+    repeated grpcSettingMaster SettingMasters = 2;
+}
+
+message GetSettingMaster_Response
+{
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    repeated grpcSettingMaster SettingMasters = 3;
+}
+message grpcSettingMaster
+{   
+    string ID = 1;
+    string Code = 2;
+    string Description = 3;
+    string StringValue1 = 4;
+    string StringValue2 = 5;
+    int32 IntValue1 = 6;
+    int32 IntValue2 = 7;
+    double DoubleValue1 = 8;
+    double DoubleValue2 = 9;
+    google.protobuf.Timestamp ModifiedOn = 10;
+    int32 UpdMode = 11;
+}
+
+message SaveUserAccount_Request
+{
+    UserCredential Credential = 1;
+    //
+    grpcUserAccount Record = 2;
+}
+
+message GetUserAccount_Response
+{
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    repeated grpcUserAccount UserAccounts = 3;
+}
+message grpcUserAccount
+{   
+    string ID = 1;
+    string UserID = 2;
+    string UserName = 3;
+    string Fullname = 4;
+    string Phone = 5;
+    string Email = 6;
+    string Address = 7;
+    string RoleID = 8;
+    int32 ApproveLevel = 9;
+    string ApproveLevelName = 10;
+    int32 DocumentLevel = 11;
+    string DocumentLevelName = 12;
+    int32 Status = 13;
+    google.protobuf.Timestamp ModifiedOn = 14;
+    int32 UpdMode = 15;
+    string Password = 16;
+}
+
+
+
+

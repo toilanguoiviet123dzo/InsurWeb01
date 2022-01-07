@@ -1,0 +1,552 @@
+﻿@page "/payment-request-list"
+@using Gosu.Admin.Services
+@using Gosu.Compensation.Services
+@using Gosu.Resource.Services
+@using System.Collections.ObjectModel;
+@using System.IO;
+@inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
+@inject grpcCompensationService.grpcCompensationServiceClient compensationServiceClient;
+@inject MasterService masterService;
+@inject IJSRuntime JsRuntime;
+@inject IToastService toastService
+@using System.Collections.Concurrent
+@using System.Threading
+
+<br />
+<div class="container" style="margin-left:0 !important;">
+    <div class="row">
+        <!--PhoneNo-->
+        <div class="col-6 col-lg-2 pr-lg-3">
+            <MyTextEdit @bind-Text="Filter_PhoneNo"
+                        ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                        Literal="Điện thoại chủ xe" />
+        </div>
+        <!--CompenNo-->
+        <div class="col-6 col-lg-2 pr-lg-3">
+            <MyTextEdit @bind-Text="Filter_CompenNo"
+                        ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                        Literal="Số tờ trình" />
+        </div>
+        <!--Status-->
+        <div class="col-6 col-lg-2 pr-lg-3">
+            <MyComboBox @bind-Value="Filter_Status"
+                        Data="StatusList"
+                        TextFieldName="@(nameof(CodeNameModel.Name))"
+                        AllowUserInput="true"
+                        ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                        Literal="Duyệt" />
+        </div>
+        <!--ReqPersonID-->
+        <div class="col-6 col-lg-2 pr-lg-3">
+            <MyComboBox @bind-Value="Filter_PayPersonID"
+                        Data="UserList"
+                        TextFieldName="@(nameof(UserAccountModel.Fullname))"
+                        ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                        AllowUserInput="true"
+                        Literal="Cán bộ bồi thường" />
+        </div>
+    </div>
+    <div class="row align-items-end">
+        <!--CarOwner-->
+        <div class="col-6 col-lg-2 pr-lg-3">
+            <MyTextEdit @bind-Text="Filter_CarOwner"
+                        ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                        Literal="Chủ sở hữu" />
+        </div>
+        <!--LicensePlate-->
+        <div class="col-6 col-lg-2">
+            <MyTextEdit @bind-Text="Filter_LicensePlate"
+                        ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                        Literal="Biển số xe" />
+        </div>
+        <!--TimeFlag-->
+        <div class="col-12 col-lg-2">
+            <MyComboBox @bind-Value="Filter_TimeFlag"
+                        Data="TimeFlagList"
+                        TextFieldName="@(nameof(CodeNameModel.Name))"
+                        AllowUserInput="true"
+                        SelectedItemChanged="@((CodeNameModel selectedItem) => TimeFlag_SelectedItemChanged(selectedItem))"
+                        ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                        Literal="Thời gian trình" />
+        </div>
+        <div class="col-12 col-lg-4 pr-lg-3">
+            <div class="row">
+                <!--StartDate-->
+                <div class="col-6">
+                    <MyDateEdit @bind-Date="Filter_StartDate"
+                                Format="dd/MM/yyyy" />
+                </div>
+                <!--EndDate-->
+                <div class="col-6">
+                    <MyDateEdit @bind-Date="Filter_EndDate"
+                                Format="dd/MM/yyyy" />
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-2 mt-2">
+            <MyButton BtnCss="btn btn-success"
+                      Text="Search"
+                      OnClick="DisplayMain">
+                <Icon>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                    </svg>
+                </Icon>
+            </MyButton>
+        </div>
+    </div>
+</div>
+<br />
+
+<!--Parent grid-->
+<div style="width:100%">
+    <DxDataGrid @ref="@grid"
+                Data="@DetailData"
+                ColumnResizeMode="DataGridColumnResizeMode.Component"
+                EditMode="DataGridEditMode.PopupEditForm"
+                SelectionMode="DataGridSelectionMode.SingleSelectedDataRow"
+                PageSize="@PageRowCount"
+                ShowFilterRow="true"
+                HorizontalScrollBarMode="ScrollBarMode.Auto"
+                HtmlRowDecoration="@OnHtmlRowDecoration"
+                HtmlDataCellDecoration="@OnHtmlDataCellDecoration">
+        <Columns>
+            <!--Command columns-->
+            <DxDataGridCommandColumn Width="5rem" VisibleIndex="0">
+                <HeaderCellTemplate></HeaderCellTemplate>
+                <CellTemplate>
+                    <div style="display:flex;justify-content:center">
+                        @if (!((CompenRequestListModel)context).AprRepairStatus || !((CompenRequestListModel)context).AprStatus)
+                        {
+                            <!--View-->
+                            <div class="text-center" style="width:3rem">
+                                <a class="fas fa-eye" style="font-size: 24px; color: black" @onclick="@(() => OnRowEditStarting(context as CompenRequestListModel))"></a>
+                            </div>
+                        }
+                        else
+                        {
+                            <!--Edit-->
+                            <div class="text-center" style="width:2.5rem">
+                                <a class="fa fa-pencil" style="font-size:24px" @onclick="@(() => OnRowEditStarting(context as CompenRequestListModel))"></a>
+                            </div>
+                        }
+                    </div>
+                </CellTemplate>
+            </DxDataGridCommandColumn>
+            <!--columns-->
+            <DxDataGridColumn Field="@nameof(CompenRequestListModel.CompenNo)"
+                              Caption="Số HSBT"
+                              SortOrder="DataGridColumnSortOrder.Descending"
+                              Width="6rem" />
+            <DxDataGridDateEditColumn Field="@nameof(CompenRequestListModel.AcceptDatetime)"
+                                      Caption="Ngày tiếp nhận"
+                                      DisplayFormat="dd/MM/yyyy HH:mm"
+                                      Width="9rem" />
+            <DxDataGridColumn Field="@nameof(CompenRequestListModel.StatusName)"
+                              Caption="Trạng thái"
+                              Width="8rem" />
+            <DxDataGridColumn Field="@nameof(CompenRequestListModel.BranchName)"
+                              Caption="Chi nhánh"
+                              Width="8rem" />
+            <DxDataGridColumn Field="@nameof(CompenRequestListModel.CarOwner)"
+                              Caption="Tên NĐBH"
+                              Width="10rem" />
+            <DxDataGridColumn Field="@nameof(CompenRequestListModel.PhoneNo)"
+                              Caption="Điện thoại"
+                              Width="7rem" />
+            <DxDataGridColumn Field="@nameof(CompenRequestListModel.VCXContractNo)"
+                              Caption="Số HĐBH"
+                              Width="7rem" />
+            <DxDataGridColumn Field="@nameof(CompenRequestListModel.LicensePlate)"
+                              Caption="BKS (SK/SM)"
+                              Width="7rem" />
+            <DxDataGridDateEditColumn Field="@nameof(CompenRequestListModel.CompenDateTime)"
+                                      Caption="Ngày yêu cầu"
+                                      DisplayFormat="dd/MM/yyyy HH:mm"
+                                      Width="9rem" />
+            <DxDataGridDateEditColumn Field="@nameof(CompenRequestListModel.AccidentDateTime)"
+                                      Caption="Ngày tổn thất"
+                                      DisplayFormat="dd/MM/yyyy HH:mm"
+                                      Width="9rem" />
+            <DxDataGridColumn Field="@nameof(CompenRequestListModel.AccidentPlace)"
+                              Caption="Nơi xảy ra tai nạn"
+                              Width="12rem" />
+            <DxDataGridSpinEditColumn Field="@nameof(CompenRequestListModel.EstDamageAmount)"
+                                      DisplayFormat="N0"
+                                      Caption="Ước tổn thất"
+                                      Width="8rem" />
+            <DxDataGridColumn Field="@nameof(CompenRequestListModel.ReqPersonName)"
+                              Caption="Cán bộ bồ thường"
+                              Width="10rem" />
+        </Columns>
+    </DxDataGrid>
+</div>
+<!--Confirm dialog-->
+<ConfirmDialog Message="@ConfirmMessage" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
+
+<!--Edit compen request-->
+<MyPopup @bind-Visible="@CompenRequestVisible"
+         VerticalAlignment="@VerticalAlignment.Top"
+         HeaderText="Tờ trình -  Xác nhận chi trả"
+         Width="1300px"
+         ZIndex="1001">
+    <BodyContentTemplate>
+        <PaymentRequest @bind-Visible="@CompenRequestVisible"
+                        CompenNo="@CompenNo"
+                        OnValidSumit="DisplayMain" />
+    </BodyContentTemplate>
+</MyPopup>
+
+
+@code{
+    private int PageRowCount = MyConstant.Grid_PageRowCount;
+    //
+    // Detail data
+    DxDataGrid<CompenRequestListModel> grid;
+    readonly ObservableCollection<CompenRequestListModel> DetailData = new ObservableCollection<CompenRequestListModel>();
+    // User list
+    private List<UserAccountModel> UserList = new List<UserAccountModel>();
+    private List<CodeNameModel> StatusList = new List<CodeNameModel>() {
+        new CodeNameModel{CodeInt = 6, Name="Chưa duyệt"},
+        new CodeNameModel{CodeInt = 7, Name="Chưa sửa xong"},
+        new CodeNameModel{CodeInt = 8, Name="Chưa nghiệm thu"},
+        new CodeNameModel{CodeInt = 9, Name="Chưa chi trả"}
+    };
+    private List<CodeNameModel> TimeFlagList = new List<CodeNameModel>() {
+        new CodeNameModel{CodeInt = 1, Name="Tuần này"},
+        new CodeNameModel{CodeInt = 2, Name="Tháng này"},
+        new CodeNameModel{CodeInt = 3, Name="Tháng trước"},
+        new CodeNameModel{CodeInt = 4, Name="Năm nay"},
+        new CodeNameModel{CodeInt = 5, Name="Năm trước"}
+    };
+    private string CompenNo = "";
+    // Confirm dialog
+    private string ConfirmAction = "";
+    private string ConfirmMessage = "";
+    private bool ConfirmVisible = false;
+    private bool CompenRequestVisible { get; set; } = false;
+    //Filter
+    private string Filter_PhoneNo { get; set; } = "";
+    public UserAccountModel Filter_PayPersonID { get; set; }
+    private string Filter_CarOwner { get; set; } = "";
+    private string Filter_CompenNo { get; set; } = "";
+    private string Filter_LicensePlate { get; set; }
+    private CodeNameModel Filter_Status { get; set; }
+    private CodeNameModel Filter_PayStatus { get; set; }
+    private CodeNameModel Filter_TimeFlag { get; set; }
+    private DateTime Filter_StartDate { get; set; } = DateTime.Today.MinDate().ToLocalTime();
+    private DateTime Filter_EndDate { get; set; } = DateTime.Today.MaxDate().ToLocalTime();
+
+    //
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        //Load master
+        await LoadMaster();
+
+        //Display data ..
+        Display_Init();
+    }
+    #region Load data
+    void Init_Main()
+    {
+        Filter_PhoneNo = "";
+        Filter_PayPersonID = UserList.Find(x => x.UserName == WebUserCredential.Username);
+        Filter_CompenNo = "";
+        Filter_Status = new CodeNameModel() { CodeInt = 9, Name = "Chưa chi trả" };
+        Filter_CarOwner = "";
+        Filter_LicensePlate = "";
+        Filter_PayStatus = null;
+        Filter_TimeFlag = null;
+        Filter_StartDate = DateTime.Today.AddDays(-7);
+        Filter_EndDate = DateTime.Today;
+    }
+
+    async Task LoadMaster()
+    {
+        //...
+        UserList = await masterService.Load_UserList();
+
+    }
+
+    void Display_Init()
+    {
+        Init_Main();
+        DisplayMain();
+    }
+
+    //
+    async void DisplayMain()
+    {
+        try
+        {
+            //Filter
+            var request = new Gosu.Compensation.Services.GetCompenRequestList_Request();
+            request.Credential = new Gosu.Compensation.Services.UserCredential()
+            {
+                Username = WebUserCredential.Username,
+                RoleID = WebUserCredential.RoleID,
+                AccessToken = WebUserCredential.AccessToken,
+                ApiKey = WebUserCredential.ApiKey
+            };
+            //PhoneNo
+            if (!string.IsNullOrWhiteSpace(Filter_PhoneNo))
+            {
+                request.PhoneNo = Filter_PhoneNo;
+            }
+            //Filter_PayPersonID
+            if (Filter_PayPersonID != null)
+            {
+                request.PayPersonID = Filter_PayPersonID.UserName;
+            }
+            //CarOwner
+            if (!string.IsNullOrWhiteSpace(Filter_CarOwner))
+            {
+                request.CarOwner = Filter_CarOwner;
+            }
+            //CompenNo
+            if (!string.IsNullOrWhiteSpace(Filter_CompenNo))
+            {
+                request.CompenNo = Filter_CompenNo;
+            }
+            //LicensePlate
+            if (!string.IsNullOrWhiteSpace(Filter_LicensePlate))
+            {
+                request.LicensePlate = Filter_LicensePlate;
+            }
+            //Status
+            if (Filter_Status != null)
+            {
+                request.Status = Filter_Status.CodeInt;
+            }
+            request.StartDate = Filter_StartDate.StartOfDay().ToUniversalTime().ToTimestamp();
+            request.EndDate = Filter_EndDate.EndOfDay().ToUniversalTime().ToTimestamp();
+
+
+            //Get data from DB
+            DetailData.Clear();
+            //
+            var response = await compensationServiceClient.GetCompenRequestListAsync(request);
+            if (response != null && response.ReturnCode == GrpcReturnCode.OK)
+            {
+                if (response.CompenRequests != null)
+                {
+                    foreach (var item in response.CompenRequests)
+                    {
+                        //Parrent grid
+                        var dataRow = new CompenRequestListModel();
+                        ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
+                        //StatusName
+                        if (!dataRow.AcceptStatus) dataRow.StatusName = "Chưa tiếp nhận";
+                        if (dataRow.AcceptStatus) dataRow.StatusName = "Đã tiếp nhận";
+                        if (dataRow.CompenStatus) dataRow.StatusName = "Đang xử lý";
+                        if (dataRow.EstReqStatus) dataRow.StatusName = "Đã yc báo giá";
+                        if (dataRow.EstDoneStatus) dataRow.StatusName = "Đã báo giá";
+                        if (dataRow.EstAprStatus) dataRow.StatusName = "Đã CN báo giá";
+                        if (dataRow.RepairStatus) dataRow.StatusName = "Đã sửa xong";
+                        if (dataRow.AprRepairStatus) dataRow.StatusName = "Đã nghiệp thu";
+                        if (dataRow.AprStatus) dataRow.StatusName = "Đã duyệt";
+                        if (dataRow.PayStatus) dataRow.StatusName = "Đã chi trả";
+                        //
+                        DetailData.Add(dataRow);
+                    }
+                }
+            }
+            if (DetailData.Count == 0)
+            {
+                toastService.ShowInfo("", "Không có dữ liệu.");
+            }
+            await grid.Refresh();
+        }
+        catch
+        {
+            toastService.ShowError("", "Nạp dữ liệu bị lỗi !!!");
+        }
+    }
+
+    #endregion
+
+    #region Save
+
+    void ConfirmHandler()
+    {
+        //Delete row
+        if (ConfirmAction == "DeleteRow")
+        {
+            DeleteRow();
+        }
+        //Close confirm delete popup
+        ConfirmVisible = false;
+        StateHasChanged();
+    }
+    //
+    #endregion
+
+    #region Grid main
+    void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<CompenRequestListModel> eventArgs)
+    {
+        MyColor myColor = new MyColor();
+        //CloseStatus
+        if (eventArgs.DataItem.CancelStatus) eventArgs.Style += myColor.DisabledRowColor;
+        //PayStatus
+        if (eventArgs.DataItem.PayStatus) eventArgs.Style += myColor.DoneRowColor;
+    }
+    void OnHtmlDataCellDecoration(DataGridHtmlDataCellDecorationEventArgs<CompenRequestListModel> eventArgs)
+    {
+        eventArgs.CssClass += " border-0";
+        //eventArgs.Style += " ;font-weight:bold;text-align: right";
+        //CompenNo
+        if (eventArgs.FieldName == nameof(CompenRequestListModel.CompenNo))
+        {
+            eventArgs.Style += " ;font-weight:bold; color: blue";
+        }
+        //VCXContractNo
+        if (eventArgs.FieldName == nameof(CompenRequestListModel.VCXContractNo))
+        {
+            eventArgs.Style += " ;font-weight:bold; color: maroon";
+        }
+        //LicensePlate
+        if (eventArgs.FieldName == nameof(CompenRequestListModel.LicensePlate))
+        {
+            eventArgs.Style += " ;font-weight:bold; color: navy";
+        }
+        //CompenDateTime
+        if (eventArgs.FieldName == nameof(CompenRequestListModel.CompenDateTime))
+        {
+            eventArgs.Style += " ;font-weight:bold; color: green";
+        }
+        //AccidentDateTime
+        if (eventArgs.FieldName == nameof(CompenRequestListModel.AccidentDateTime))
+        {
+            eventArgs.Style += " ;font-weight:bold; color: maroon";
+        }
+        //EstDamageAmount
+        if (eventArgs.FieldName == nameof(CompenRequestListModel.EstDamageAmount))
+        {
+            eventArgs.Style += " ;font-weight:bold; color: blue; text-align: right";
+        }
+    }
+
+    //Cancel edit
+    async Task OnCancelButtonClick()
+    {
+        await grid.CancelRowEdit();
+    }
+
+    //Confirm delete
+    CompenRequestListModel DeletedRow = null;
+    void OnRowRemoving(CompenRequestListModel dataRow)
+    {
+        DeletedRow = dataRow;
+
+        //Show popup confirm
+        ConfirmMessage = "Xóa tờ trình?";
+        ConfirmAction = "DeleteRow";
+        ConfirmVisible = true;
+        StateHasChanged();
+    }
+    //
+    async void DeleteRow()
+    {
+        try
+        {
+            //call api
+            var request = new Gosu.Compensation.Services.SaveCompenRequest_Request();
+            request.Credential = new Gosu.Compensation.Services.UserCredential()
+            {
+                Username = WebUserCredential.Username,
+                RoleID = WebUserCredential.RoleID,
+                AccessToken = WebUserCredential.AccessToken,
+                ApiKey = WebUserCredential.ApiKey
+            };
+            request.CompenRequest.CompenNo = DeletedRow.CompenNo;
+            request.CompenRequest.UpdMode = 3;
+            //
+            var response = await compensationServiceClient.SaveCompenRequestAsync(request);
+            if (response != null && response.ReturnCode == GrpcReturnCode.OK)
+            {
+                DetailData.Remove(DeletedRow);
+                //
+                toastService.ShowSuccess("", "Xóa tờ trình thành công");
+                //Refresh layout
+                await grid.Refresh();
+            }
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message, "Xóa tờ trình thất bại.");
+        }
+    }
+
+    //Get data for edit/insert
+    void OnRowEditStarting(CompenRequestListModel editingRow)
+    {
+        if (editingRow == null)
+        {
+            //Addnew
+            CompenNo = "";
+        }
+        else
+        {
+            //Update
+            CompenNo = editingRow.CompenNo;
+        }
+        CompenRequestVisible = true;
+        StateHasChanged();
+    }
+    //Update row
+    async Task UpdateRow()
+    {
+        //Close popup & refresh data
+        await grid.CancelRowEdit();
+        await grid.Refresh();
+    }
+
+    #endregion
+
+    #region Screen items
+
+    void TimeFlag_SelectedItemChanged(CodeNameModel seletedItem)
+    {
+        //Tuan nay
+        if (seletedItem.CodeInt == 1)
+        {
+            Filter_StartDate = DateTime.Today.FirstDayOfWeek();
+            Filter_EndDate = DateTime.Today.LastDayOfWeek();
+        }
+        //Thang nay
+        if (seletedItem.CodeInt == 2)
+        {
+            Filter_StartDate = DateTime.Today.FirstDayOfMonth();
+            Filter_EndDate = DateTime.Today.LastDayOfMonth();
+        }
+        //Thang truoc
+        if (seletedItem.CodeInt == 3)
+        {
+            Filter_StartDate = DateTime.Today.AddMonths(-1).FirstDayOfMonth();
+            Filter_EndDate = DateTime.Today.AddMonths(-1).LastDayOfMonth();
+        }
+        //Nam nay
+        if (seletedItem.CodeInt == 4)
+        {
+            Filter_StartDate = DateTime.Today.FirstDayOfYear();
+            Filter_EndDate = DateTime.Today.LastDayOfYear();
+        }
+        //Nam truoc
+        if (seletedItem.CodeInt == 5)
+        {
+            Filter_StartDate = DateTime.Today.AddYears(-1).FirstDayOfYear();
+            Filter_EndDate = DateTime.Today.AddYears(-1).LastDayOfYear();
+        }
+        StateHasChanged();
+    }
+
+
+
+
+
+
+    #endregion
+    //
+}

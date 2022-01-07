@@ -1,0 +1,26 @@
+﻿
+<button @ref="Ref" class="@BtnCss" style="width:@Width; height:2rem; vertical-align:middle;padding:0" @onclick="@OnClickHandler">
+    @Icon
+    <span style="font-size:medium" aria-hidden="true">@Text</span>
+</button>
+
+@code {
+    [Parameter]
+    public ElementReference Ref { get; set; }
+    [Parameter]
+    public string Text { get; set; } = "";
+    [Parameter]
+    public string BtnCss { get; set; } = "btn btn-success";
+    [Parameter]
+    public string Width { get; set; } = "9rem";
+    [Parameter]
+    public RenderFragment Icon { get; set; }
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    private async void OnClickHandler()
+    {
+        await OnClick.InvokeAsync();
+    }
+
+}

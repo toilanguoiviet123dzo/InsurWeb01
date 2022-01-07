@@ -1,0 +1,38 @@
+﻿<div style="width:@Width">
+    <label class="demo-text cw-320 mt-2 text-muted" style="padding: 0; margin: 0; font-size: small">@Literal</label>
+    <DxTextBox Text="@Text"
+               TextChanged="@((string x) => OnTextChanged(x))"
+               ClearButtonDisplayMode="@ClearButtonDisplayMode"
+               BindValueMode="@BindValueMode"
+               Password="@Password"
+               ReadOnly="@ReadOnly"
+               InputCssClass="@InputCssClass"
+               CssClass="@CssClass"/>
+</div>
+
+@code {
+    [Parameter]
+    public string CssClass { get; set; } = "";
+    [Parameter]
+    public string Width { get; set; } = "100%";
+    [Parameter]
+    public string Literal { get; set; } = "";
+    [Parameter]
+    public string InputCssClass { get; set; } = "";
+    [Parameter]
+    public bool ReadOnly { get; set; } = false;
+    [Parameter]
+    public bool Password { get; set; } = false;
+    [Parameter]
+    public DataEditorClearButtonDisplayMode ClearButtonDisplayMode { get; set; } = DataEditorClearButtonDisplayMode.Never;
+    [Parameter]
+    public BindValueMode BindValueMode { get; set; } = BindValueMode.OnLostFocus;
+    [Parameter]
+    public string Text { get; set; } = "";
+    [Parameter]
+    public EventCallback<string> TextChanged { get; set; }
+    private async Task OnTextChanged(string newValue)
+    {
+        await TextChanged.InvokeAsync(newValue);
+    }
+}

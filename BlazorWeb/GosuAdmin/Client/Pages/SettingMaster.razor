@@ -1,0 +1,431 @@
+﻿@page "/settingmaster"
+@using Gosu.Admin.Services
+@using System.Collections.ObjectModel
+@inject grpcAdminService.grpcAdminServiceClient adminServiceClient
+@inject IJSRuntime JsRuntime
+@inject IToastService toastService
+
+<br />
+<div style="width:100%">
+    <DxDataGrid @ref="@Grid"
+                Data="@ListSettingMaster"
+                EditMode="DataGridEditMode.PopupEditForm"
+                PageSize="20"
+                ShowFilterRow="true"
+                HtmlRowDecoration="@OnHtmlRowDecoration"
+                HorizontalScrollBarMode="ScrollBarMode.Auto"
+                RowInsertStart="@(() => OnRowEditStarting(null))"
+                RowEditStart="@(dataRow => OnRowEditStarting(dataRow))">
+        <Columns>
+            <DxDataGridColumn Field="@nameof(SettingMasterModel.Code)"
+                              Caption="Code"
+                              SortOrder="DataGridColumnSortOrder.Ascending"
+                              Width="5rem" />
+            <DxDataGridColumn Field="@nameof(SettingMasterModel.Description)"
+                              Caption="Descriptions"
+                              Width="15rem" />
+            <DxDataGridColumn Field="@nameof(SettingMasterModel.StringValue1)"
+                              Caption="String value1"
+                              Width="15rem" />
+            <DxDataGridColumn Field="@nameof(SettingMasterModel.StringValue2)"
+                              Caption="String value2"
+                              Width="8rem" />
+            <DxDataGridSpinEditColumn Field="@nameof(SettingMasterModel.IntValue1)"
+                                      Caption="Int value1"
+                                      DisplayFormat="N0"
+                                      Width="8rem" />
+            <DxDataGridSpinEditColumn Field="@nameof(SettingMasterModel.IntValue2)"
+                                      Caption="Int value2"
+                                      DisplayFormat="N0"
+                                      Width="8rem" />
+            <DxDataGridSpinEditColumn Field="@nameof(SettingMasterModel.DoubleValue1)"
+                                      Caption="Double value1"
+                                      DisplayFormat="N2"
+                                      Width="8rem" />
+            <DxDataGridSpinEditColumn Field="@nameof(SettingMasterModel.DoubleValue2)"
+                                      Caption="Double value2"
+                                      DisplayFormat="N2"
+                                      Width="8rem" />
+            <DxDataGridDateEditColumn Field="@nameof(SettingMasterModel.ModifiedOn)"
+                                      Caption="ModifiedOn"
+                                      DisplayFormat="dd/MM/yyyy HH:mm"
+                                      Width="10rem" />
+            <!--Command columns-->
+            <MyGridCommand Grid="Grid"
+                           ShowAddnew="true"
+                           ShowEdit="true"
+                           ShowDelete="true"
+                           OnRowRemoving="@((context) => OnRowRemoving(context as SettingMasterModel))" />
+        </Columns>
+        <EditFormTemplate>
+            <EditForm Model="@EditContext" Context="EditFormContext" OnValidSubmit="@UpdateRow">
+                <DataAnnotationsValidator />
+                <DxFormLayout>
+                    <DxFormLayoutItem Caption="Code: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxTextBox @bind-Text="@EditContext.Code" />
+                            <ValidationMessage For="@(() => EditContext.Code)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Description: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxTextBox @bind-Text="@EditContext.Description" />
+                            <ValidationMessage For="@(() => EditContext.Description)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="StringValue1: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxTextBox @bind-Text="@EditContext.StringValue1" />
+                            <ValidationMessage For="@(() => EditContext.StringValue1)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="StringValue2: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxTextBox @bind-Text="@EditContext.StringValue2" />
+                            <ValidationMessage For="@(() => EditContext.StringValue2)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="IntValue1: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxMaskedInput @bind-Value="@EditContext.IntValue1"
+                                           Mask="N0" />
+                            <ValidationMessage For="@(() => EditContext.IntValue1)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="IntValue2: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxMaskedInput @bind-Value="@EditContext.IntValue2"
+                                           Mask="N0" />
+                            <ValidationMessage For="@(() => EditContext.IntValue2)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="DoubleValue1: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxMaskedInput @bind-Value="@EditContext.DoubleValue1"
+                                           Mask="N2" />
+                            <ValidationMessage For="@(() => EditContext.DoubleValue1)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="DoubleValue2: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxMaskedInput @bind-Value="@EditContext.DoubleValue2"
+                                           Mask="N2" />
+                            <ValidationMessage For="@(() => EditContext.DoubleValue2)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <!--OK Cancel-->
+                    <MyGridEditFormOKCancel OnCancelClick="OnCancelButtonClick" />
+                </DxFormLayout>
+            </EditForm>
+        </EditFormTemplate>
+    </DxDataGrid>
+    <br />
+    <div class="text-center">
+        <MyButtonSave OnClick="ShowConfirm_SaveMain" />
+        <MyButtonCancel OnClick="ShowConfirm_CancelSaveMain" />
+    </div>
+</div>
+
+<ConfirmDialog Message="@ConfirmMessage" @bind-Visible="@PopupVisible" confirm="@ConfirmHandler" />
+
+@code{
+    // Popup
+    private string ConfirmMessage = "";
+    private string ConfirmAction = "";
+    private bool PopupVisible = false;
+    // SettingMaster
+    readonly ObservableCollection<SettingMasterModel> ListSettingMaster = new ObservableCollection<SettingMasterModel>();
+    // Init
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        // Load filter data
+        await DisplayMain();
+
+        // Display data ..
+    }
+
+    #region Load data
+    // Load SettingMaster
+    async Task DisplayMain()
+    {
+        try
+        {
+            var requestSettingMaster = new Empty_Request()
+            {
+                Credential = new UserCredential()
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                }
+            };
+            //Get data from DB
+            ListSettingMaster.Clear();
+            var resSettingMaster = await adminServiceClient.GetSettingMasterAsync(requestSettingMaster);
+            if (resSettingMaster != null && resSettingMaster.ReturnCode == 200)
+            {
+                foreach (var item in resSettingMaster.SettingMasters)
+                {
+                    SettingMasterModel dataRow = new SettingMasterModel();
+                    ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
+                    // Set Updmode
+                    dataRow.UpdMode = 0;
+                    //
+                    ListSettingMaster.Add(dataRow);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message, "Load dữ liệu thất bại.");
+        }
+
+    }
+    #endregion
+
+    #region DataGrid
+    // Edit row model
+    DxDataGrid<SettingMasterModel> Grid;
+    FormEditContext EditContext = null;
+    class FormEditContext : SettingMasterModel
+    {
+        public FormEditContext(SettingMasterModel settingMasterModel)
+        {
+            //Saved data
+            EditingRow = settingMasterModel;
+            //Editable data only
+            Code = EditingRow.Code;
+            Description = EditingRow.Description;
+            StringValue1 = EditingRow.StringValue1;
+            StringValue2 = EditingRow.StringValue2;
+            IntValue1 = EditingRow.IntValue1;
+            IntValue2 = EditingRow.IntValue2;
+            DoubleValue1 = EditingRow.DoubleValue1;
+            DoubleValue2 = EditingRow.DoubleValue2;
+        }
+        public SettingMasterModel EditingRow { get; set; }
+        public Action StateHasChanged { get; set; }
+    }
+    // Color of edit data
+    void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<SettingMasterModel> eventArgs)
+    {
+        MyColor myColor = new MyColor();
+        if (eventArgs.DataItem.UpdMode == 1)
+            eventArgs.Style += myColor.NewRowColor;
+        else if (eventArgs.DataItem.UpdMode == 2)
+            eventArgs.Style += myColor.EditRowColor;
+        else if (eventArgs.DataItem.UpdMode == 3)
+            eventArgs.Style += myColor.DeleteRowColor;
+    }
+    #endregion
+
+    #region CRUD
+    // Check changed in SettingMaster
+    bool Check_Changed()
+    {
+        foreach (SettingMasterModel row in ListSettingMaster)
+        {
+            if (row.UpdMode != 0)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    // Show confirm cancel SaveMain
+    void ShowConfirm_CancelSaveMain()
+    {
+        if (!Check_Changed())
+        {
+            //Show message: Nothing changed!
+            toastService.ShowInfo("", "Nothing Changed!");
+            return;
+        }
+        // Show popup confirm
+        ConfirmMessage = "Cancel changed?";
+        ConfirmAction = "CancelSaveMain";
+        PopupVisible = true;
+        StateHasChanged();
+    }
+    // Show confirm delete SaveMain
+    SettingMasterModel DeletedRow = null;
+    void OnRowRemoving(SettingMasterModel dataRow)
+    {
+        DeletedRow = dataRow;
+        // Show popup confirm
+        ConfirmMessage = "Delete row?";
+        ConfirmAction = "DeleteRow";
+        PopupVisible = true;
+        StateHasChanged();
+    }
+    // Show confirm save SaveMain
+    void ShowConfirm_SaveMain()
+    {
+        if (!Check_Changed())
+        {
+            //Show message: Nothing changed!
+            toastService.ShowInfo("", "Nothing Changed!");
+            return;
+        }
+        // Show popup confirm
+        ConfirmMessage = "Save changed?";
+        ConfirmAction = "SaveMain";
+        PopupVisible = true;
+        StateHasChanged();
+    }
+    // Confirm Cancel, Delete, Save
+    void ConfirmHandler()
+    {
+        // Cancel save main
+        if (ConfirmAction == "CancelSaveMain")
+        {
+            CancelSaveMain();
+        }
+        // Delete row main
+        if (ConfirmAction == "DeleteRow")
+        {
+            DeleteRow();
+        }
+        // Save all change main
+        if (ConfirmAction == "SaveMain")
+        {
+            SaveMain();
+        }
+        // Close confirm delete popup
+        PopupVisible = false;
+        StateHasChanged();
+    }
+    // Cancel edit main
+    async void CancelSaveMain()
+    {
+        // Reload data
+        await DisplayMain();
+    }
+    // Delete edit main
+    async void DeleteRow()
+    {
+        // Set to delete mode
+        if (DeletedRow.UpdMode == 1)
+        {
+            // Remove new row from data source
+            ListSettingMaster.Remove(DeletedRow);
+        }
+        else
+        {
+            // Mark to delete
+            DeletedRow.UpdMode = 3;
+        }
+        // Refresh layout
+        await Grid.Refresh();
+    }
+    // Get data for edit/insert
+    void OnRowEditStarting(SettingMasterModel editingRow)
+    {
+        // Init new row
+        if (editingRow == null)
+        {
+            editingRow = new SettingMasterModel();
+            //
+            editingRow.ModifiedOn = DateTime.Now;
+            editingRow.UpdMode = -1;
+        }
+        EditContext = new FormEditContext(editingRow);
+    }
+    // Update row
+    async Task UpdateRow()
+    {
+        // Update for edit field
+        var backupRow = new SettingMasterModel();
+        ClassHelper.CopyPropertiesData(EditContext.EditingRow, backupRow);
+        //
+        EditContext.EditingRow.Code = EditContext.Code;
+        EditContext.EditingRow.Description = EditContext.Description;
+        EditContext.EditingRow.StringValue1 = EditContext.StringValue1;
+        EditContext.EditingRow.StringValue2 = EditContext.StringValue2;
+        EditContext.EditingRow.IntValue1 = EditContext.IntValue1;
+        EditContext.EditingRow.IntValue2 = EditContext.IntValue2;
+        EditContext.EditingRow.DoubleValue1 = EditContext.DoubleValue1;
+        EditContext.EditingRow.DoubleValue2 = EditContext.DoubleValue2;
+        EditContext.EditingRow.ModifiedOn = DateTime.Now;
+        // Update mode
+        if (EditContext.EditingRow.UpdMode == 0 || EditContext.EditingRow.UpdMode == 3)
+        {
+            EditContext.EditingRow.UpdMode = 2;
+        }
+        // Insert to datasource
+        if (EditContext.EditingRow.UpdMode == -1)
+        {
+            EditContext.EditingRow.UpdMode = 1;
+            ListSettingMaster.Add(EditContext.EditingRow);
+        }
+        // Close popup & refresh data
+        await Grid.CancelRowEdit();
+        await Grid.Refresh();
+    }
+    // Save edit main
+    async void SaveMain()
+    {
+        try
+        {
+            var hasChanged = false;
+            //Request
+            SaveSettingMaster_Request request = new SaveSettingMaster_Request();
+            var Credential = new UserCredential()
+            {
+                Username = WebUserCredential.Username,
+                RoleID = WebUserCredential.RoleID,
+                AccessToken = WebUserCredential.AccessToken,
+                ApiKey = WebUserCredential.ApiKey
+            };
+            request.Credential = Credential;
+            //
+            foreach (SettingMasterModel row in ListSettingMaster)
+            {
+                if (row.UpdMode != 0)
+                {
+                    // Convert to DB row
+                    var dbRow = new grpcSettingMaster();
+                    ClassHelper.CopyPropertiesDataDateConverted(row, dbRow);
+                    request.SettingMasters.Add(dbRow);
+                    //
+                    hasChanged = true;
+                }
+            }
+            // Check changed
+            if (!hasChanged)
+            {
+                //Message no change
+                toastService.ShowInfo("", "Nothing Changed!");
+                return;
+            }
+            // Call api
+            var response = await adminServiceClient.SaveSettingMasterAsync(request);
+            // Success
+            if (response != null && response.ReturnCode == 200)
+            {
+                //Show success
+                toastService.ShowSuccess("", "Save Success!");
+            }
+            else
+            {
+                toastService.ShowError("", "Lưu dữ liệu thất bại.");
+            }
+            // Reload data
+            await DisplayMain();
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message, "Lưu dữ liệu thất bại.");
+        }
+    }
+    // Cancel edit
+    async Task OnCancelButtonClick()
+    {
+        await Grid.CancelRowEdit();
+        EditContext = null;
+    }
+    #endregion
+}

@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>6ec37e95-9132-410f-816b-f3065fee138c</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\Configs\GrpcConfig.cs" Link="Configs\GrpcConfig.cs" />
+    <Compile Include="..\..\..\GrpcClient\GrpcChannelFactory.cs" Link="GrpcClient\GrpcChannelFactory.cs" />
+    <Compile Include="..\..\..\GrpcClient\GrpcClientFactory.cs" Link="GrpcClient\GrpcClientFactory.cs" />
+    <Compile Include="..\..\..\GrpcClient\GrpcReturnCode.cs" Link="GrpcClient\GrpcReturnCode.cs" />
+    <Compile Include="..\..\..\GrpcClient\ServiceList.cs" Link="GrpcClient\ServiceList.cs" />
+    <Compile Include="..\..\..\GrpcClient\ServiceListModel.cs" Link="GrpcClient\ServiceListModel.cs" />
+    <Compile Include="..\..\..\GrpcClient\UserCredential.cs" Link="GrpcClient\UserCredential.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DevExpress.Blazor" Version="21.1.4" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.36.0" />
+    <PackageReference Include="Grpc.AspNetCore.Web" Version="2.36.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.4" />
+    <PackageReference Include="WebPush" Version="1.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Cores\Cores.csproj" />
+    <ProjectReference Include="..\Client\GosuAdmin.Client.csproj" />
+    <ProjectReference Include="..\Shared\GosuAdmin.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+    <Folder Include="GrpcClient\" />
+    <Folder Include="Configs\" />
+  </ItemGroup>
+
+
+</Project>

@@ -1,0 +1,55 @@
+﻿@typeparam TData
+<div style="width:@Width">
+    <label class="demo-text cw-320 mt-2 text-muted" style="padding:0;margin:0;font-size:small">@Literal</label>
+    <DxComboBox Data="@Data"
+                Value="@Value"
+                ValueChanged="@((TData selectedValue) => OnValueChanged(selectedValue))"
+                SelectedItemChanged="@((TData selectedValue) => OnSelectedItemChanged(selectedValue))"
+                TextFieldName="@TextFieldName"
+                ClearButtonDisplayMode="@ClearButtonDisplayMode"
+                AllowUserInput="@AllowUserInput"
+                ReadOnly="@ReadOnly"
+                InputCssClass="@InputCssClass"
+                CssClass="@CssClass"
+                FilteringMode="DataGridFilteringMode.Contains">
+    </DxComboBox>
+</div>
+
+@code {
+    [Parameter]
+    public string Width { get; set; } = "100%";
+    [Parameter]
+    public string Literal { get; set; } = "";
+    [Parameter]
+    public string InputCssClass { get; set; } = "";
+    [Parameter]
+    public string CssClass { get; set; } = "";
+    [Parameter]
+    public string TextFieldName { get; set; } = "";
+    [Parameter]
+    public DataEditorClearButtonDisplayMode ClearButtonDisplayMode { get; set; } = DataEditorClearButtonDisplayMode.Never;
+    [Parameter]
+    public List<TData> Data { get; set; } = new List<TData>();
+    [Parameter]
+    public bool ReadOnly { get; set; } = false;
+    [Parameter]
+    public bool AllowUserInput { get; set; } = true;
+
+    //Value
+    [Parameter]
+    public TData Value { get; set; }
+    [Parameter]
+    public EventCallback<TData> ValueChanged { get; set; }
+    private async Task OnValueChanged(TData newValue)
+    {
+        await ValueChanged.InvokeAsync(newValue);
+    }
+
+    //SelectedItemChanged
+    [Parameter]
+    public EventCallback<TData> SelectedItemChanged { get; set; }
+    private async void OnSelectedItemChanged(TData newValue)
+    {
+        await SelectedItemChanged.InvokeAsync(newValue);
+    }
+}

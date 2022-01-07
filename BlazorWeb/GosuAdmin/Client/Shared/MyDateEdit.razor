@@ -1,0 +1,32 @@
+﻿<div style="width:@Width">
+    <label class="demo-text cw-320 mt-2 text-muted" style="padding: 0; margin: 0; font-size: small">@Literal</label>
+    <DxDateEdit CssClass="@CssClass"
+                InputCssClass="@InputCssClass"
+                Format="@Format"
+                Mask="@Format"
+                ReadOnly="@ReadOnly"
+                DateChanged="@((DateTime newValue) => OnDateChanged(newValue))"
+                Date="@Date"/>
+</div>
+@code {
+    [Parameter]
+    public string Width { get; set; } = "100%";
+    [Parameter]
+    public string Literal { get; set; } = "";
+    [Parameter]
+    public string InputCssClass { get; set; } = "";
+    [Parameter]
+    public string CssClass { get; set; } = "";
+    [Parameter]
+    public string Format { get; set; } = "dd/MM/yyyy";
+    [Parameter]
+    public bool ReadOnly { get; set; } = false;
+    [Parameter]
+    public DateTime Date { get; set; } = DateTime.Today;
+    [Parameter]
+    public EventCallback<DateTime> DateChanged { get; set; }
+    private async Task OnDateChanged(DateTime newValue)
+    {
+        await DateChanged.InvokeAsync(newValue);
+    }
+}

@@ -1,0 +1,72 @@
+﻿@using Blazored.Toast.Configuration
+
+<style>
+    .popup-css {
+        margin: 0 !important;
+    }
+
+    .popup-header {
+        padding: 0 20px;
+        background-color: #03396c;
+        color: wheat;
+        font-weight: bold;
+        font-size: large;
+    }
+
+    .popup-body {
+        padding: 10px;
+    }
+</style>
+
+<DxPopup Visible="@Visible"
+         VisibleChanged="@((value) => OnVisibleChanged(value))"
+         CloseOnOutsideClick="false"
+         ShowHeader="true"
+         HeaderText="@HeaderText"
+         ShowFooter="false"
+         Scrollable="true"
+         VerticalAlignment="@VerticalAlignment"
+         BodyCssClass="popup-body"
+         HeaderCssClass="popup-header"
+         CssClass="popup-css"
+         MinWidth="300px"
+         Width="@Width"
+         Height="@Height"
+         ZIndex="@ZIndex">
+    <BodyContentTemplate>
+        @BodyContentTemplate
+    </BodyContentTemplate>
+</DxPopup>
+
+@code {
+    [Parameter]
+    public VerticalAlignment VerticalAlignment { get; set; } = VerticalAlignment.Center;
+    [Parameter]
+    public string HeaderText { get; set; } = "";
+    [Parameter]
+    public string Width { get; set; } = "100%";
+    [Parameter]
+    public string Height { get; set; } = "100%";
+    [Parameter]
+    public RenderFragment BodyContentTemplate { get; set; }
+    [Parameter]
+    public Int32 ZIndex { get; set; } = 1050;
+    [Parameter]
+    public bool Visible { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> VisibleChanged { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (BrowserInfo.IsMobile)
+        {
+            Width = "100%";
+        }
+    }
+
+
+    private async void OnVisibleChanged(bool value)
+    {
+        await VisibleChanged.InvokeAsync(value);
+    }
+}

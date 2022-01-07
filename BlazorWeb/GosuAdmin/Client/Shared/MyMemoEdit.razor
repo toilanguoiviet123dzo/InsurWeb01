@@ -1,0 +1,58 @@
+﻿<style>
+    .mymeno-input {
+        padding: 5px;
+        font-size: medium;
+    }
+</style>
+
+<div>
+    <label class="demo-text cw-320 mt-2 text-muted" style="padding: 0; margin: 0; font-size: small">@Literal</label>
+    <DxMemo @ref="@Ref"
+            Text="@Text"
+            TextChanged="@((string x) => OnTextChanged(x))"
+            ClearButtonDisplayMode="@ClearButtonDisplayMode"
+            BindValueMode="@BindValueMode"
+            ReadOnly="@ReadOnly"
+            Enabled="@Enabled"
+            TextAreaCssClass="@(@TextAreaCssClass + " mymeno-input" )"
+            SizeMode="@SizeMode"
+            CssClass="@CssClass"
+            Rows="@Rows"
+            Columns="@Columns"
+            ResizeMode="@ResizeMode" />
+</div>
+
+@code {
+    [Parameter]
+    public DxMemo Ref { get; set; }
+    [Parameter]
+    public string Literal { get; set; } = "";
+    [Parameter]
+    public string CssClass { get; set; } = "";
+    [Parameter]
+    public int Rows { get; set; } = 5;
+    [Parameter]
+    public MemoResizeMode ResizeMode { get; set; } = MemoResizeMode.VerticalAndHorizontal;
+    [Parameter]
+    public int Columns { get; set; } = 100;
+    [Parameter]
+    public bool ReadOnly { get; set; } = false;
+    [Parameter]
+    public bool Enabled { get; set; } = true;
+    [Parameter]
+    public string TextAreaCssClass { get; set; } = "";
+    [Parameter]
+    public SizeMode SizeMode { get; set; } = SizeMode.Medium;
+    [Parameter]
+    public DataEditorClearButtonDisplayMode ClearButtonDisplayMode { get; set; } = DataEditorClearButtonDisplayMode.Never;
+    [Parameter]
+    public BindValueMode BindValueMode { get; set; } = BindValueMode.OnLostFocus;
+    [Parameter]
+    public string Text { get; set; } = "";
+    [Parameter]
+    public EventCallback<string> TextChanged { get; set; }
+    private async Task OnTextChanged(string newValue)
+    {
+        await TextChanged.InvokeAsync(newValue);
+    }
+}

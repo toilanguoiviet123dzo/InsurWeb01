@@ -1,0 +1,156 @@
+﻿@inject IJSRuntime JsRuntime;
+@inject IToastService toastService
+@using System.Threading
+@using Gosu.Compensation.Services
+@inject grpcCompensationService.grpcCompensationServiceClient compensationServiceClient;
+
+<div class="container" @onkeydown="keyDownHandler">
+    <!--EstItem-->
+    <div class="row">
+        <DxDataGrid @ref="@grid"
+                    Data="@DetailData"
+                    ColumnResizeMode="DataGridColumnResizeMode.Component"
+                    EditMode="DataGridEditMode.PopupEditForm"
+                    PageSize="999"
+                    ShowFilterRow="true"
+                    RowClick="@OnRowClick"
+                    @bind-SingleSelectedDataRow="@SelectedRow"
+                    HorizontalScrollBarMode="ScrollBarMode.Auto">
+            <Columns>
+                <DxDataGridColumn Field="@nameof(RefEstimationModel.TemplateName)"
+                                  Caption="Mẫu"
+                                  Width="10rem" />
+                <DxDataGridColumn Field="@nameof(RefEstimationModel.CompenNo)"
+                                  Caption="Số bồi thường"
+                                  Width="7rem" />
+                <DxDataGridColumn Field="@nameof(RefEstimationModel.ReqPersonName)"
+                                  Caption="Cán bộ bồi thường"
+                                  Width="12rem" />
+                <DxDataGridColumn Field="@nameof(RefEstimationModel.BranchName)"
+                                  Caption="Chi nhánh"
+                                  Width="10rem" />
+                <DxDataGridColumn Field="@nameof(RefEstimationModel.RepairerName)"
+                                  Caption="Nơi sửa chữa"
+                                  Width="12rem" />
+            </Columns>
+        </DxDataGrid>
+    </div>
+
+    <!--OK, Cancel-->
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="text-center">
+                <DxButton RenderStyle="@ButtonRenderStyle.Success" style="width: 100px; font-size: 15px; margin-right: 10px" @onclick="@(() => OnValidSumit_Handler())" Text="OK" />
+                <DxButton RenderStyle="@ButtonRenderStyle.Danger" style="width:100px; font-size:15px; margin-right:10px" @onclick="@(() => OnVisibleChanged(false))" Text="Cancel" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public EventCallback<string> OnValidSumit { get; set; }
+    [Parameter]
+    public bool Visible { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> VisibleChanged { get; set; }
+    private bool ApproveAmountChanged = false;
+    //
+    DxDataGrid<RefEstimationModel> grid;
+    private List<RefEstimationModel> DetailData = new List<RefEstimationModel>();
+    private RefEstimationModel SelectedRow;
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+        //
+        await DisplayMain();
+        //focus first row
+        if (DetailData.Count > 0)
+        {
+            SelectedRow = DetailData[0];
+        }
+    }
+    private async void OnVisibleChanged(bool value)
+    {
+        await VisibleChanged.InvokeAsync(value);
+    }
+
+    void OnRowClick(DataGridRowClickEventArgs<RefEstimationModel> args)
+    {
+        if (args.MouseEventArgs.Detail == 2)
+        {
+            // Double-click handler
+            OnValidSumit_Handler();
+        }
+    }
+
+    private void keyDownHandler(KeyboardEventArgs args)
+    {
+        //Enter
+        if (args.Key == ConsoleKey.Enter.ToString())
+        {
+            OnValidSumit_Handler();
+        }
+        //Esc
+        if (args.Key == ConsoleKey.Escape.ToString())
+        {
+            OnVisibleChanged(false);
+        }
+    }
+
+    async void OnValidSumit_Handler()
+    {
+        if (SelectedRow == null) return;
+        //
+        await OnValidSumit.InvokeAsync(SelectedRow.CompenNo);
+        await VisibleChanged.InvokeAsync(false);
+    }
+
+    async Task DisplayMain()
+    {
+        try
+        {
+            //Filter
+            var request = new Gosu.Compensation.Services.Empty_Request();
+            request.Credential = new Gosu.Compensation.Services.UserCredential()
+            {
+                Username = WebUserCredential.Username,
+                RoleID = WebUserCredential.RoleID,
+                AccessToken = WebUserCredential.AccessToken,
+                ApiKey = WebUserCredential.ApiKey
+            };
+            //Get data from DB
+            DetailData.Clear();
+            //
+            var response = await compensationServiceClient.GetRefEstimationListAsync(request);
+            if (response != null && response.ReturnCode == GrpcReturnCode.OK)
+            {
+                if (response.Records != null)
+                {
+                    foreach (var item in response.Records)
+                    {
+                        //Parrent grid
+                        var dataRow = new RefEstimationModel();
+                        ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
+                        //
+                        DetailData.Add(dataRow);
+                    }
+                }
+            }
+            //Order
+            if (DetailData.Count > 0)
+            {
+                DetailData = DetailData.OrderBy(x => x.TemplateName).ToList<RefEstimationModel>();
+            }
+            //
+            await grid.Refresh();
+        }
+        catch
+        {
+            toastService.ShowError("", "Nạp dữ liệu bị lỗi !!!");
+        }
+    }
+
+}

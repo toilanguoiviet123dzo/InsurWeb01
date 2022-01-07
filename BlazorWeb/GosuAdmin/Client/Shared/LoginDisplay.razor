@@ -1,0 +1,36 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+
+@inject NavigationManager Navigation
+@inject IAuthenticationService AuthService
+
+<AuthorizeView>
+    <Authorized>
+        <div style="margin-right:2rem;font-size:larger;font-weight:bold;float:right">
+            <button class="btn btn-danger" @onclick="LogOut">Logout</button>
+        </div>
+        <div style="margin-right:2rem;font-size:larger;font-weight:bold;float:right">
+            Hello, @WebUserCredential.Fullname
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div style="margin-right:2rem;font-size:larger;font-weight:bold;float:right">
+            <button class="btn btn-primary" @onclick="LogIn">Login</button>
+        </div>
+        <div style="margin-right:2rem;font-size:larger;font-weight:bold;float:right">
+            Hello, You need to login.
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code{
+    private void LogOut(MouseEventArgs args)
+    {
+        AuthService.Logout();
+        Navigation.NavigateTo("/");
+    }
+
+    private void LogIn(MouseEventArgs args)
+    {
+        Navigation.NavigateTo("/login");
+    }
+}
