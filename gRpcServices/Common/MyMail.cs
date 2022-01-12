@@ -6,7 +6,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gosu.Common
+namespace Cores.Common
 {
     public class MyMail
     {

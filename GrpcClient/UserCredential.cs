@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Gosu.SystemConfig.Services;
 
-namespace Gosu.Grpc.Client
+namespace Cores.Grpc.Client
 {
     public static class GrpcCredential
     {

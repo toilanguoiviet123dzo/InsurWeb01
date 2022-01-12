@@ -5,7 +5,7 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gosu.Extentions
+namespace Cores.Extentions
 {
     public static class StringExt
     {

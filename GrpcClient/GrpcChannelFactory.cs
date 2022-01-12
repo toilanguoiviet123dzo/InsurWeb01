@@ -7,10 +7,8 @@ using System.Collections.Concurrent;
 using Grpc.Net.Client;
 using System.Net.Http;
 using System.Threading;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Configuration;
 
-namespace Gosu.Grpc.Client
+namespace Cores.Grpc.Client
 {
     public class GrpcChannelFactory
     {

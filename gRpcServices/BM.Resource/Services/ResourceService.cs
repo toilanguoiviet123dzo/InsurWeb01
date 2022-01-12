@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
-using Gosu.Service.Models;
-using Gosu.Resource.Services;
+using Cores.Service.Models;
+using Cores.Resource.Services;
 using MongoDB.Entities;
 using MongoDB.Driver.Linq;
 using MongoDB.Driver;
@@ -13,12 +13,12 @@ using MongoDB.Bson;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using System.Text;
-using Gosu.Service;
-using Gosu.Common;
+using Cores.Service;
+using Cores.Common;
 using Grpc.Net.Client;
 
 
-namespace Gosu.Service.Services
+namespace Cores.Service.Services
 {
     public class ResourceService : grpcResourceService.grpcResourceServiceBase
     {

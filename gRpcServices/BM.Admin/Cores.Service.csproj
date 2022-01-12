@@ -1,0 +1,77 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <UserSecretsId>e1247988-46e2-4397-89ab-89b0860c59ae</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>.</DockerfileContext>
+    <DockerComposeProjectPath>docker-compose.dcproj</DockerComposeProjectPath>
+    <AssemblyName>BM.Admin</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Common\ClassHelper.cs" Link="Common\ClassHelper.cs" />
+    <Compile Include="..\Common\GrpcChannelFactory.cs" Link="Common\GrpcChannelFactory.cs" />
+    <Compile Include="..\Common\GrpcClientFactory.cs" Link="Common\GrpcClientFactory.cs" />
+    <Compile Include="..\Common\GrpcReturnCode.cs" Link="Common\GrpcReturnCode.cs" />
+    <Compile Include="..\Common\MyAppLog.cs" Link="Common\MyAppLog.cs" />
+    <Compile Include="..\Common\MyCodeGenerator.cs" Link="Common\MyCodeGenerator.cs" />
+    <Compile Include="..\Common\MyConstant.cs" Link="Common\MyConstant.cs" />
+    <Compile Include="..\Common\MyCrypto.cs" Link="Common\MyCrypto.cs" />
+    <Compile Include="..\Common\MyDecoder.cs" Link="Common\MyDecoder.cs" />
+    <Compile Include="..\Common\MyFile.cs" Link="Common\MyFile.cs" />
+    <Compile Include="..\Common\MyMail.cs" Link="Common\MyMail.cs" />
+    <Compile Include="..\Common\MyStringExtentions.cs" Link="Common\MyStringExtentions.cs" />
+    <Compile Include="..\Common\ServiceList.cs" Link="Common\ServiceList.cs" />
+    <Compile Include="..\Common\ServiceListModel.cs" Link="Common\ServiceListModel.cs" />
+    <Compile Include="..\Common\TaskHelper.cs" Link="Common\TaskHelper.cs" />
+    <Compile Include="..\Common\UserCredential.cs" Link="Common\UserCredential.cs" />
+    <Compile Include="..\Configs\DatabaseConfig.cs" Link="Configs\DatabaseConfig.cs" />
+    <Compile Include="..\Configs\GrpcConfig.cs" Link="Configs\GrpcConfig.cs" />
+    <Compile Include="..\Models\mdFunctionList.cs" Link="Models\mdFunctionList.cs" />
+    <Compile Include="..\Models\mdMenuDetail.cs" Link="Models\mdMenuDetail.cs" />
+    <Compile Include="..\Models\mdMenuGroup.cs" Link="Models\mdMenuGroup.cs" />
+    <Compile Include="..\Models\mdNotificationSubcribe.cs" Link="Models\mdNotificationSubcribe.cs" />
+    <Compile Include="..\Models\mdOptionList.cs" Link="Models\mdOptionList.cs" />
+    <Compile Include="..\Models\mdOptionListHeader.cs" Link="Models\mdOptionListHeader.cs" />
+    
+    <Compile Include="..\Models\mdRoleDetail.cs" Link="Models\mdRoleDetail.cs" />
+    <Compile Include="..\Models\mdRoleList.cs" Link="Models\mdRoleList.cs" />
+    <Compile Include="..\Models\mdServiceList.cs" Link="Models\mdServiceList.cs" />
+    <Compile Include="..\Models\mdSettingMaster.cs" Link="Models\mdSettingMaster.cs" />
+    <Compile Include="..\Models\mdUserAccount.cs" Link="Models\mdUserAccount.cs" />
+    
+    <Compile Include="..\Models\mdUserRole.cs" Link="Models\mdUserRole.cs" />
+    
+    <Compile Include="..\Models\mdVoucherMaster.cs" Link="Models\mdVoucherMaster.cs" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" Version="2.38.0" />
+    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.41.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="6.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
+    <PackageReference Include="MongoDB.Entities" Version="20.26.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Polly" Version="7.2.2" />
+    <PackageReference Include="Serilog" Version="2.10.1-dev-01285" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Common\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\..\Protos\AppLog.proto">
+      <Link>Protos\AppLog.proto</Link>
+    </Protobuf>
+    <Protobuf Include="..\..\Protos\SystemConfig.proto" GrpcServices="Client">
+      <Link>Protos\SystemConfig.proto</Link>
+    </Protobuf>
+    <Protobuf Include="..\..\Protos\Admin.proto" GrpcServices="Server">
+      <Link>Protos\Admin.proto</Link>
+    </Protobuf>
+  </ItemGroup>
+
+</Project>

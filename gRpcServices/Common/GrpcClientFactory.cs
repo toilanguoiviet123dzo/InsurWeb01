@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
-using Gosu.SystemConfig.Services;
+using Cores.SystemConfig.Services;
 using System.Net.Http;
 using System.Threading;
-using Gosu.Common;
+using Cores.Common;
 
 
-namespace Gosu.Common
+namespace Cores.Common
 {
     public static class GrpcClientFactory
     {
@@ -108,7 +108,7 @@ namespace Gosu.Common
                 {
                     foreach (var item in result.ServiceList)
                     {
-                        var serviceListItem = new Gosu.Common.ServiceListModel();
+                        var serviceListItem = new Cores.Common.ServiceListModel();
                         ClassHelper.CopyPropertiesData(item, serviceListItem);
                         serviceList.Add(serviceListItem);
                     }

@@ -10,7 +10,7 @@ using System.Threading;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
 
-namespace Gosu.Common
+namespace Cores.Common
 {
     public class GrpcChannelFactory
     {

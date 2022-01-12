@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
-using Gosu.Cores;
 using System.Net.Http;
 using System.Threading;
-using Gosu.SystemConfig.Services;
+using Cores.Helpers;
 
-namespace Gosu.Grpc.Client
+namespace Cores.Grpc.Client
 {
     public static class GrpcClientFactory
     {
@@ -91,37 +89,37 @@ namespace Gosu.Grpc.Client
             var serviceList = new List<ServiceListModel>();
             try
             {
-                GetServiceList_Response result = await CallServiceAtSpecificUrl<GetServiceList_Response>(_systemConfigUrl, async channel =>
-                {
-                    try
-                    {
-                        var client = new grpcSystemConfigService.grpcSystemConfigServiceClient(channel);
-                        var response = await client.GetServiceListAsync(new Empty_Request()
-                        {
-                            Credential = new UserCredential()
-                            {
-                                Username = GrpcCredential.Username,
-                                RoleID = GrpcCredential.RoleID,
-                                AccessToken = GrpcCredential.AccessToken,
-                                ApiKey = GrpcCredential.ApiKey
-                            }
-                        });
-                        return response;
-                    }
-                    catch { }
-                    return default;
-                });
-                //Result
-                if (result != null && result.ReturnCode == GrpcReturnCode.OK)
-                {
-                    foreach (var item in result.ServiceList)
-                    {
-                        Console.WriteLine(item.Url);
-                        var serviceListItem = new ServiceListModel();
-                        ClassHelper.CopyPropertiesData(item, serviceListItem);
-                        serviceList.Add(serviceListItem);
-                    }
-                }
+                //GetServiceList_Response result = await CallServiceAtSpecificUrl<GetServiceList_Response>(_systemConfigUrl, async channel =>
+                //{
+                //    try
+                //    {
+                //        var client = new grpcSystemConfigService.grpcSystemConfigServiceClient(channel);
+                //        var response = await client.GetServiceListAsync(new Empty_Request()
+                //        {
+                //            Credential = new UserCredential()
+                //            {
+                //                Username = GrpcCredential.Username,
+                //                RoleID = GrpcCredential.RoleID,
+                //                AccessToken = GrpcCredential.AccessToken,
+                //                ApiKey = GrpcCredential.ApiKey
+                //            }
+                //        });
+                //        return response;
+                //    }
+                //    catch { }
+                //    return default;
+                //});
+                ////Result
+                //if (result != null && result.ReturnCode == GrpcReturnCode.OK)
+                //{
+                //    foreach (var item in result.ServiceList)
+                //    {
+                //        Console.WriteLine(item.Url);
+                //        var serviceListItem = new ServiceListModel();
+                //        ClassHelper.CopyPropertiesData(item, serviceListItem);
+                //        serviceList.Add(serviceListItem);
+                //    }
+                //}
             }
             catch { }
 

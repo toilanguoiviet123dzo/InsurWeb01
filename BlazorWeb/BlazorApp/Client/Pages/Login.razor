@@ -1,0 +1,160 @@
+﻿@page "/login"
+@using Cores.Admin.Services
+@inject IAuthenticationService AuthService
+@inject SettingService settingService;
+@inject NavigationManager NavManager
+@inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
+@inject IJSRuntime JsRuntime;
+@attribute [AllowAnonymous]
+
+<style>
+    .center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+</style>
+
+<!--Show error message-->
+@if (showError)
+{
+    <div class="alert alert-danger" role="alert">
+        <p>@errorMessage</p>
+    </div>
+}
+
+<!--Login form-->
+@if (!MaintennanceMode)
+{
+    <div class="center">
+        <div style="width:15rem">
+            <EditForm Model="@model" OnValidSubmit="@ExecuteLogin">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <!--UserName-->
+                <label class="demo-text cw-320 mt-2 text-muted" style="padding: 0; margin: 0; font-size: small">User name</label>
+                <DxTextBox @bind-Text="model.UserName"
+                           ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" />
+                <ValidationMessage For="@(() => model.UserName)" />
+
+                <!--Password-->
+                <label class="demo-text cw-320 mt-2 text-muted" style="padding: 0; margin: 0; font-size: small">Password</label>
+                <DxTextBox @bind-Text="model.Password"
+                           ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                           Password="true" />
+                <ValidationMessage For="@(() => model.Password)" />
+
+                <!--Submit-->
+                <div style="margin: 20px auto; width: 60%">
+                    <MyButton OnClick="ExecuteLogin"
+                              Text="Login"
+                              BtnCss="btn btn-primary"
+                              Width="100%">
+                        <Icon>
+                            <span class="oi oi-account-login" style="margin-right:20px;font-size:larger"></span>
+                        </Icon>
+                    </MyButton>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<!--Maintenance mode-->
+@if (MaintennanceMode)
+{
+    <h1 style="color:red; font-weight:bold">Hệ thống đang bảo trì</h1>
+}
+
+
+@code {
+    private AuthenticationRequestModel model = new();
+    private bool showError = false;
+    private string errorMessage = "";
+    private bool MaintennanceMode = false;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        // Check maintenance mode
+        await Check_MaintenanceMode();
+    }
+
+    private async Task ExecuteLogin()
+    {
+        showError = false;
+        var result = await AuthService.Login(model);
+        if (result == true)
+        {
+            await Get_BrowserInfo();
+            NavManager.NavigateTo("/");
+            _ = RequestNotificationSubscriptionAsync();
+        }
+        else
+        {
+            errorMessage = "There is error on login.";
+            showError = true;
+        }
+    }
+
+    async Task Get_BrowserInfo()
+    {
+        var info = await JsRuntime.InvokeAsync<BrowserDimension>("getDimensions");
+        if (info != null)
+        {
+            BrowserInfo.Height = info.Height;
+            BrowserInfo.Width = info.Width;
+            if (BrowserInfo.Width <= 768)
+            {
+                BrowserInfo.IsMobile = true;
+            }
+        }
+    }
+
+
+    async Task Check_MaintenanceMode()
+    {
+        var setting = await settingService.GetSetting("005");
+        if (setting != null)
+        {
+            MaintennanceMode = setting.IntValue1 == 1 ? true : false;
+        }
+    }
+
+    async Task RequestNotificationSubscriptionAsync()
+    {
+        var subscription = await JsRuntime.InvokeAsync<NotificationSubscription>("blazorPushNotifications.requestSubscription");
+        if (subscription != null)
+        {
+            try
+            {
+                //await OrdersClient.SubscribeToNotifications(subscription);
+                var request = new Cores.Admin.Services.SubscribeToNotifications_Request();
+                request.Credential = new Cores.Admin.Services.UserCredential()
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                };
+                request.NotificationSubscriptionId = subscription.NotificationSubscriptionId;
+                request.UserId = subscription.UserId ?? "";
+                request.Url = subscription.Url ?? "";
+                request.P256Dh = subscription.P256dh ?? "";
+                request.Auth = subscription.Auth ?? "";
+
+                //Get data from DB
+                var response = await adminServiceClient.SubscribeToNotificationsAsync(request);
+            }
+            catch (AccessTokenNotAvailableException ex)
+            {
+                ex.Redirect();
+            }
+        }
+    }
+
+
+}

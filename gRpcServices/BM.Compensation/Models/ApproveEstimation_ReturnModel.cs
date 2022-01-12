@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Gosu.Service.Models
+namespace Cores.Service.Models
 {
     public class ApproveEstimation_ReturnModel
     {

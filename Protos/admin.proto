@@ -1,5 +1,5 @@
 ﻿syntax = "proto3";
-option csharp_namespace = "Gosu.Admin.Services";
+option csharp_namespace = "Cores.Admin.Services";
 import "google/protobuf/timestamp.proto";
 package grpcAdminService;
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Gosu.Cores
+namespace Cores.Helpers
 {
     public static class TaskHelper
     {
@@ -21,7 +21,11 @@ namespace Gosu.Cores
         /// </summary>
         public static void RunBg(Func<Task> fn)
         {
-            Task.Run(fn).ConfigureAwait(false);
+            try
+            {
+                Task.Run(fn).ConfigureAwait(false);
+            }
+            catch { }
         }
 
         /// <summary>
@@ -32,8 +36,12 @@ namespace Gosu.Cores
         /// </summary>
         public static void RunBgLong(Func<Task> fn)
         {
-            Task.Factory.StartNew(fn, TaskCreationOptions.LongRunning)
+            try
+            {
+                Task.Factory.StartNew(fn, TaskCreationOptions.LongRunning)
                 .ConfigureAwait(false);
+            }
+            catch { }
         }
         /// <summary>
         /// Array params of action

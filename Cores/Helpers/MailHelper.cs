@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Gosu.Cores
+namespace Cores.Helpers
 {
     /// <summary>
     /// Lớp cung cấp chức năng gởi mail

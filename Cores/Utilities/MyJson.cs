@@ -6,7 +6,7 @@ using System.Text.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Gosu.Cores
+namespace Cores.Utilities
 {
     public class MyJson
     {

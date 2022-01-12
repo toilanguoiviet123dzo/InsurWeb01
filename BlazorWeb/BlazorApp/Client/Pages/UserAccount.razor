@@ -1,0 +1,593 @@
+﻿@page "/useraccount"
+@using Cores.Admin.Services
+@using System.Collections.ObjectModel;
+@inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
+@inject IJSRuntime JsRuntime;
+@inject IToastService toastService
+
+<br />
+<div style="width:100%">
+    <DxDataGrid @ref="@grid"
+                Data="@DetailData"
+                ColumnResizeMode="DataGridColumnResizeMode.Component"
+                EditMode="DataGridEditMode.PopupEditForm"
+                PageSize="@PageRowCount"
+                ShowFilterRow="true"
+                HtmlRowDecoration="@OnHtmlRowDecoration"
+                HorizontalScrollBarMode="ScrollBarMode.Auto"
+                RowEditStart="@(dataRow => OnRowEditStarting(dataRow))"
+                RowInsertStart="@(() => OnRowEditStarting(null))">
+        <Columns>
+            <DxDataGridColumn Field="@nameof(UserAccountModel.UserName)"
+                              Caption="UserName"
+                              Width="8rem" />
+            <DxDataGridColumn Field="@nameof(UserAccountModel.Fullname)"
+                              Caption="Fullname"
+                              Width="12rem" />
+            <DxDataGridColumn Field="@nameof(UserAccountModel.Phone)"
+                              Caption="Phone"
+                              Width="8rem" />
+            <DxDataGridColumn Field="@nameof(UserAccountModel.Email)"
+                              Caption="Email"
+                              Width="15rem" />
+            <DxDataGridColumn Field="@nameof(UserAccountModel.Address)"
+                              Caption="Address"
+                              Width="20rem" />
+            <DxDataGridColumn Field="@nameof(UserAccountModel.RoleName)"
+                              Caption="RoleName"
+                              Width="10rem" />
+            <DxDataGridColumn Field="@nameof(UserAccountModel.ApproveLevelName)"
+                              Caption="Approve Level"
+                              Width="10rem" />
+            <DxDataGridColumn Field="@nameof(UserAccountModel.DocumentLevelName)"
+                              Caption="Document Level"
+                              Width="10rem" />
+            <DxDataGridColumn Field="@nameof(UserAccountModel.StatusName)"
+                              Caption="Status"
+                              Width="8rem" />
+            <DxDataGridDateEditColumn Field="@nameof(UserAccountModel.ModifiedOn)"
+                                      Caption="ModifiedOn"
+                                      DisplayFormat="dd/MM/yyyy HH:mm"
+                                      Width="10rem" />
+            <!--Command columns-->
+            <MyGridCommand Grid="grid"
+                           ShowAddnew="true"
+                           ShowEdit="true"
+                           ShowDelete="true"
+                           OnRowRemoving="@((context) => OnRowRemoving(context as UserAccountModel))" />
+        </Columns>
+        <EditFormTemplate>
+            <EditForm Model="@EditContext" Context="EditFormContext" OnValidSubmit="@UpdateRow">
+                <DataAnnotationsValidator />
+                <DxFormLayout>
+                    <DxFormLayoutItem Caption="UserName: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxTextBox @bind-Text="@EditContext.UserName" />
+                            <ValidationMessage For="@(() => EditContext.UserName)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Fullname: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxTextBox @bind-Text="@EditContext.Fullname" />
+                            <ValidationMessage For="@(() => EditContext.Fullname)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Phone: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxTextBox @bind-Text="@EditContext.Phone" />
+                            <ValidationMessage For="@(() => EditContext.Phone)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Email: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxTextBox @bind-Text="@EditContext.Email" />
+                            <ValidationMessage For="@(() => EditContext.Email)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Address: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxTextBox @bind-Text="@EditContext.Address" />
+                            <ValidationMessage For="@(() => EditContext.Address)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="RoleID: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxComboBox @bind-Value="@EditContext.RoleID"
+                                        Data="@RoleList"
+                                        AllowUserInput="true"
+                                        FilteringMode="DataGridFilteringMode.Contains"
+                                        TextFieldName="@nameof(RoleListModel.RoleName)"
+                                        ValueFieldName="@nameof(RoleListModel.RoleID)"
+                                        SelectedItemChanged="@((RoleListModel value) => RoleList_ItemChanged(value))" />
+                            <ValidationMessage For="@(() => EditContext.RoleID)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Approve level: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxComboBox @bind-Value="@EditContext.ApproveLevel"
+                                        Data="@ApproveLevelList"
+                                        AllowUserInput="true"
+                                        FilteringMode="DataGridFilteringMode.Contains"
+                                        TextFieldName="@nameof(OptionListModel.ItemName)"
+                                        ValueFieldName="@nameof(OptionListModel.IntCode)"
+                                        SelectedItemChanged="@((OptionListModel value) => {
+                                                                   EditContext.ApproveLevel = value.IntCode;
+                                                                   EditContext.ApproveLevelName = value.ItemName;
+                                                               })" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Document level: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxComboBox @bind-Value="@EditContext.DocumentLevel"
+                                        Data="@DocumentLevelList"
+                                        AllowUserInput="true"
+                                        FilteringMode="DataGridFilteringMode.Contains"
+                                        TextFieldName="@nameof(OptionListModel.ItemName)"
+                                        ValueFieldName="@nameof(OptionListModel.IntCode)"
+                                        SelectedItemChanged="@((OptionListModel value) => {
+                                                                   EditContext.DocumentLevel = value.IntCode;
+                                                                   EditContext.DocumentLevelName = value.ItemName;
+                                                               })" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Set password: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxTextBox @bind-Text="@EditContext.Password" 
+                                       Password="true"/>
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Hữu hiệu" ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxCheckBox @bind-Checked="@EditContext.BoolStatus" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <!--OK Cancel-->
+                    <MyGridEditFormOKCancel OnCancelClick="OnCancelEditRow" />
+                </DxFormLayout>
+            </EditForm>
+        </EditFormTemplate>
+    </DxDataGrid>
+</div>
+
+<ConfirmDialog Message="@ConfirmMessage" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
+
+@code{
+    private int PageRowCount = MyConstant.Grid_PageRowCount;
+    FormEditContext EditContext = null;
+    // Detail data
+    readonly ObservableCollection<UserAccountModel> DetailData = new ObservableCollection<UserAccountModel>();
+    // RoleList
+    private List<RoleListModel> RoleList = new List<RoleListModel>();
+    private List<OptionListModel> ApproveLevelList = new List<OptionListModel>();
+    private List<OptionListModel> DocumentLevelList = new List<OptionListModel>();
+    // Popup
+    private string ConfirmMessage = "";
+    private string ConfirmAction = "";
+    private bool ConfirmVisible = false;
+    //
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        //Load master
+        await LoadMaster();
+
+        //Display data ..
+        await DisplayMain();
+    }
+    #region Load data
+    async Task LoadMaster()
+    {
+
+        //...
+        await LoadRow_RoleList();
+        await Load_ApproveLevelList();
+        await Load_DocumentLevelList();
+    }
+
+
+    async Task DisplayMain()
+    {
+        try
+        {
+            //Filter
+            var requestString = new String_Request()
+            {
+                Credential = new UserCredential()
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                },
+                StringValue = ""
+            };
+
+            //Get data from DB
+            DetailData.Clear();
+            var response = await adminServiceClient.GetUserAccountAsync(requestString);
+            if (response != null && response.ReturnCode == 200)
+            {
+                foreach (var item in response.UserAccounts)
+                {
+                    UserAccountModel dataRow = new UserAccountModel();
+                    ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
+                    var newRoleListModel = RoleList.Where(x => x.RoleID == dataRow.RoleID).FirstOrDefault();
+                    if (newRoleListModel != null)
+                    {
+                        dataRow.RoleName = newRoleListModel.RoleName;
+                    }
+                    //Upd mode
+                    dataRow.UpdMode = 0;
+                    //Status
+                    dataRow.StatusName = "";
+                    if (item.Status == 0)
+                    {
+                        dataRow.StatusName = "Vô hiệu";
+                    }
+                    //Set blank for password -> not save
+                    dataRow.Password = "";
+                    //
+                    DetailData.Add(dataRow);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message, "Load dữ liệu thất bại.");
+        }
+    }
+    // Load RoleList in EditForm
+    async Task LoadRow_RoleList()
+    {
+        try
+        {
+            var requestRoleList = new Empty_Request()
+            {
+                Credential = new UserCredential()
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                }
+            };
+            //Get data from DB
+            RoleList.Clear();
+            var resRoleList = await adminServiceClient.GetRoleListAsync(requestRoleList);
+            if (resRoleList != null && resRoleList.ReturnCode == 200)
+            {
+                foreach (var item in resRoleList.RoleList)
+                {
+                    RoleListModel dataRow = new RoleListModel();
+                    ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
+                    RoleList.Add(dataRow);
+                }
+            }
+            //Order
+            RoleList = RoleList.OrderBy(x => x.DspOrder).ToList<RoleListModel>();
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message, "Load dánh sách vai trò thất bại.");
+        }
+    }
+    // Approve level list
+    async Task Load_ApproveLevelList()
+    {
+        try
+        {
+            var request = new Cores.Admin.Services.String_Request()
+            {
+                Credential = new Cores.Admin.Services.UserCredential()
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                },
+                StringValue = "002"
+
+            };
+            //Get data from DB
+            ApproveLevelList.Clear();
+            var response = await adminServiceClient.GetOptionListAsync(request);
+            if (response != null && response.ReturnCode == 200)
+            {
+                foreach (var item in response.OptionList)
+                {
+                    var dataRow = new OptionListModel();
+                    ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
+                    ApproveLevelList.Add(dataRow);
+                }
+            }
+            //Order
+            ApproveLevelList = ApproveLevelList.OrderBy(x => x.DspOrder).ToList<OptionListModel>();
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message, "Load approve level list failed.");
+        }
+    }
+    // Document level list
+    async Task Load_DocumentLevelList()
+    {
+        try
+        {
+            var request = new Cores.Admin.Services.String_Request()
+            {
+                Credential = new Cores.Admin.Services.UserCredential()
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                },
+                StringValue = "003"
+
+            };
+            //Get data from DB
+            DocumentLevelList.Clear();
+            var response = await adminServiceClient.GetOptionListAsync(request);
+            if (response != null && response.ReturnCode == 200)
+            {
+                foreach (var item in response.OptionList)
+                {
+                    var dataRow = new OptionListModel();
+                    ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
+                    DocumentLevelList.Add(dataRow);
+                }
+            }
+            //Order
+            DocumentLevelList = DocumentLevelList.OrderBy(x => x.DspOrder).ToList<OptionListModel>();
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message, "Load approve level list failed.");
+        }
+    }
+    #endregion
+
+    #region Save
+
+    void ConfirmHandler()
+    {
+        //Delete row
+        if (ConfirmAction == "DeleteRow")
+        {
+            DeleteRow();
+        }
+
+        //Close confirm delete popup
+        ConfirmVisible = false;
+        StateHasChanged();
+    }
+
+    //Save Row
+    async Task<bool> SaveRow(UserAccountModel saveRow)
+    {
+        try
+        {
+            //Request
+            var request = new SaveUserAccount_Request();
+            var Credential = new UserCredential()
+            {
+                Username = WebUserCredential.Username,
+                RoleID = WebUserCredential.RoleID,
+                AccessToken = WebUserCredential.AccessToken,
+                ApiKey = WebUserCredential.ApiKey
+            };
+            request.Credential = Credential;
+            // Convert to DB row
+            request.Record = new grpcUserAccount();
+            ClassHelper.CopyPropertiesDataDateConverted(saveRow, request.Record);
+            // Call api
+            var response = await adminServiceClient.SaveUserAccountAsync(request);
+            // Success
+            if (response == null || response.ReturnCode != GrpcReturnCode.OK)
+            {
+                toastService.ShowError("", "Lưu thất bại.");
+            }
+            else
+            {
+                //Update ID
+                saveRow.ID = response.StringValue;
+            }
+            //OK
+            return true;
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message, "Lưu thất bại.");
+        }
+        //
+        return false;
+    }
+
+    #endregion
+
+    #region Grid main
+    //Confirm delete
+    UserAccountModel DeletedRow = null;
+    void OnRowRemoving(UserAccountModel dataRow)
+    {
+        DeletedRow = dataRow;
+
+        //Show popup confirm
+        ConfirmMessage = "Xóa dòng?";
+        ConfirmAction = "DeleteRow";
+        ConfirmVisible = true;
+        StateHasChanged();
+    }
+
+    //Cancel edit
+    async Task OnCancelEditRow()
+    {
+        await grid.CancelRowEdit();
+        EditContext = null;
+    }
+    async void DeleteRow()
+    {
+        // Mark to delete on grid
+        DeletedRow.UpdMode = 3;
+
+        var saveResult = await SaveRow(DeletedRow);
+
+        // Refresh layout
+        if (saveResult)
+        {
+            await grid.Refresh();
+        }
+    }
+
+    async Task UpdateRow()
+    {
+        // Update for edit field
+        EditContext.EditingRow.UserName = EditContext.UserName;
+        EditContext.EditingRow.Fullname = EditContext.Fullname;
+        EditContext.EditingRow.Phone = EditContext.Phone;
+        EditContext.EditingRow.Email = EditContext.Email;
+        EditContext.EditingRow.Address = EditContext.Address;
+        EditContext.EditingRow.RoleID = EditContext.RoleID;
+        EditContext.EditingRow.RoleName = GetRoleName;
+        EditContext.EditingRow.ApproveLevel = EditContext.ApproveLevel;
+        EditContext.EditingRow.ApproveLevelName = EditContext.ApproveLevelName;
+        //ApproveLevelName
+        var approveLevel = ApproveLevelList.Find(x => x.IntCode == EditContext.ApproveLevel);
+        if (approveLevel != null)
+        {
+            EditContext.EditingRow.ApproveLevelName = approveLevel.ItemName;
+        }
+        EditContext.EditingRow.DocumentLevel = EditContext.DocumentLevel;
+        //DocumentLevelName
+        var DocumentLevel = DocumentLevelList.Find(x => x.IntCode == EditContext.DocumentLevel);
+        if (DocumentLevel != null)
+        {
+            EditContext.EditingRow.DocumentLevelName = DocumentLevel.ItemName;
+        }
+        //Status
+        EditContext.EditingRow.Status = 0;
+        EditContext.EditingRow.StatusName = "Vô hiệu";
+        if (EditContext.BoolStatus)
+        {
+            EditContext.EditingRow.Status = 1;
+            EditContext.EditingRow.StatusName = "";
+        }
+        //Reset password
+        if (!string.IsNullOrWhiteSpace(EditContext.Password))
+        {
+            EditContext.EditingRow.Password = EditContext.Password;
+        }
+
+        // Insert
+        if (EditContext.UpdMode == 1)
+        {
+            EditContext.EditingRow.UpdMode = 1;
+            DetailData.Add(EditContext.EditingRow);
+        }
+        else
+        {
+            //Update or update to restore delete record
+            EditContext.EditingRow.UpdMode = 2;
+        }
+
+        //Save row to DB
+        var saveResult = await SaveRow(EditContext.EditingRow);
+        if (saveResult)
+        {
+            // Close popup & refresh data
+            await grid.CancelRowEdit();
+            await grid.Refresh();
+        }
+    }
+
+    // Edit row model
+    DxDataGrid<UserAccountModel> grid;
+    class FormEditContext : UserAccountModel
+    {
+        public FormEditContext(UserAccountModel targetRow, int updMode)
+        {
+            //Backup editting row
+            EditingRow = targetRow;
+
+            //UpdMode
+            UpdMode = updMode;
+
+            //Edit context -> Editable data only
+            UserName = EditingRow.UserName;
+            Fullname = EditingRow.Fullname;
+            Phone = EditingRow.Phone;
+            Email = EditingRow.Email;
+            Address = EditingRow.Address;
+            RoleID = EditingRow.RoleID;
+            RoleName = EditingRow.RoleName;
+            ApproveLevel = EditingRow.ApproveLevel;
+            ApproveLevelName = EditingRow.ApproveLevelName;
+            DocumentLevel = EditingRow.DocumentLevel;
+            DocumentLevelName = EditingRow.DocumentLevelName;
+            BoolStatus = true;
+            if (EditingRow.Status == 0)
+            {
+                BoolStatus = false;
+            }
+        }
+        public bool BoolStatus { get; set; } = true;
+        public UserAccountModel EditingRow { get; set; }
+    }
+
+    //Get data for edit/insert
+    void OnRowEditStarting(UserAccountModel editingRow)
+    {
+        // Insert row
+        if (editingRow == null)
+        {
+            editingRow = new UserAccountModel();
+            //
+            editingRow.UpdMode = -1;
+            //Init row here
+            editingRow.ModifiedOn = DateTime.Now;
+            //
+            EditContext = new FormEditContext(editingRow, 1);
+        }
+        else
+        {
+            //Update row
+            editingRow.UpdMode = 2;
+            EditContext = new FormEditContext(editingRow, 2);
+        }
+    }
+
+    // Color of edit data
+    void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<UserAccountModel> eventArgs)
+    {
+        MyColor myColor = new MyColor();
+        if (eventArgs.DataItem.UpdMode == 1)
+            eventArgs.Style += myColor.NewRowColor;
+        else if (eventArgs.DataItem.UpdMode == 2)
+            eventArgs.Style += myColor.EditRowColor;
+        else if (eventArgs.DataItem.UpdMode == 3)
+            eventArgs.Style += myColor.DeleteRowColor;
+
+        //Disable user
+        if (eventArgs.DataItem.Status == 0) eventArgs.Style += myColor.DisabledRowColor;
+    }
+    #endregion
+
+    #region Screen items
+
+    // Select RoleList
+    string GetRoleID;
+    string GetRoleName = "";
+    void RoleList_ItemChanged(RoleListModel item)
+    {
+        GetRoleName = "";
+        if (item != null)
+        {
+            GetRoleID = item.RoleID;
+            GetRoleName = item.RoleName ?? "";
+        }
+    }
+
+    #endregion
+    //
+}

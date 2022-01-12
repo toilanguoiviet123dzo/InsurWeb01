@@ -9,18 +9,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Gosu.Services;
-using Gosu.Configs;
+using Cores.Services;
+using Cores.Configs;
 using MongoDB.Entities;
 using MongoDB.Driver;
-using Gosu.Common;
+using Cores.Common;
 using System.Security;
-using Gosu.Extentions;
+using Cores.Extentions;
 using System.Text;
 using System.Net.Http;
 using System.Threading;
 
-namespace Gosu.Service
+namespace Cores.Service
 {
     public class Startup
     {

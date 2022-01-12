@@ -5,7 +5,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Gosu.Common
+namespace Cores.Common
 {
     public static class MD5Crypto
     {

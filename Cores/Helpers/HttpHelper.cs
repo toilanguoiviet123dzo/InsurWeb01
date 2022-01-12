@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Cores.Utilities;
+using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Net;
@@ -9,7 +10,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Gosu.Cores
+namespace Cores.Helpers
 {
     public class HttpHelper
     {

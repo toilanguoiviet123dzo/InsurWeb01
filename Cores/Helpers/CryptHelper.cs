@@ -3,7 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Gosu.Cores
+namespace Cores.Helpers
 {
     /// <summary>
     /// Lớp cung cấp các hàm mã hóa dữ liệu

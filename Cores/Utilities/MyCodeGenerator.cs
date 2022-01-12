@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gosu.Cores
+namespace Cores.Utilities
 {
     public static class MyCodeGenerator
     {

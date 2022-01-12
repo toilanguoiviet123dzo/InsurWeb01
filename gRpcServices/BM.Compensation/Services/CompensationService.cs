@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
-using Gosu.Service.Models;
-using Gosu.Compensation.Services;
+using Cores.Service.Models;
+using Cores.Compensation.Services;
 using MongoDB.Entities;
 using MongoDB.Driver.Linq;
 using MongoDB.Driver;
@@ -13,14 +13,14 @@ using MongoDB.Bson;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using System.Text;
-using Gosu.Service;
-using Gosu.Common;
+using Cores.Service;
+using Cores.Common;
 using Grpc.Net.Client;
-using Gosu.Admin.Services;
-using Gosu.Resource.Services;
+using Cores.Admin.Services;
+using Cores.Resource.Services;
 
 
-namespace Gosu.Service.Services
+namespace Cores.Service.Services
 {
     public class CompensationService : grpcCompensationService.grpcCompensationServiceBase
     {
@@ -49,7 +49,7 @@ namespace Gosu.Service.Services
                         newRecord.ModifiedOn = DateTime.UtcNow;
                         //Commit VoucherNo
                         var requestCommit = new CommitVoucherNo_Request();
-                        requestCommit.Credential = new Gosu.Admin.Services.UserCredential()
+                        requestCommit.Credential = new Cores.Admin.Services.UserCredential()
                         {
                             Username = GrpcCredential.Username,
                             RoleID = GrpcCredential.RoleID,
@@ -59,7 +59,7 @@ namespace Gosu.Service.Services
                         requestCommit.VoucherCode = "001";
                         requestCommit.VoucherNo = newRecord.CompenNo;
                         //
-                        var responseCommit = await GrpcClientFactory.CallServiceAsync<Gosu.Admin.Services.String_Response>(ServiceList.Admin, async channel =>
+                        var responseCommit = await GrpcClientFactory.CallServiceAsync<Cores.Admin.Services.String_Response>(ServiceList.Admin, async channel =>
                         {
                             var client = new grpcAdminService.grpcAdminServiceClient(channel);
                             return await client.CommitVoucherNoAsync(requestCommit);
@@ -140,7 +140,7 @@ namespace Gosu.Service.Services
                             foreach (var record in findRecords)
                             {
                                 var requestResource = new SaveResourceFile_Request();
-                                var Credential = new Gosu.Resource.Services.UserCredential()
+                                var Credential = new Cores.Resource.Services.UserCredential()
                                 {
                                     Username = GrpcCredential.Username,
                                     RoleID = GrpcCredential.RoleID,
@@ -152,7 +152,7 @@ namespace Gosu.Service.Services
                                 requestResource.ResourceFile.ResourceID = record.ResourceID;
                                 requestResource.ResourceFile.UpdMode = 3;   //Delete
                                 //
-                                var responseResource = await GrpcClientFactory.CallServiceAsync<Gosu.Resource.Services.String_Response>(ServiceList.Resource, async channel =>
+                                var responseResource = await GrpcClientFactory.CallServiceAsync<Cores.Resource.Services.String_Response>(ServiceList.Resource, async channel =>
                                 {
                                     var client = new grpcResourceService.grpcResourceServiceClient(channel);
                                     return await client.SaveResourceFileAsync(requestResource);
@@ -713,9 +713,9 @@ namespace Gosu.Service.Services
         //-------------------------------------------------------------------------------------------------------/
         // UpdateTotalCompenRequest
         //-------------------------------------------------------------------------------------------------------/
-        public override async Task<Gosu.Compensation.Services.Empty_Response> UpdateTotalCompenRequest(UpdateTotalCompenRequest_Request request, ServerCallContext context)
+        public override async Task<Cores.Compensation.Services.Empty_Response> UpdateTotalCompenRequest(UpdateTotalCompenRequest_Request request, ServerCallContext context)
         {
-            var response = new Gosu.Compensation.Services.Empty_Response();
+            var response = new Cores.Compensation.Services.Empty_Response();
             response.ReturnCode = GrpcReturnCode.OK;
             response.MsgCode = "";
             //
@@ -757,9 +757,9 @@ namespace Gosu.Service.Services
         //-------------------------------------------------------------------------------------------------------/
         // UpdateStatusCompenRequest
         //-------------------------------------------------------------------------------------------------------/
-        public override async Task<Gosu.Compensation.Services.Empty_Response> UpdateStatusCompenRequest(Gosu.Compensation.Services.UpdateStatusCompenRequest_Request request, ServerCallContext context)
+        public override async Task<Cores.Compensation.Services.Empty_Response> UpdateStatusCompenRequest(Cores.Compensation.Services.UpdateStatusCompenRequest_Request request, ServerCallContext context)
         {
-            var response = new Gosu.Compensation.Services.Empty_Response();
+            var response = new Cores.Compensation.Services.Empty_Response();
             response.ReturnCode = GrpcReturnCode.OK;
             response.MsgCode = "";
             //

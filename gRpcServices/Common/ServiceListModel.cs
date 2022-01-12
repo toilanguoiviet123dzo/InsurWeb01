@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Gosu.Common
+namespace Cores.Common
 {
     public class ServiceListModel
     {

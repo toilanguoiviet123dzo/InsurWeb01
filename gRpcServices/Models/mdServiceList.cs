@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Gosu.Service.Models
+namespace Cores.Service.Models
 {
     [Collection("ServiceList")]
     public class mdServiceList : Entity

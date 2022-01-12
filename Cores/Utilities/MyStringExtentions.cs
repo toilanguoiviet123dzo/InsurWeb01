@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Gosu.Cores
+namespace Cores.Utilities
 {
     public static class MyStringExtentions
     {

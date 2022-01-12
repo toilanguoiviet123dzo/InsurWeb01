@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Gosu.Common
+namespace Cores.Common
 {
     public static class MyStringExtentions
     {

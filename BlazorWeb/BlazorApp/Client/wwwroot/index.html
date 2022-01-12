@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>BM</title>
+    <base href="/" />
+    <!--PWA-->
+    <link href="manifest.json" rel="manifest" />
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+    <!--jquery-->
+    <script src="js/jquery/jquery.min.js"></script>
+    <!--Litera themes-->
+    <link href="css/Litera/bootstrap.min.css" rel="stylesheet" />
+
+    <!--<link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />-->
+
+    <link href="css/styles.css" rel="stylesheet" />
+    <link href="css/gulpfile.js" rel="stylesheet" />
+    <link href="css/package.json" rel="stylesheet" />
+    <link href="css/script.js" rel="stylesheet" />
+    <link href="css/open-iconic/font/css/open-iconic-bootstrap.min.css" rel="stylesheet" />
+    <!--fontawesome-->
+    <link href="css/fontawesome/css/all.css" rel="stylesheet" />
+
+    <link href="BlazorApp.Client.styles.css" rel="stylesheet" />
+    <link href="_content/DevExpress.Blazor/dx-blazor.css" rel="stylesheet" />
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link href="_content/Blazored.Toast/blazored-toast.css" rel="stylesheet" />
+    <link href="_content/Blazored.Typeahead/blazored-typeahead.css" rel="stylesheet" />
+    <style type="text/css">
+        .splash-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-flow: column nowrap;
+            height: 100vh;
+            font-family: "Segoe UI",Roboto,"Helvetica Neue","-apple-system",BlinkMacSystemFont,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+            font-size: .88rem;
+            font-weight: 400;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+            .splash-screen .spinner-border {
+                border: .2em solid;
+                border-color: #5f368d #bfbfbf #bfbfbf;
+                width: 120px;
+                height: 120px;
+            }
+
+        .splash-screen-caption {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+        }
+
+        .splash-screen-text {
+            color: #a1a1a1;
+            margin-top: .5rem;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        /*for focus items*/
+        function focusEditor(className) {
+            document.getElementsByClassName(className)[0].querySelector("input").focus();
+        }
+        /* Warning F5 */
+        $(window).bind('beforeunload', function (e) {
+            return "Load lại trang có thể bị mất dữ liệu. Bạn có muốn tiếp tục..."
+            e.preventDefault();
+        });
+        /* getDimensions*/
+        window.getDimensions = function () {
+            return {
+                width: window.innerWidth,
+                height: window.innerHeight
+            };
+        };
+    </script>
+
+    <div id="app">
+        <script type="text/javascript">
+            if (/MSIE \d|Trident.*rv:/.test(window.navigator.userAgent))
+                window.location.href = "ieNotSupported.html";
+        </script>
+        <div class="splash-screen">
+            <div class="spinner-border"></div>
+            <div class="splash-screen-caption">BM</div>
+            <div class="splash-screen-text">Loading...</div>
+        </div>
+    </div>
+    <!--<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+    </div>-->
+    <script src="js/DownloadHelper.js"></script>
+    <script src="js/pushNotifications.js"></script>
+    <script src="js/localStorage.js"></script>
+    <script src="_framework/blazor.webassembly.js" autostart="false"></script>
+    <script>navigator.serviceWorker.register('service-worker.js');</script>
+    <script src="_content/Blazored.Typeahead/blazored-typeahead.js"></script>
+    <script>
+        Blazor.start({
+            environment: "Development"
+        });
+    </script>
+    <!--Development, Production-->
+</body>
+</html>

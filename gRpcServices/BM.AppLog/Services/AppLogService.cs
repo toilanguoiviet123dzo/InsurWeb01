@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
-using Gosu.Service.Models;
-using Gosu.AppLog.Services;
+using Cores.Service.Models;
+using Cores.AppLog.Services;
 using MongoDB.Entities;
 using MongoDB.Driver.Linq;
 using MongoDB.Driver;
@@ -13,9 +13,9 @@ using MongoDB.Bson;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using System.Text;
-using Gosu.Common;
+using Cores.Common;
 
-namespace Gosu.Services
+namespace Cores.Services
 {
     public class AppLogService : grpcAppLogService.grpcAppLogServiceBase
     {

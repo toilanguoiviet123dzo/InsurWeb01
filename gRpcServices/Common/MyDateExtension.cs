@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gosu.Common
+namespace Cores.Common
 {
     public static partial class DateTimeExtensions
     {

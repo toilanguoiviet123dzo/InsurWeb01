@@ -5,7 +5,7 @@ using System.Text.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Gosu.Common
+namespace Cores.Common
 {
     public static class MyConstant
     {

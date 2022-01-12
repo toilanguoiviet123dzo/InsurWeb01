@@ -1,5 +1,5 @@
 ﻿syntax = "proto3";
-option csharp_namespace = "Gosu.SystemConfig.Services";
+option csharp_namespace = "Cores.SystemConfig.Services";
 import "google/protobuf/timestamp.proto";
 package grpcSystemConfigService;
 //Services

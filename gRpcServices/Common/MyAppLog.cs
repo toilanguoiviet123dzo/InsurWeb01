@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Gosu.SystemConfig.Services;
-using Gosu.AppLog.Services;
+using Cores.SystemConfig.Services;
+using Cores.AppLog.Services;
 
-namespace Gosu.Common
+namespace Cores.Common
 {
     public static class MyAppLog
     {
@@ -17,7 +17,7 @@ namespace Gosu.Common
                                     int ErrorCode,
                                     string ErrorMessage) 
         {
-            var request = new Gosu.AppLog.Services.WriteLog_Request();
+            var request = new Cores.AppLog.Services.WriteLog_Request();
             request.Credential = new AppLog.Services.UserCredential()
             {
                 Username = GrpcCredential.Username,

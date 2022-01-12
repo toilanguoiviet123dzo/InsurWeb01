@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gosu.Cores
+namespace Cores.Utilities
 {
     public static class MyFile
     {

@@ -10,7 +10,7 @@ using Google.Protobuf.WellKnownTypes;
 using Google.Protobuf;
 using System.Linq;
 
-namespace Gosu.Cores
+namespace Cores.Helpers
 { 
     public static class ClassHelper
     {
