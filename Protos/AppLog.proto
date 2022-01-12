@@ -1,5 +1,5 @@
 ﻿syntax = "proto3";
-option csharp_namespace = "Cores.AppLog.Services";
+option csharp_namespace = "AppLog.Services";
 import "google/protobuf/timestamp.proto";
 package grpcAppLogService;
 //Services

@@ -20,5 +20,6 @@ namespace Cores.Grpc.Client
         public static int Error_208 = 208;
         public static int Error_209 = 209;
         public static int Error_ByServer = 500;
+        public static int Error_BadRequest = 400;
     }
 }

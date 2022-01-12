@@ -1,5 +1,5 @@
 ﻿syntax = "proto3";
-option csharp_namespace = "Cores.SystemConfig.Services";
+option csharp_namespace = "SystemConfig.Services";
 import "google/protobuf/timestamp.proto";
 package grpcSystemConfigService;
 //Services
@@ -12,7 +12,6 @@ service grpcSystemConfigService {
 //======================================================
 // Common Messages
 //======================================================
-
 message UserCredential {
     string Username = 1;
     string RoleID = 2;
@@ -26,11 +25,26 @@ message Empty_Response {
 message Empty_Request {
     UserCredential Credential = 1;
 }
+//
 message String_Request
 {
     UserCredential Credential = 1;
     //
      string StringValue = 2;
+}
+message String_Response
+{
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+     string StringValue = 3;
+}
+message Int_Response
+{
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+     int32 IntValue = 3;
 }
 //
 //======================================================

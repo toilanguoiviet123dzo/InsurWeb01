@@ -108,6 +108,13 @@ namespace Cores.Utilities
 
         #endregion
 
+        #region Remove file
+        public static void Delete(string filename)
+        {
+            File.Delete(filename);
+        }
+        #endregion
+
         #region View file
         public static void View_File(string filePath)
         {

@@ -11,7 +11,7 @@ namespace Cores.Grpc.Client
         public const string SystemConfig = "SystemConfig";
         public const string AppLog = "AppLog";
         public const string Admin = "Admin";
-        public const string Compensation = "Compensation";
+        public const string Claim = "Claim";
         public const string Resource = "Resource";
     }
 }

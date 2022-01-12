@@ -1,5 +1,5 @@
 ﻿@page "/login"
-@using Cores.Admin.Services
+@using Admin.Services
 @inject IAuthenticationService AuthService
 @inject SettingService settingService;
 @inject NavigationManager NavManager
@@ -132,8 +132,8 @@
             try
             {
                 //await OrdersClient.SubscribeToNotifications(subscription);
-                var request = new Cores.Admin.Services.SubscribeToNotifications_Request();
-                request.Credential = new Cores.Admin.Services.UserCredential()
+                var request = new Admin.Services.SubscribeToNotifications_Request();
+                request.Credential = new Admin.Services.UserCredential()
                 {
                     Username = WebUserCredential.Username,
                     RoleID = WebUserCredential.RoleID,

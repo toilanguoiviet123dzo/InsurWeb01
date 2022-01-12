@@ -11,6 +11,11 @@ using Microsoft.Extensions.Hosting;
 using System.Linq;
 using Cores.Grpc.Authentication;
 using System;
+using BlazorApp.Server.Common;
+using MongoDB.Driver;
+using MongoDB.Entities;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace BlazorApp.Server
 {
@@ -25,7 +30,7 @@ namespace BlazorApp.Server
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public async void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             // add gRPC service 
             services.AddGrpc();
@@ -42,23 +47,42 @@ namespace BlazorApp.Server
                        .AllowAnyHeader()
                        .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
             }));
-            
+
             //services.AddControllersWithViews();
             //services.AddRazorPages();
 
-            //Init grpc client
-            int maxChannelCount = 5;
-            string systemConfigUrl = "http://222.253.79.223:5099";
-            var grpcConfig = Configuration.GetSection(nameof(GrpcConfig)).Get<GrpcConfig>();
-            if (grpcConfig != null && grpcConfig.MaxChannelCount > 0)
+            //Mongle DB
+            bool IsTaskDone = false;
+            var databaseConfig = Configuration.GetSection(nameof(DatabaseConfig)).Get<DatabaseConfig>();
+            Action asyncTask = new Action(async () =>
             {
-                maxChannelCount = grpcConfig.MaxChannelCount;
-                systemConfigUrl = grpcConfig.SystemConfigUrl;
-            }
-            await GrpcClientFactory.InitAsync(maxChannelCount, systemConfigUrl);
+                await DB.InitAsync(databaseConfig.DBName, MongoClientSettings.FromConnectionString(databaseConfig.ConnectionString));
+                IsTaskDone = true;
+            });
 
-            //Gosu service
-            services.AddGosuServices();
+            //Run & wait
+            var task = new Task(asyncTask);
+            task.Start();
+            while (!IsTaskDone)
+            {
+                Thread.Sleep(1000);
+            }
+
+            //My service
+            services.AddMyServices();
+
+            //Init grpc client
+            //int maxChannelCount = 5;
+            //string systemConfigUrl = "http://222.253.79.223:5099";
+            //var grpcConfig = Configuration.GetSection(nameof(GrpcConfig)).Get<GrpcConfig>();
+            //if (grpcConfig != null && grpcConfig.MaxChannelCount > 0)
+            //{
+            //    maxChannelCount = grpcConfig.MaxChannelCount;
+            //    systemConfigUrl = grpcConfig.SystemConfigUrl;
+            //}
+            //await GrpcClientFactory.InitAsync(maxChannelCount, systemConfigUrl);
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -90,7 +114,7 @@ namespace BlazorApp.Server
                 // map to and register the gRPC service
                 //
                 endpoints.MapGrpcService<AdminService>().EnableGrpcWeb().RequireCors(MyAllowSpecificOrigins);
-                endpoints.MapGrpcService<CompensationService>().EnableGrpcWeb().RequireCors(MyAllowSpecificOrigins);
+                endpoints.MapGrpcService<ClaimService>().EnableGrpcWeb().RequireCors(MyAllowSpecificOrigins);
                 endpoints.MapGrpcService<ResourceService>().EnableGrpcWeb().RequireCors(MyAllowSpecificOrigins);
                 //
                 endpoints.MapFallbackToFile("index.html");
@@ -100,11 +124,15 @@ namespace BlazorApp.Server
 
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddGosuServices(this IServiceCollection services)
+        public static IServiceCollection AddMyServices(this IServiceCollection services)
         {
             //Init authentication
             AuthenticationService.Init();
 
+            //Grpc Service
+            services.AddSingleton<AdminService>();
+            services.AddSingleton<ClaimService>();
+            services.AddSingleton<ResourceService>();
 
             //Service list
             //services.AddScoped<IUserService, UserService>();

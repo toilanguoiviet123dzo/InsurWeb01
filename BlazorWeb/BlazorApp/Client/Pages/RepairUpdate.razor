@@ -1,8 +1,8 @@
 ﻿@using System.ComponentModel.DataAnnotations;
-@using Cores.Admin.Services
-@using Cores.Compensation.Services
+@using Admin.Services
+@using Claim.Services
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
-@inject grpcCompensationService.grpcCompensationServiceClient compensationServiceClient;
+@inject grpcClaimService.grpcClaimServiceClient ClaimServiceClient;
 @inject MasterService masterService;
 @inject IJSRuntime JsRuntime;
 @inject IToastService toastService
@@ -36,8 +36,8 @@
 <div class="container">
     <div class="row">
         <div class="col-6 col-lg-3">
-            <!--CompenNo-->
-            <MyTextEdit @bind-Text="Model.CompenNo"
+            <!--ClaimNo-->
+            <MyTextEdit @bind-Text="Model.ClaimNo"
                         ReadOnly="true"
                         Literal="Số tờ trình"
                         InputCssClass="color-blue font-bold" />
@@ -273,7 +273,7 @@
             <!--Tiền đền bù-->
             <div class="row">
                 <div class="col-12">
-                    <MyNumEdit @bind-Value="Model.CompensationPrice"
+                    <MyNumEdit @bind-Value="Model.ClaimPrice"
                                ReadOnly="true"
                                Mask="N0"
                                Literal="Tiền đền bù"
@@ -393,7 +393,7 @@
          ZIndex="1002">
     <BodyContentTemplate>
         <AttachFiles @bind-Visible="@AttachFileVisbible"
-                     VoucherNo="@Model.CompenNo"
+                     VoucherNo="@Model.ClaimNo"
                      OnValidSumit="@(async () => await Get_AttachFileCount())" />
     </BodyContentTemplate>
 </MyPopup>
@@ -405,7 +405,7 @@
          Width="1200px"
          ZIndex="1002">
     <BodyContentTemplate>
-        <RepairEstimation CompenNo="@Model.CompenNo"
+        <RepairEstimation ClaimNo="@Model.ClaimNo"
                           ReqPersonName="@Model.ReqPersonName"
                           BranchName="@Model.BranchName"
                           RepairerName="@Model.RepairerName"
@@ -420,7 +420,7 @@
 @code {
     //Parameters and events
     [Parameter]
-    public string CompenNo { get; set; } = "";
+    public string ClaimNo { get; set; } = "";
     [Parameter]
     public EventCallback OnValidSumit { get; set; }
     [Parameter]
@@ -457,7 +457,7 @@
         await LoadMaster();
 
         //Display data ..
-        if (string.IsNullOrWhiteSpace(CompenNo))
+        if (string.IsNullOrWhiteSpace(ClaimNo))
         {
             await InitMain();
         }
@@ -485,8 +485,8 @@
         Model = new CompenRequestModel();
         Model.UpdMode = 1;
 
-        //CompenNo
-        Model.CompenNo = await Get_NewVoucherNo();
+        //ClaimNo
+        Model.ClaimNo = await Get_NewVoucherNo();
         //CompenDateTime
         Model.CompenDateTime = DateTime.Now;
         //AccidentDateTime
@@ -500,8 +500,8 @@
     {
         try
         {
-            var request = new Cores.Admin.Services.String_Request();
-            request.Credential = new Cores.Admin.Services.UserCredential()
+            var request = new Admin.Services.String_Request();
+            request.Credential = new Admin.Services.UserCredential()
             {
                 Username = WebUserCredential.Username,
                 RoleID = WebUserCredential.RoleID,
@@ -532,8 +532,8 @@
         try
         {
             //Request
-            var request = new Cores.Compensation.Services.String_Request();
-            var Credential = new Cores.Compensation.Services.UserCredential()
+            var request = new Claim.Services.String_Request();
+            var Credential = new Claim.Services.UserCredential()
             {
                 Username = WebUserCredential.Username,
                 RoleID = WebUserCredential.RoleID,
@@ -542,9 +542,9 @@
             };
             request.Credential = Credential;
             //
-            request.StringValue = CompenNo;
+            request.StringValue = ClaimNo;
             //Call api
-            var response = await compensationServiceClient.GetCompenRequestAsync(request);
+            var response = await ClaimServiceClient.GetCompenRequestAsync(request);
             // Success
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
@@ -585,18 +585,18 @@
         {
             AttachFileText = $"Đính kèm (0 files)";
             //
-            var request = new Cores.Compensation.Services.GetAttachFileCount_Request();
-            request.Credential = new Cores.Compensation.Services.UserCredential()
+            var request = new Claim.Services.GetAttachFileCount_Request();
+            request.Credential = new Claim.Services.UserCredential()
             {
                 Username = WebUserCredential.Username,
                 RoleID = WebUserCredential.RoleID,
                 AccessToken = WebUserCredential.AccessToken,
                 ApiKey = WebUserCredential.ApiKey
             };
-            request.VoucherNo = Model.CompenNo;
+            request.VoucherNo = Model.ClaimNo;
             request.DocumentLevel = WebUserCredential.DocumentLevel;
             //
-            var response = await compensationServiceClient.GetAttachFileCountAsync(request);
+            var response = await ClaimServiceClient.GetAttachFileCountAsync(request);
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
                 AttachFileText = $"Đính kèm ({response.IntValue.ToString()} files)";
@@ -637,7 +637,7 @@
 
             //Request
             var request = new SaveCompenRequest_Request();
-            var Credential = new Cores.Compensation.Services.UserCredential()
+            var Credential = new Claim.Services.UserCredential()
             {
                 Username = WebUserCredential.Username,
                 RoleID = WebUserCredential.RoleID,
@@ -649,7 +649,7 @@
             request.CompenRequest = new grpcCompenRequestModel();
             ClassHelper.CopyPropertiesDataDateConverted(Model, request.CompenRequest);
             //Call api
-            var response = await compensationServiceClient.SaveCompenRequestAsync(request);
+            var response = await ClaimServiceClient.SaveCompenRequestAsync(request);
             // Success
             if (response == null || response.ReturnCode != GrpcReturnCode.OK)
             {

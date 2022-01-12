@@ -37,11 +37,11 @@ namespace Cores.GrpcClient.Authentication
             //Authenticated user
             WebUserCredential.IsAuthenticated = true;
             //Claim
-            var claims = new List<Claim>();
-            claims.Add(new Claim(ClaimTypes.Name, WebUserCredential.Username));
-            claims.Add(new Claim(ClaimTypes.Role, WebUserCredential.RoleID.ToString()));
+            var claims = new List<System.Security.Claims.Claim>();
+            claims.Add(new System.Security.Claims.Claim(ClaimTypes.Name, WebUserCredential.Username));
+            claims.Add(new System.Security.Claims.Claim(ClaimTypes.Role, WebUserCredential.RoleID.ToString()));
 
-            claims.Add(new Claim("Fullname", WebUserCredential.Fullname));
+            claims.Add(new System.Security.Claims.Claim("Fullname", WebUserCredential.Fullname));
 
             //ClaimsPrincipal
             return new ClaimsPrincipal(new ClaimsIdentity(claims, "jwtAuthType"));

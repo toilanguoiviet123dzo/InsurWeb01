@@ -8,7 +8,7 @@ namespace BlazorApp.Client.BindingModels
         public string ID { get; set; } = "";
         public string CustomerID { get; set; } = "";
         public string CustomerName { get; set; } = "";
-        public string CompenNo { get; set; } = "";
+        public string ClaimNo { get; set; } = "";
         public string InternalDocNo { get; set; } = "";
         public DateTime CompenDateTime { get; set; }
         public string CarOwner { get; set; } = "";
@@ -105,7 +105,7 @@ namespace BlazorApp.Client.BindingModels
         public double DiscountRate { get; set; }
         public double DiscountAmount { get; set; }
         public double TipAmount { get; set; }
-        public double CompensationPrice { get; set; }
+        public double ClaimPrice { get; set; }
         public double EstVAT { get; set; }
         public double DealVAT { get; set; }
         public double AprVAT { get; set; }

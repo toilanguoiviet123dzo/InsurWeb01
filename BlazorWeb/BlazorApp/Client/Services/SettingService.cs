@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Cores.Admin.Services;
+using Admin.Services;
 using Cores.GrpcClient.Authentication;
 using Cores.Grpc.Client;
 using BlazorApp.Client.BindingModels;

@@ -1,5 +1,5 @@
 ﻿syntax = "proto3";
-option csharp_namespace = "Cores.Admin.Services";
+option csharp_namespace = "Admin.Services";
 import "google/protobuf/timestamp.proto";
 package grpcAdminService;
 
@@ -50,7 +50,6 @@ service grpcAdminService {
     rpc WebPushNotification (WebPushNotification_Request) returns (Empty_Response);
     rpc GetNotificationSubscribe (String_Request) returns (GetNotificationSubscribe_Response);
 }
-
 //======================================================
 // Common Messages
 //======================================================
@@ -80,6 +79,13 @@ message String_Response
     string MsgCode = 2;
     //
      string StringValue = 3;
+}
+message Int_Response
+{
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+     int32 IntValue = 3;
 }
 //
 //======================================================

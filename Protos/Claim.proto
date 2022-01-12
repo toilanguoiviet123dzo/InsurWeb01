@@ -1,10 +1,10 @@
 ﻿syntax = "proto3";
-option csharp_namespace = "Cores.Compensation.Services";
+option csharp_namespace = "Claim.Services";
 import "google/protobuf/timestamp.proto";
-package grpcCompensationService;
+package grpcClaimService;
 
 //Services
-service grpcCompensationService {    
+service grpcClaimService {    
     //CompenRequest
     rpc SaveCompenRequest (SaveCompenRequest_Request) returns (String_Response);
     rpc GetCompenRequest (String_Request) returns (GetCompenRequest_Response);
@@ -69,6 +69,7 @@ message Int_Response
     //
      int32 IntValue = 3;
 }
+
 //
 //======================================================
 // Messages
@@ -80,7 +81,7 @@ message GetRefEstimationList_Response {
     repeated grpcRefEstimationModel Records = 3;
 }
 message grpcRefEstimationModel {
-    string CompenNo = 1;
+    string ClaimNo = 1;
     string ReqPersonName = 2;
     string BranchName = 3;
     string RepairerName = 4;
@@ -112,7 +113,7 @@ message GetBranchMaster_Response {
 message UpdateTotalCompenRequest_Request {
     UserCredential Credential = 1;
     //
-    string CompenNo = 2;
+    string ClaimNo = 2;
     double EstRepairPrice = 3;
     double DealRepairPrice = 4;
     double AprRepairPrice = 5;
@@ -123,7 +124,7 @@ message UpdateTotalCompenRequest_Request {
 message UpdateStatusCompenRequest_Request {
     UserCredential Credential = 1;
     //
-    string CompenNo = 2;
+    string ClaimNo = 2;
     bool IsUpdateAcceptStatus = 3;
     bool AcceptStatus = 4;
     bool IsUpdateCancelStatus = 5;
@@ -181,7 +182,7 @@ message grpcCompenRequestModel {
     string ID = 1;
     string CustomerID = 2;
     string CustomerName = 3;
-    string CompenNo = 4;
+    string ClaimNo = 4;
     string InternalDocNo = 5;
     google.protobuf.Timestamp CompenDateTime = 6;
     string CarOwner = 7;
@@ -274,7 +275,7 @@ message grpcCompenRequestModel {
     double DiscountRate = 84;
     double DiscountAmount = 85;
     double TipAmount = 86;
-    double CompensationPrice = 87;
+    double ClaimPrice = 87;
     double EstVAT = 88;
     double DealVAT = 89;
     double AprVAT = 90;
@@ -306,7 +307,7 @@ message GetRepairEstimation_Response {
 }
 message grpcRepairEstimationModel {
     string ID = 1;
-    string CompenNo = 2;
+    string ClaimNo = 2;
     string EstNo = 3;
     google.protobuf.Timestamp EstDateTime = 4;
     string EstContent = 5;
@@ -388,7 +389,7 @@ message GetCompenRequestList_Request {
     string PayPersonID = 6;
     string PhoneNo = 7;
     string CarOwner = 8;
-    string CompenNo = 9;
+    string ClaimNo = 9;
     string LicensePlate = 10;
     int32 Status = 11;
     google.protobuf.Timestamp StartDate = 12;

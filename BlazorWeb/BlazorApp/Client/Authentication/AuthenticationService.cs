@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.Json;
 using System.Net.Http.Headers;
-using Cores.Admin.Services;
+using Admin.Services;
 using Cores.Grpc.Client;
 
 namespace Cores.GrpcClient.Authentication

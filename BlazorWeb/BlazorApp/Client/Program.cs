@@ -13,11 +13,10 @@ using Microsoft.AspNetCore.Components;
 using Cores.GrpcClient.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Blazored.LocalStorage;
-using Cores.SystemConfig.Services;
-using Cores.Admin.Services;
+using Admin.Services;
 using Blazored.Toast;
-using Cores.Compensation.Services;
-using Cores.Resource.Services;
+using Claim.Services;
+using Resource.Services;
 using BlazorApp.Client.Services;
 
 namespace BlazorApp.Client
@@ -60,7 +59,7 @@ namespace BlazorApp.Client
 
             // grpcService
             services.AddSingleton(services => new grpcAdminService.grpcAdminServiceClient(channel));
-            services.AddSingleton(services => new grpcCompensationService.grpcCompensationServiceClient(channel));
+            services.AddSingleton(services => new grpcClaimService.grpcClaimServiceClient(channel));
             services.AddSingleton(services => new grpcResourceService.grpcResourceServiceClient(channel));
 
             //Authentication

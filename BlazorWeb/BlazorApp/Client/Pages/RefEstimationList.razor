@@ -1,8 +1,8 @@
 ﻿@inject IJSRuntime JsRuntime;
 @inject IToastService toastService
 @using System.Threading
-@using Cores.Compensation.Services
-@inject grpcCompensationService.grpcCompensationServiceClient compensationServiceClient;
+@using Claim.Services
+@inject grpcClaimService.grpcClaimServiceClient ClaimServiceClient;
 
 <div class="container" @onkeydown="keyDownHandler">
     <!--EstItem-->
@@ -20,7 +20,7 @@
                 <DxDataGridColumn Field="@nameof(RefEstimationModel.TemplateName)"
                                   Caption="Mẫu"
                                   Width="10rem" />
-                <DxDataGridColumn Field="@nameof(RefEstimationModel.CompenNo)"
+                <DxDataGridColumn Field="@nameof(RefEstimationModel.ClaimNo)"
                                   Caption="Số bồi thường"
                                   Width="7rem" />
                 <DxDataGridColumn Field="@nameof(RefEstimationModel.ReqPersonName)"
@@ -103,7 +103,7 @@
     {
         if (SelectedRow == null) return;
         //
-        await OnValidSumit.InvokeAsync(SelectedRow.CompenNo);
+        await OnValidSumit.InvokeAsync(SelectedRow.ClaimNo);
         await VisibleChanged.InvokeAsync(false);
     }
 
@@ -112,8 +112,8 @@
         try
         {
             //Filter
-            var request = new Cores.Compensation.Services.Empty_Request();
-            request.Credential = new Cores.Compensation.Services.UserCredential()
+            var request = new Claim.Services.Empty_Request();
+            request.Credential = new Claim.Services.UserCredential()
             {
                 Username = WebUserCredential.Username,
                 RoleID = WebUserCredential.RoleID,
@@ -123,7 +123,7 @@
             //Get data from DB
             DetailData.Clear();
             //
-            var response = await compensationServiceClient.GetRefEstimationListAsync(request);
+            var response = await ClaimServiceClient.GetRefEstimationListAsync(request);
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
                 if (response.Records != null)

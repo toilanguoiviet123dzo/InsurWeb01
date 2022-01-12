@@ -1,11 +1,11 @@
 ﻿@page "/repair-request-list"
-@using Cores.Admin.Services
-@using Cores.Compensation.Services
-@using Cores.Resource.Services
+@using Admin.Services
+@using Claim.Services
+@using Resource.Services
 @using System.Collections.ObjectModel;
 @using System.IO;
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
-@inject grpcCompensationService.grpcCompensationServiceClient compensationServiceClient;
+@inject grpcClaimService.grpcClaimServiceClient ClaimServiceClient;
 @inject IJSRuntime JsRuntime;
 @inject IToastService toastService
 @using System.Collections.Concurrent
@@ -98,7 +98,7 @@
                 </CellTemplate>
             </DxDataGridCommandColumn>
             <!--columns-->
-            <DxDataGridColumn Field="@nameof(CompenRequestListModel.CompenNo)"
+            <DxDataGridColumn Field="@nameof(CompenRequestListModel.ClaimNo)"
                               Caption="Số HSBT"
                               SortOrder="DataGridColumnSortOrder.Descending"
                               Width="6rem" />
@@ -157,7 +157,7 @@
          ZIndex="1001">
     <BodyContentTemplate>
         <RepairUpdate @bind-Visible="@CompenRequestVisible"
-                         CompenNo="@CompenNo"
+                         ClaimNo="@ClaimNo"
                          OnValidSumit="@(async() => await DisplayMain())" />
     </BodyContentTemplate>
 </MyPopup>
@@ -192,7 +192,7 @@
     private DateTime Filter_StartDate { get; set; } = DateTime.Today.MinDate().ToLocalTime();
     private DateTime Filter_EndDate { get; set; } = DateTime.Today.MaxDate().ToLocalTime();
     //
-    private string CompenNo = "123456";
+    private string ClaimNo = "123456";
     // Confirm dialog
     private string ConfirmAction = "";
     private string ConfirmMessage = "";
@@ -225,8 +225,8 @@
         try
         {
             //Filter
-            var request = new Cores.Compensation.Services.GetCompenRequestList_Request();
-            request.Credential = new Cores.Compensation.Services.UserCredential()
+            var request = new Claim.Services.GetCompenRequestList_Request();
+            request.Credential = new Claim.Services.UserCredential()
             {
                 Username = WebUserCredential.Username,
                 RoleID = WebUserCredential.RoleID,
@@ -248,7 +248,7 @@
             //Get data from DB
             DetailData.Clear();
             //
-            var response = await compensationServiceClient.GetCompenRequestListAsync(request);
+            var response = await ClaimServiceClient.GetCompenRequestListAsync(request);
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
                 if (response.CompenRequests != null)
@@ -314,8 +314,8 @@
     {
         eventArgs.CssClass += " border-0";
         //eventArgs.Style += " ;font-weight:bold;text-align: right";
-        //CompenNo
-        if (eventArgs.FieldName == nameof(CompenRequestListModel.CompenNo))
+        //ClaimNo
+        if (eventArgs.FieldName == nameof(CompenRequestListModel.ClaimNo))
         {
             eventArgs.Style += " ;font-weight:bold; color: blue";
         }
@@ -381,18 +381,18 @@
         try
         {
             //call api
-            var request = new Cores.Compensation.Services.SaveCompenRequest_Request();
-            request.Credential = new Cores.Compensation.Services.UserCredential()
+            var request = new Claim.Services.SaveCompenRequest_Request();
+            request.Credential = new Claim.Services.UserCredential()
             {
                 Username = WebUserCredential.Username,
                 RoleID = WebUserCredential.RoleID,
                 AccessToken = WebUserCredential.AccessToken,
                 ApiKey = WebUserCredential.ApiKey
             };
-            request.CompenRequest.CompenNo = DeletedRow.CompenNo;
+            request.CompenRequest.ClaimNo = DeletedRow.ClaimNo;
             request.CompenRequest.UpdMode = 3;
             //
-            var response = await compensationServiceClient.SaveCompenRequestAsync(request);
+            var response = await ClaimServiceClient.SaveCompenRequestAsync(request);
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
                 DetailData.Remove(DeletedRow);
@@ -414,12 +414,12 @@
         if (editingRow == null)
         {
             //Addnew
-            CompenNo = "";
+            ClaimNo = "";
         }
         else
         {
-            //CompenNo
-            CompenNo = editingRow.CompenNo;
+            //ClaimNo
+            ClaimNo = editingRow.ClaimNo;
         }
         CompenRequestVisible = true;
         StateHasChanged();

@@ -1,11 +1,11 @@
 ﻿@page "/repairestimation"
-@using Cores.Admin.Services
-@using Cores.Compensation.Services
-@using Cores.Resource.Services
+@using Admin.Services
+@using Claim.Services
+@using Resource.Services
 @using System.Collections.ObjectModel;
 @using System.IO;
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
-@inject grpcCompensationService.grpcCompensationServiceClient compensationServiceClient;
+@inject grpcClaimService.grpcClaimServiceClient ClaimServiceClient;
 @inject SettingService settingService;
 @inject IJSRuntime JsRuntime;
 @inject IToastService toastService
@@ -314,7 +314,7 @@
          ZIndex="1003">
     <BodyContentTemplate>
         <AttachFiles @bind-Visible="@AttachFileVisbible"
-                     VoucherNo="@Model.CompenNo"
+                     VoucherNo="@Model.ClaimNo"
                      OnValidSumit="@(async () => await Get_AttachFileCount())" />
     </BodyContentTemplate>
 </MyPopup>
@@ -347,7 +347,7 @@
 
 @code{
     [Parameter]
-    public string CompenNo { get; set; } = "";
+    public string ClaimNo { get; set; } = "";
     [Parameter]
     public string ReqPersonName { get; set; } = "";
     [Parameter]
@@ -394,13 +394,13 @@
         await LoadMaster();
 
         //Display data ..
-        if (string.IsNullOrWhiteSpace(CompenNo))
+        if (string.IsNullOrWhiteSpace(ClaimNo))
         {
             Init_Main();
         }
         else
         {
-            await DisplayMain(CompenNo);
+            await DisplayMain(ClaimNo);
         }
         //
         await Get_AttachFileCount();
@@ -415,7 +415,7 @@
     void Init_Main()
     {
         Model = new RepairEstimationModel();
-        Model.CompenNo = CompenNo;
+        Model.ClaimNo = ClaimNo;
         Model.ModifiedOn = DateTime.Now;
         Model.UpdMode = 1;
         Model.EstDateTime = DateTime.Now;
@@ -442,28 +442,28 @@
         }
     }
     //
-    async Task DisplayMain(string compenNo, bool IsRefMode = false)
+    async Task DisplayMain(string ClaimNo, bool IsRefMode = false)
     {
         try
         {
             //Filter
-            var request = new Cores.Compensation.Services.String_Request()
+            var request = new Claim.Services.String_Request()
             {
-                Credential = new Cores.Compensation.Services.UserCredential()
+                Credential = new Claim.Services.UserCredential()
                 {
                     Username = WebUserCredential.Username,
                     RoleID = WebUserCredential.RoleID,
                     AccessToken = WebUserCredential.AccessToken,
                     ApiKey = WebUserCredential.ApiKey
                 },
-                StringValue = compenNo
+                StringValue = ClaimNo
             };
 
             //Get data from DB
             DetailData.Clear();
             ChildGrid1_Data.Clear();
             //
-            var response = await compensationServiceClient.GetRepairEstimationAsync(request);
+            var response = await ClaimServiceClient.GetRepairEstimationAsync(request);
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
                 //Header
@@ -503,7 +503,7 @@
                 {
                     Model.IsTemplate = false;
                     Model.TemplateName = "";
-                    Model.CompenNo = CompenNo;
+                    Model.ClaimNo = ClaimNo;
                     Model.ModifiedOn = DateTime.Now;
                     Model.UpdMode = 1;
                     Model.EstDateTime = DateTime.Now;
@@ -532,18 +532,18 @@
         {
             AttachFileText = $"File đính kèm (0 files)";
             //
-            var request = new Cores.Compensation.Services.GetAttachFileCount_Request();
-            request.Credential = new Cores.Compensation.Services.UserCredential()
+            var request = new Claim.Services.GetAttachFileCount_Request();
+            request.Credential = new Claim.Services.UserCredential()
             {
                 Username = WebUserCredential.Username,
                 RoleID = WebUserCredential.RoleID,
                 AccessToken = WebUserCredential.AccessToken,
                 ApiKey = WebUserCredential.ApiKey
             };
-            request.VoucherNo = Model.CompenNo;
+            request.VoucherNo = Model.ClaimNo;
             request.DocumentLevel = WebUserCredential.DocumentLevel;
             //
-            var response = await compensationServiceClient.GetAttachFileCountAsync(request);
+            var response = await ClaimServiceClient.GetAttachFileCountAsync(request);
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
                 AttachFileText = $"File đính kèm ({response.IntValue.ToString()} files)";
@@ -562,7 +562,7 @@
         {
             //Request
             var request = new SaveRepairEstimation_Request();
-            var Credential = new Cores.Compensation.Services.UserCredential()
+            var Credential = new Claim.Services.UserCredential()
             {
                 Username = WebUserCredential.Username,
                 RoleID = WebUserCredential.RoleID,
@@ -573,10 +573,10 @@
             //
             request.RepairEstimation = new grpcRepairEstimationModel();
             //Header
-            request.RepairEstimation.CompenNo = CompenNo;
+            request.RepairEstimation.ClaimNo = ClaimNo;
             request.RepairEstimation.UpdMode = 3;
             //Call api
-            var response = await compensationServiceClient.SaveRepairEstimationAsync(request);
+            var response = await ClaimServiceClient.SaveRepairEstimationAsync(request);
             // Success
             if (response == null || response.ReturnCode != GrpcReturnCode.OK)
             {
@@ -661,7 +661,7 @@
 
             //Request
             var request = new SaveRepairEstimation_Request();
-            var Credential = new Cores.Compensation.Services.UserCredential()
+            var Credential = new Claim.Services.UserCredential()
             {
                 Username = WebUserCredential.Username,
                 RoleID = WebUserCredential.RoleID,
@@ -674,15 +674,15 @@
             //Header
             ClassHelper.CopyPropertiesDataDateConverted(Model, request.RepairEstimation);
             //
-            request.RepairEstimation.CompenNo = CompenNo;
-            request.RepairEstimation.EstNo = CompenNo;
+            request.RepairEstimation.ClaimNo = ClaimNo;
+            request.RepairEstimation.EstNo = ClaimNo;
             //ApproveLevel: Approve mode
             if (RoleMode == 3)
             {
                 request.RepairEstimation.ApproveLevel = WebUserCredential.ApproveLevel;
             }
             //UpdMode
-            if (string.IsNullOrWhiteSpace(CompenNo))
+            if (string.IsNullOrWhiteSpace(ClaimNo))
             {
                 request.RepairEstimation.UpdMode = 1;
             }
@@ -774,7 +774,7 @@
                 }
             }
             //Call api
-            var response = await compensationServiceClient.SaveRepairEstimationAsync(request);
+            var response = await ClaimServiceClient.SaveRepairEstimationAsync(request);
             // Success
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
@@ -789,21 +789,21 @@
 
                 //Update Total
                 var totalRequest = new UpdateTotalCompenRequest_Request();
-                totalRequest.Credential = new Cores.Compensation.Services.UserCredential()
+                totalRequest.Credential = new Claim.Services.UserCredential()
                 {
                     Username = WebUserCredential.Username,
                     RoleID = WebUserCredential.RoleID,
                     AccessToken = WebUserCredential.AccessToken,
                     ApiKey = WebUserCredential.ApiKey
                 };
-                totalRequest.CompenNo = CompenNo;
+                totalRequest.ClaimNo = ClaimNo;
                 totalRequest.EstRepairPrice = EstRepairPrice;
                 totalRequest.DealRepairPrice = DealRepairPrice;
                 totalRequest.AprRepairPrice = AprRepairPrice;
                 totalRequest.EstVAT = AprVAT;
                 totalRequest.DealVAT = DealVAT;
                 totalRequest.AprVAT = AprVAT;
-                var totalResponse = await compensationServiceClient.UpdateTotalCompenRequestAsync(totalRequest);
+                var totalResponse = await ClaimServiceClient.UpdateTotalCompenRequestAsync(totalRequest);
                 if (totalResponse == null || totalResponse.ReturnCode != GrpcReturnCode.OK)
                 {
                     toastService.ShowError("", "Lưu báo giá thất bại.");
@@ -1259,9 +1259,9 @@
         StateHasChanged();
     }
 
-    async void RefEstimation_Submit(string compenno)
+    async void RefEstimation_Submit(string ClaimNo)
     {
-        await DisplayMain(compenno, true);
+        await DisplayMain(ClaimNo, true);
     }
 
 

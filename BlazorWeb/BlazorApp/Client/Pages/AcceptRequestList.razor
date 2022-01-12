@@ -1,11 +1,11 @@
 ﻿@page "/accept-request-list"
-@using Cores.Admin.Services
-@using Cores.Compensation.Services
-@using Cores.Resource.Services
+@using Admin.Services
+@using Claim.Services
+@using Resource.Services
 @using System.Collections.ObjectModel;
 @using System.IO;
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
-@inject grpcCompensationService.grpcCompensationServiceClient compensationServiceClient;
+@inject grpcClaimService.grpcClaimServiceClient ClaimServiceClient;
 @inject MasterService masterService;
 @inject IJSRuntime JsRuntime;
 @inject IToastService toastService
@@ -22,9 +22,9 @@
                         ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
                         Literal="Điện thoại chủ xe"/>
         </div>
-        <!--CompenNo-->
+        <!--ClaimNo-->
         <div class="col-6 col-lg-2 pr-lg-3">
-            <MyTextEdit @bind-Text="Filter_CompenNo"
+            <MyTextEdit @bind-Text="Filter_ClaimNo"
                         ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
                         Literal="Số tờ trình"/>
         </div>
@@ -150,7 +150,7 @@
                 </CellTemplate>
             </DxDataGridCommandColumn>
             <!--columns-->
-            <DxDataGridColumn Field="@nameof(CompenRequestListModel.CompenNo)"
+            <DxDataGridColumn Field="@nameof(CompenRequestListModel.ClaimNo)"
                               Caption="Số HSBT"
                               SortOrder="DataGridColumnSortOrder.Descending"
                               Width="6rem" />
@@ -208,7 +208,7 @@
          ZIndex="1001">
     <BodyContentTemplate>
         <AcceptRequest @bind-Visible="@CompenRequestVisible"
-                       CompenNo="@CompenNo"
+                       ClaimNo="@ClaimNo"
                        OnValidSumit="DisplayMain" />
     </BodyContentTemplate>
 </MyPopup>
@@ -235,7 +235,7 @@
         new CodeNameModel{CodeInt = 4, Name="Năm nay"},
         new CodeNameModel{CodeInt = 5, Name="Năm trước"}
     };
-    private string CompenNo = "123456";
+    private string ClaimNo = "123456";
     // Confirm dialog
     private string ConfirmAction = "";
     private string ConfirmMessage = "";
@@ -245,7 +245,7 @@
     private string Filter_PhoneNo { get; set; } = "";
     public UserAccountModel Filter_ReqPersonID { get; set; }
     private string Filter_CarOwner { get; set; } = "";
-    private string Filter_CompenNo { get; set; } = "";
+    private string Filter_ClaimNo { get; set; } = "";
     private string Filter_LicensePlate { get; set; }
     private CodeNameModel Filter_Status { get; set; }
     private CodeNameModel Filter_TimeFlag { get; set; }
@@ -268,7 +268,7 @@
     {
         Filter_PhoneNo = "";
         Filter_ReqPersonID = null;
-        Filter_CompenNo = "";
+        Filter_ClaimNo = "";
         Filter_Status = new CodeNameModel() { CodeInt = 1, Name = "Chưa tiếp nhận" };
         Filter_CarOwner = "";
         Filter_LicensePlate = "";
@@ -295,8 +295,8 @@
         try
         {
             //Filter
-            var request = new Cores.Compensation.Services.GetCompenRequestList_Request();
-            request.Credential = new Cores.Compensation.Services.UserCredential()
+            var request = new Claim.Services.GetCompenRequestList_Request();
+            request.Credential = new Claim.Services.UserCredential()
             {
                 Username = WebUserCredential.Username,
                 RoleID = WebUserCredential.RoleID,
@@ -318,10 +318,10 @@
             {
                 request.CarOwner = Filter_CarOwner;
             }
-            //CompenNo
-            if (!string.IsNullOrWhiteSpace(Filter_CompenNo))
+            //ClaimNo
+            if (!string.IsNullOrWhiteSpace(Filter_ClaimNo))
             {
-                request.CompenNo = Filter_CompenNo;
+                request.ClaimNo = Filter_ClaimNo;
             }
             //LicensePlate
             if (!string.IsNullOrWhiteSpace(Filter_LicensePlate))
@@ -340,7 +340,7 @@
             //Get data from DB
             DetailData.Clear();
             //
-            var response = await compensationServiceClient.GetCompenRequestListAsync(request);
+            var response = await ClaimServiceClient.GetCompenRequestListAsync(request);
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
                 if (response.CompenRequests != null)
@@ -410,8 +410,8 @@
     {
         eventArgs.CssClass += " border-0";
         //eventArgs.Style += " ;font-weight:bold;text-align: right";
-        //CompenNo
-        if (eventArgs.FieldName == nameof(CompenRequestListModel.CompenNo))
+        //ClaimNo
+        if (eventArgs.FieldName == nameof(CompenRequestListModel.ClaimNo))
         {
             eventArgs.Style += " ;font-weight:bold; color: blue";
         }
@@ -466,19 +466,19 @@
         try
         {
             //call api
-            var request = new Cores.Compensation.Services.UpdateStatusCompenRequest_Request();
-            request.Credential = new Cores.Compensation.Services.UserCredential()
+            var request = new Claim.Services.UpdateStatusCompenRequest_Request();
+            request.Credential = new Claim.Services.UserCredential()
             {
                 Username = WebUserCredential.Username,
                 RoleID = WebUserCredential.RoleID,
                 AccessToken = WebUserCredential.AccessToken,
                 ApiKey = WebUserCredential.ApiKey
             };
-            request.CompenNo = DeletedRow.CompenNo;
+            request.ClaimNo = DeletedRow.ClaimNo;
             request.IsUpdateCancelStatus = true;
             request.CancelStatus = !DeletedRow.CancelStatus;
             //
-            var response = await compensationServiceClient.UpdateStatusCompenRequestAsync(request);
+            var response = await ClaimServiceClient.UpdateStatusCompenRequestAsync(request);
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
                 toastService.ShowSuccess("", "Cập nhật thành công");
@@ -498,12 +498,12 @@
         if (editingRow == null)
         {
             //Addnew
-            CompenNo = "";
+            ClaimNo = "";
         }
         else
         {
             //Update
-            CompenNo = editingRow.CompenNo;
+            ClaimNo = editingRow.ClaimNo;
         }
         CompenRequestVisible = true;
         StateHasChanged();

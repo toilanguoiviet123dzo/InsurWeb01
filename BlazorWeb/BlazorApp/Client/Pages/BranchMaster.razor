@@ -1,9 +1,9 @@
 ﻿@page "/branch-master"
-@using Cores.Admin.Services
-@using Cores.Compensation.Services
+@using Admin.Services
+@using Claim.Services
 @using System.Collections.ObjectModel;
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
-@inject grpcCompensationService.grpcCompensationServiceClient compensationServiceClient;
+@inject grpcClaimService.grpcClaimServiceClient ClaimServiceClient;
 @inject IJSRuntime JsRuntime;
 @inject IToastService toastService
 
@@ -120,9 +120,9 @@
         try
         {
             //Filter
-            var requestString = new Cores.Compensation.Services.Empty_Request()
+            var requestString = new Claim.Services.Empty_Request()
             {
-                Credential = new Cores.Compensation.Services.UserCredential()
+                Credential = new Claim.Services.UserCredential()
                 {
                     Username = WebUserCredential.Username,
                     RoleID = WebUserCredential.RoleID,
@@ -133,7 +133,7 @@
 
             //Get data from DB
             DetailData.Clear();
-            var response = await compensationServiceClient.GetBranchMasterAsync(requestString);
+            var response = await ClaimServiceClient.GetBranchMasterAsync(requestString);
             if (response != null && response.ReturnCode == 200)
             {
                 foreach (var item in response.Records)
@@ -176,7 +176,7 @@
         {
             //Request
             var request = new SaveBranchMaster_Request();
-            var Credential = new Cores.Compensation.Services.UserCredential()
+            var Credential = new Claim.Services.UserCredential()
             {
                 Username = WebUserCredential.Username,
                 RoleID = WebUserCredential.RoleID,
@@ -188,7 +188,7 @@
             request.Record = new grpcBranchMasterModel();
             ClassHelper.CopyPropertiesDataDateConverted(saveRow, request.Record);
             // Call api
-            var response = await compensationServiceClient.SaveBranchMasterAsync(request);
+            var response = await ClaimServiceClient.SaveBranchMasterAsync(request);
             // Success
             if (response == null || response.ReturnCode != GrpcReturnCode.OK)
             {

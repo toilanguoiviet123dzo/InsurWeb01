@@ -14,14 +14,34 @@ namespace Cores.Utilities
             return RandomCode(0, 6);
         }
 
+        public static string GenAccessToken(int UserDBCount,
+                                            string UserName,
+                                            string RoleID,
+                                            string DeviceID,
+                                            string GameID)
+        {
+            //X: Cal User DB index count
+            if (UserDBCount == 0) UserDBCount = 1;
+            string DBIndex = (UserName.GetHashCode() % UserDBCount).ToString();
+
+            //Y
+            string StrToEncrypt = RoleID + UserName + DeviceID + GameID + Guid.NewGuid().ToString();
+
+            //Return
+            return DBIndex + MD5Crypto.Encrypt(StrToEncrypt);
+        }
+
         public static string GenRecNo()
         {
             return DateTime.Now.ToString("yyMMddHHmmssfff") + RandomCode(0, 2);
         }
-
         public static string GenTransactionID()
         {
             return DateTime.Now.ToString("yyMMddHHmmssfff") + RandomCode(0, 2);
+        }
+        public static string GenResourceID()
+        {
+            return DateTime.Now.ToString("yyMMddHHmmssfff") + RandomCode(0, 3);
         }
 
         public static string GenCustomerID()

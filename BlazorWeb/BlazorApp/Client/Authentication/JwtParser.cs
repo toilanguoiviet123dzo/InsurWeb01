@@ -9,9 +9,9 @@ namespace Cores.GrpcClient.Authentication
 {
     public class JwtParser
     {
-        public static IEnumerable<Claim> ParseClaimFromJWT(string jwt)
+        public static IEnumerable<System.Security.Claims.Claim> ParseClaimFromJWT(string jwt)
         {
-            var claims = new List<Claim>();
+            var claims = new List<System.Security.Claims.Claim>();
             //
             var payload = jwt.Split('.')[1];
             var jsonBytes = ParseBase64WithoutPadding(jwt);
@@ -19,12 +19,12 @@ namespace Cores.GrpcClient.Authentication
             //
             ExtractRolesFromJWT(claims, keyValuePairs);
             //
-            claims.AddRange(keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString())));
+            claims.AddRange(keyValuePairs.Select(kvp => new System.Security.Claims.Claim(kvp.Key, kvp.Value.ToString())));
             //
             return claims;
         }
 
-        public static void ExtractRolesFromJWT(List<Claim> claims, Dictionary<string, object> keyValuePairs)
+        public static void ExtractRolesFromJWT(List<System.Security.Claims.Claim> claims, Dictionary<string, object> keyValuePairs)
         {
             keyValuePairs.TryGetValue(ClaimTypes.Role, out object roles);
             //
@@ -33,7 +33,7 @@ namespace Cores.GrpcClient.Authentication
                 var parsedRoles = roles.ToString().Trim().TrimStart('[').TrimEnd(']').Split(',');
                 foreach (var parsedRole in parsedRoles)
                 {
-                    claims.Add(new Claim(ClaimTypes.Role, parsedRole.Trim('"')));
+                    claims.Add(new System.Security.Claims.Claim(ClaimTypes.Role, parsedRole.Trim('"')));
                 }
                 //
                 keyValuePairs.Remove(ClaimTypes.Role);

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Cores.Admin.Services;
-using Cores.Compensation.Services;
+using Admin.Services;
+using Claim.Services;
 using Cores.GrpcClient.Authentication;
 using BlazorApp.Client.BindingModels;
 using Cores.Helpers;
@@ -14,13 +14,13 @@ namespace BlazorApp.Client.Services
     public class MasterService
     {
         private readonly grpcAdminService.grpcAdminServiceClient _adminServiceClient;
-        private readonly grpcCompensationService.grpcCompensationServiceClient _compensationServiceClient;
+        private readonly grpcClaimService.grpcClaimServiceClient _ClaimServiceClient;
         
         public MasterService(grpcAdminService.grpcAdminServiceClient adminServiceClient,
-                             grpcCompensationService.grpcCompensationServiceClient compensationServiceClient)
+                             grpcClaimService.grpcClaimServiceClient ClaimServiceClient)
         {
             _adminServiceClient = adminServiceClient;
-            _compensationServiceClient = compensationServiceClient;
+            _ClaimServiceClient = ClaimServiceClient;
         }
         //OptionLists
         private List<OptionListModel> OptionLists = new List<OptionListModel>();
@@ -31,9 +31,9 @@ namespace BlazorApp.Client.Services
             {
                 try
                 {
-                    var request = new Cores.Admin.Services.String_Request()
+                    var request = new Admin.Services.String_Request()
                     {
-                        Credential = new Cores.Admin.Services.UserCredential()
+                        Credential = new Admin.Services.UserCredential()
                         {
                             Username = WebUserCredential.Username,
                             RoleID = WebUserCredential.RoleID,
@@ -86,8 +86,8 @@ namespace BlazorApp.Client.Services
             {
                 if (UserLists.Count == 0)
                 {
-                    var request = new Cores.Admin.Services.String_Request();
-                    request.Credential = new Cores.Admin.Services.UserCredential()
+                    var request = new Admin.Services.String_Request();
+                    request.Credential = new Admin.Services.UserCredential()
                     {
                         Username = WebUserCredential.Username,
                         RoleID = WebUserCredential.RoleID,
@@ -127,8 +127,8 @@ namespace BlazorApp.Client.Services
             {
                 if (RepairerLists.Count == 0)
                 {
-                    var request = new Cores.Compensation.Services.Empty_Request();
-                    request.Credential = new Cores.Compensation.Services.UserCredential()
+                    var request = new Claim.Services.Empty_Request();
+                    request.Credential = new Claim.Services.UserCredential()
                     {
                         Username = WebUserCredential.Username,
                         RoleID = WebUserCredential.RoleID,
@@ -136,7 +136,7 @@ namespace BlazorApp.Client.Services
                         ApiKey = WebUserCredential.ApiKey
                     };
                     //
-                    var response = await _compensationServiceClient.GetRepairerMasterAsync(request);
+                    var response = await _ClaimServiceClient.GetRepairerMasterAsync(request);
                     if (response != null && response.ReturnCode == GrpcReturnCode.OK)
                     {
                         foreach (var item in response.Records)
@@ -168,8 +168,8 @@ namespace BlazorApp.Client.Services
             {
                 if (BranchLists.Count == 0)
                 {
-                    var request = new Cores.Compensation.Services.Empty_Request();
-                    request.Credential = new Cores.Compensation.Services.UserCredential()
+                    var request = new Claim.Services.Empty_Request();
+                    request.Credential = new Claim.Services.UserCredential()
                     {
                         Username = WebUserCredential.Username,
                         RoleID = WebUserCredential.RoleID,
@@ -177,7 +177,7 @@ namespace BlazorApp.Client.Services
                         ApiKey = WebUserCredential.ApiKey
                     };
                     //
-                    var response = await _compensationServiceClient.GetBranchMasterAsync(request);
+                    var response = await _ClaimServiceClient.GetBranchMasterAsync(request);
                     if (response != null && response.ReturnCode == GrpcReturnCode.OK)
                     {
                         foreach (var item in response.Records)

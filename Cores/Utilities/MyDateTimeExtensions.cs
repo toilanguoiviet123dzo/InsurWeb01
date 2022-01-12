@@ -69,13 +69,12 @@ namespace Cores.Utilities
         }
         public static DateTime MinDate(this DateTime dt)
         {
-            return new DateTime(1900, 01, 01, 0, 0, 0, 0, DateTimeKind.Utc);
+            return new DateTime(1900, 01, 01, 0, 0, 0, 0);
         }
         public static DateTime MaxDate(this DateTime dt)
         {
-            return new DateTime(2900, 01, 01, 0, 0, 0, 0, DateTimeKind.Utc);
+            return new DateTime(2900, 01, 01, 0, 0, 0, 0);
         }
-
         public static Timestamp ToTimestamp(this DateTime dt)
         {
             try
@@ -96,5 +95,14 @@ namespace Cores.Utilities
         {
             return dt.ToDateTime();
         }
+        public static string MinShortDateString(this DateTime dt)
+        {
+            return "19000101";
+        }
+        public static string MaxShortDateString(this DateTime dt)
+        {
+            return "29000101";
+        }
+
     }
 }

@@ -48,7 +48,7 @@ namespace Cores.Grpc.Client
                 _serviceDict.Add(ServiceList.SystemConfig, "http://222.253.79.223:5099");
                 _serviceDict.Add(ServiceList.AppLog, "http://222.253.79.223:5050");
                 _serviceDict.Add(ServiceList.Admin, "http://222.253.79.223:5001");
-                _serviceDict.Add(ServiceList.Compensation, "http://222.253.79.223:5002");
+                _serviceDict.Add(ServiceList.Claim, "http://222.253.79.223:5002");
             }
 
             //Create dict of GrpcChannelFactory

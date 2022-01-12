@@ -1,5 +1,5 @@
 ﻿@page "/roledetail"
-@using Cores.Admin.Services
+@using Admin.Services
 @using System.Collections.ObjectModel;
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
 @inject IJSRuntime JsRuntime;
@@ -213,7 +213,7 @@
     {
         try
         {
-            var request = new Cores.Admin.Services.String_Request()
+            var request = new Admin.Services.String_Request()
             {
                 Credential = new UserCredential()
                 {
@@ -536,7 +536,7 @@
         {
             //Delete first
             var requestDelete = new DeleteRoleDetail_Request();
-            requestDelete.Credential = new Cores.Admin.Services.UserCredential()
+            requestDelete.Credential = new Admin.Services.UserCredential()
             {
                 Username = WebUserCredential.Username,
                 RoleID = WebUserCredential.RoleID,
@@ -553,7 +553,7 @@
 
             //Insert
             var request = new SaveRoleDetail_Request();
-            request.Credential = new Cores.Admin.Services.UserCredential()
+            request.Credential = new Admin.Services.UserCredential()
             {
                 Username = WebUserCredential.Username,
                 RoleID = WebUserCredential.RoleID,

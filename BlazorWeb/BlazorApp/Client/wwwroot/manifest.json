@@ -1,6 +1,6 @@
 ﻿{
   "name": "BM: quản lý bồi thường",
-  "short_name": "BM compensation",
+  "short_name": "BM Claim",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",

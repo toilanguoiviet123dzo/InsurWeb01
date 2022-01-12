@@ -109,6 +109,25 @@ namespace Cores.Utilities
             var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
             return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }
+
+        public static int ToInt(this string s)
+        {
+            int numValue = 0;
+            int.TryParse(s, out numValue);
+            return numValue;
+        }
+        public static double ToDouble(this string s)
+        {
+            double numValue = 0;
+            double.TryParse(s, out numValue);
+            return numValue;
+        }
+        public static decimal ToDecimal(this string s)
+        {
+            decimal numValue = 0;
+            decimal.TryParse(s, out numValue);
+            return numValue;
+        }
         #endregion
 
 

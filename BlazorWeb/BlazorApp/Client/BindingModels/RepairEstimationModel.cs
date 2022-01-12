@@ -7,7 +7,7 @@ namespace BlazorApp.Client.BindingModels
     public class RepairEstimationModel
     {
         public string ID { get; set; } = "";
-        public string CompenNo { get; set; } = "";
+        public string ClaimNo { get; set; } = "";
         public string EstNo { get; set; } = "";
         public DateTime EstDateTime { get; set; }
         public string EstContent { get; set; } = "";

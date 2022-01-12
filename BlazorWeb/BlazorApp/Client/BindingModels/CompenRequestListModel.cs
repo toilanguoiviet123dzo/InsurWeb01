@@ -5,7 +5,7 @@ namespace BlazorApp.Client.BindingModels
 {
     public class CompenRequestListModel
     {
-        public string CompenNo { get; set; } = "";
+        public string ClaimNo { get; set; } = "";
         public DateTime AcceptDatetime { get; set; }
         public string StatusName { get; set; } = "";
         public string BranchName { get; set; } = "";

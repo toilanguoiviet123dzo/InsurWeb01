@@ -1,5 +1,5 @@
 ﻿@page "/useraccount"
-@using Cores.Admin.Services
+@using Admin.Services
 @using System.Collections.ObjectModel;
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
 @inject IJSRuntime JsRuntime;
@@ -277,9 +277,9 @@
     {
         try
         {
-            var request = new Cores.Admin.Services.String_Request()
+            var request = new Admin.Services.String_Request()
             {
-                Credential = new Cores.Admin.Services.UserCredential()
+                Credential = new Admin.Services.UserCredential()
                 {
                     Username = WebUserCredential.Username,
                     RoleID = WebUserCredential.RoleID,
@@ -314,9 +314,9 @@
     {
         try
         {
-            var request = new Cores.Admin.Services.String_Request()
+            var request = new Admin.Services.String_Request()
             {
-                Credential = new Cores.Admin.Services.UserCredential()
+                Credential = new Admin.Services.UserCredential()
                 {
                     Username = WebUserCredential.Username,
                     RoleID = WebUserCredential.RoleID,

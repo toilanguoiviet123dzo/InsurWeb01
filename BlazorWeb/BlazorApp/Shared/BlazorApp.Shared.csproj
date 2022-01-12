@@ -23,17 +23,14 @@
     <Protobuf Include="..\..\..\Protos\Admin.proto">
       <Link>Protos\Admin.proto</Link>
     </Protobuf>
-    <Protobuf Include="..\..\..\Protos\Compensation.proto">
-      <Link>Protos\Compensation.proto</Link>
+    <Protobuf Include="..\..\..\Protos\Claim.proto">
+      <Link>Protos\Claim.proto</Link>
     </Protobuf>
     <Protobuf Include="..\..\..\Protos\SystemConfig.proto">
       <Link>Protos\SystemConfig.proto</Link>
     </Protobuf>
-    <Protobuf Include="..\..\..\Protos\AppLog.proto">
-      <Link>Protos\AppLog.proto</Link>
-    </Protobuf>
-    <Protobuf Include="..\..\..\Protos\Compensation.proto">
-      <Link>Protos\Compensation.proto</Link>
+    <Protobuf Include="..\..\..\Protos\Claim.proto">
+      <Link>Protos\Claim.proto</Link>
     </Protobuf>
     <Protobuf Include="..\..\..\Protos\Resource.proto">
       <Link>Protos\Resource.proto</Link>
