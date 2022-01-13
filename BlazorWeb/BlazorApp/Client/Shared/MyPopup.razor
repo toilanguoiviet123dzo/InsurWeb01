@@ -13,6 +13,14 @@
         font-size: large;
     }
 
+    .popup-header-addnew {
+        padding: 0 20px;
+        background-color: #03396c;
+        color: wheat;
+        font-weight: bold;
+        font-size: large;
+    }
+
     .popup-body {
         padding: 10px;
     }
@@ -27,7 +35,7 @@
          Scrollable="true"
          VerticalAlignment="@VerticalAlignment"
          BodyCssClass="popup-body"
-         HeaderCssClass="popup-header"
+         HeaderCssClass="@HeaderCssClass"
          CssClass="popup-css"
          MinWidth="300px"
          Width="@Width"
@@ -36,6 +44,9 @@
     <BodyContentTemplate>
         @BodyContentTemplate
     </BodyContentTemplate>
+    <FooterTemplate>
+        @FooterTemplate
+    </FooterTemplate>
 </DxPopup>
 
 @code {
@@ -50,20 +61,29 @@
     [Parameter]
     public RenderFragment BodyContentTemplate { get; set; }
     [Parameter]
+    public RenderFragment FooterTemplate { get; set; }
+    [Parameter]
     public Int32 ZIndex { get; set; } = 1050;
     [Parameter]
     public bool Visible { get; set; } = false;
     [Parameter]
+    public int UpdMode { get; set; } = 1;
+    [Parameter]
     public EventCallback<bool> VisibleChanged { get; set; }
-
+    //private
+    private string HeaderCssClass = "popup-header";
+    //
     protected override void OnParametersSet()
     {
+        //Width
         if (BrowserInfo.IsMobile)
         {
             Width = "100%";
         }
+        //UpdMode
+        HeaderCssClass = "popup-header";
+        if (UpdMode == 1) HeaderCssClass = "popup-header-addnew";
     }
-
 
     private async void OnVisibleChanged(bool value)
     {

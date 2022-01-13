@@ -5,10 +5,7 @@
 @inject IJSRuntime JsRuntime;
 @inject IToastService toastService
 
-<br />
-<div style="display:flex">
-    <p style="width:10rem"></p>
-    <div style="width:10rem">
+<div style="width:15rem">
         <label>Role</label>
         <DxComboBox Data="@ListRoleList"
                     Value="@ClearCmbRoleList"
@@ -18,7 +15,6 @@
                     TextFieldName="@nameof(RoleListModel.RoleName)">
         </DxComboBox>
     </div>
-</div>
 <br />
 <div style="width:100%">
     <DxDataGrid @ref="@Grid"

@@ -35,7 +35,6 @@
                            ShowEdit="true"
                            ShowDelete="true"
                            OnRowRemoving="@((context) => OnRowRemoving(context as OptionListHeaderModel))" />
-            <DxDataGridCommandColumn Width="10%"></DxDataGridCommandColumn>
         </Columns>
         <EditFormTemplate>
             <EditForm Model="@EditContext" Context="EditFormContext" OnValidSubmit="@UpdateRow">

@@ -5,21 +5,39 @@
 @inject IJSRuntime JsRuntime;
 @inject IToastService toastService
 
+<style>
+    .dxbl-modal .dxbs-modal .dxbs-popup {
+        outline: 0;
+        box-sizing: border-box;
+        opacity: 1;
+        position: relative;
+        left: auto;
+        top: auto;
+        padding: 0;
+        align-self: center;
+        justify-self: center;
+        margin: 1.75rem;
+        width: 400px !important;
+    }
+</style>
+
 <br />
 <div style="width:100%">
     <DxDataGrid @ref="@grid"
                 Data="@DetailData"
                 ColumnResizeMode="DataGridColumnResizeMode.Component"
-                EditMode="DataGridEditMode.PopupEditForm"
                 PageSize="@PageRowCount"
+                EditMode="DataGridEditMode.PopupEditForm"
                 ShowFilterRow="true"
                 HtmlRowDecoration="@OnHtmlRowDecoration"
                 HorizontalScrollBarMode="ScrollBarMode.Auto"
                 RowEditStart="@(dataRow => OnRowEditStarting(dataRow))"
-                RowInsertStart="@(() => OnRowEditStarting(null))">
+                RowInsertStart="@(() => OnRowEditStarting(null))"
+                PopupEditFormHeaderText="@PopupEditFormHeaderText"
+                PopupEditFormCssClass="editform-header-addnew">
         <Columns>
             <DxDataGridColumn Field="@nameof(UserAccountModel.UserName)"
-                              Caption="UserName"
+                              Caption="Account"
                               Width="8rem" />
             <DxDataGridColumn Field="@nameof(UserAccountModel.Fullname)"
                               Caption="Fullname"
@@ -29,22 +47,22 @@
                               Width="8rem" />
             <DxDataGridColumn Field="@nameof(UserAccountModel.Email)"
                               Caption="Email"
-                              Width="15rem" />
+                              Width="12rem" />
             <DxDataGridColumn Field="@nameof(UserAccountModel.Address)"
                               Caption="Address"
                               Width="20rem" />
             <DxDataGridColumn Field="@nameof(UserAccountModel.RoleName)"
-                              Caption="RoleName"
-                              Width="10rem" />
+                              Caption="Role"
+                              Width="7rem" />
             <DxDataGridColumn Field="@nameof(UserAccountModel.ApproveLevelName)"
-                              Caption="Approve Level"
-                              Width="10rem" />
+                              Caption="Approve"
+                              Width="7rem" />
             <DxDataGridColumn Field="@nameof(UserAccountModel.DocumentLevelName)"
-                              Caption="Document Level"
-                              Width="10rem" />
+                              Caption="Document"
+                              Width="7rem" />
             <DxDataGridColumn Field="@nameof(UserAccountModel.StatusName)"
                               Caption="Status"
-                              Width="8rem" />
+                              Width="6rem" />
             <DxDataGridDateEditColumn Field="@nameof(UserAccountModel.ModifiedOn)"
                                       Caption="ModifiedOn"
                                       DisplayFormat="dd/MM/yyyy HH:mm"
@@ -60,7 +78,7 @@
             <EditForm Model="@EditContext" Context="EditFormContext" OnValidSubmit="@UpdateRow">
                 <DataAnnotationsValidator />
                 <DxFormLayout>
-                    <DxFormLayoutItem Caption="UserName: " ColSpanMd="12" Context="FormLayoutContext">
+                    <DxFormLayoutItem Caption="Account: " ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
                             <DxTextBox @bind-Text="@EditContext.UserName" />
                             <ValidationMessage For="@(() => EditContext.UserName)" />
@@ -90,7 +108,7 @@
                             <ValidationMessage For="@(() => EditContext.Address)" />
                         </Template>
                     </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="RoleID: " ColSpanMd="12" Context="FormLayoutContext">
+                    <DxFormLayoutItem Caption="Role: " ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
                             <DxComboBox @bind-Value="@EditContext.RoleID"
                                         Data="@RoleList"
@@ -132,11 +150,11 @@
                     </DxFormLayoutItem>
                     <DxFormLayoutItem Caption="Set password: " ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
-                            <DxTextBox @bind-Text="@EditContext.Password" 
-                                       Password="true"/>
+                            <DxTextBox @bind-Text="@EditContext.Password"
+                                       Password="true" />
                         </Template>
                     </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Hữu hiệu" ColSpanMd="12" Context="FormLayoutContext">
+                    <DxFormLayoutItem Caption="Enabled" ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
                             <DxCheckBox @bind-Checked="@EditContext.BoolStatus" />
                         </Template>
@@ -151,7 +169,7 @@
 
 <ConfirmDialog Message="@ConfirmMessage" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
 
-@code{
+@code {
     private int PageRowCount = MyConstant.Grid_PageRowCount;
     FormEditContext EditContext = null;
     // Detail data
@@ -192,16 +210,16 @@
         {
             //Filter
             var requestString = new String_Request()
-            {
-                Credential = new UserCredential()
                 {
-                    Username = WebUserCredential.Username,
-                    RoleID = WebUserCredential.RoleID,
-                    AccessToken = WebUserCredential.AccessToken,
-                    ApiKey = WebUserCredential.ApiKey
-                },
-                StringValue = ""
-            };
+                    Credential = new UserCredential()
+                    {
+                        Username = WebUserCredential.Username,
+                        RoleID = WebUserCredential.RoleID,
+                        AccessToken = WebUserCredential.AccessToken,
+                        ApiKey = WebUserCredential.ApiKey
+                    },
+                    StringValue = ""
+                };
 
             //Get data from DB
             DetailData.Clear();
@@ -243,15 +261,15 @@
         try
         {
             var requestRoleList = new Empty_Request()
-            {
-                Credential = new UserCredential()
                 {
-                    Username = WebUserCredential.Username,
-                    RoleID = WebUserCredential.RoleID,
-                    AccessToken = WebUserCredential.AccessToken,
-                    ApiKey = WebUserCredential.ApiKey
-                }
-            };
+                    Credential = new UserCredential()
+                    {
+                        Username = WebUserCredential.Username,
+                        RoleID = WebUserCredential.RoleID,
+                        AccessToken = WebUserCredential.AccessToken,
+                        ApiKey = WebUserCredential.ApiKey
+                    }
+                };
             //Get data from DB
             RoleList.Clear();
             var resRoleList = await adminServiceClient.GetRoleListAsync(requestRoleList);
@@ -278,17 +296,17 @@
         try
         {
             var request = new Admin.Services.String_Request()
-            {
-                Credential = new Admin.Services.UserCredential()
                 {
-                    Username = WebUserCredential.Username,
-                    RoleID = WebUserCredential.RoleID,
-                    AccessToken = WebUserCredential.AccessToken,
-                    ApiKey = WebUserCredential.ApiKey
-                },
-                StringValue = "002"
+                    Credential = new Admin.Services.UserCredential()
+                    {
+                        Username = WebUserCredential.Username,
+                        RoleID = WebUserCredential.RoleID,
+                        AccessToken = WebUserCredential.AccessToken,
+                        ApiKey = WebUserCredential.ApiKey
+                    },
+                    StringValue = "002"
 
-            };
+                };
             //Get data from DB
             ApproveLevelList.Clear();
             var response = await adminServiceClient.GetOptionListAsync(request);
@@ -315,17 +333,17 @@
         try
         {
             var request = new Admin.Services.String_Request()
-            {
-                Credential = new Admin.Services.UserCredential()
                 {
-                    Username = WebUserCredential.Username,
-                    RoleID = WebUserCredential.RoleID,
-                    AccessToken = WebUserCredential.AccessToken,
-                    ApiKey = WebUserCredential.ApiKey
-                },
-                StringValue = "003"
+                    Credential = new Admin.Services.UserCredential()
+                    {
+                        Username = WebUserCredential.Username,
+                        RoleID = WebUserCredential.RoleID,
+                        AccessToken = WebUserCredential.AccessToken,
+                        ApiKey = WebUserCredential.ApiKey
+                    },
+                    StringValue = "003"
 
-            };
+                };
             //Get data from DB
             DocumentLevelList.Clear();
             var response = await adminServiceClient.GetOptionListAsync(request);
@@ -371,12 +389,12 @@
             //Request
             var request = new SaveUserAccount_Request();
             var Credential = new UserCredential()
-            {
-                Username = WebUserCredential.Username,
-                RoleID = WebUserCredential.RoleID,
-                AccessToken = WebUserCredential.AccessToken,
-                ApiKey = WebUserCredential.ApiKey
-            };
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                };
             request.Credential = Credential;
             // Convert to DB row
             request.Record = new grpcUserAccount();
@@ -536,13 +554,16 @@
     }
 
     //Get data for edit/insert
+    private string PopupEditFormHeaderText = "Edit form";
     void OnRowEditStarting(UserAccountModel editingRow)
     {
         // Insert row
         if (editingRow == null)
         {
+            PopupEditFormHeaderText = "Tạo mới User";
             editingRow = new UserAccountModel();
             //
+            editingRow.Status = 1;
             editingRow.UpdMode = -1;
             //Init row here
             editingRow.ModifiedOn = DateTime.Now;
@@ -551,10 +572,12 @@
         }
         else
         {
+            PopupEditFormHeaderText = "Cập nhật User";
             //Update row
             editingRow.UpdMode = 2;
             EditContext = new FormEditContext(editingRow, 2);
         }
+        this.StateHasChanged();
     }
 
     // Color of edit data
