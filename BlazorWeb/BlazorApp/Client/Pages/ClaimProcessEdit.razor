@@ -12,6 +12,10 @@
         color: blue !important;
     }
 
+    .color-red {
+        color: blue !important;
+    }
+
     .color-green {
         color: green !important;
     }
@@ -31,6 +35,10 @@
     .padding-right-col3 {
         padding-right: 15px
     }
+
+    .text-align-right {
+        text-align: right;
+    }
 </style>
 
 <div class="container">
@@ -41,6 +49,12 @@
                         ReadOnly="true"
                         Literal="Số tờ trình"
                         InputCssClass="color-blue font-bold" />
+        </div>
+        <!--InternalDocNo-->
+        <div class="col-6 col-lg-2">
+            <MyTextEdit @bind-Text="Model.InternalDocNo"
+                        Literal="Số nội bộ"
+                        InputCssClass="color-maroon font-bold" />
         </div>
         <!--Chi nhanh BM-->
         <div class="col-6 col-lg-2">
@@ -56,6 +70,13 @@
                                                    Model.BranchName = selectedRow.BranchName;
                                              })"
                         CssClass="branchid-focusid" />
+        </div>
+        <!--InternalDocNo-->
+        <div class="col-6 col-lg-2">
+            <MyDateEdit @bind-Date="Model.CompenDateTime"
+                        ReadOnly="true"
+                        Format="dd/MM/yyyy HH:mm"
+                        Literal="Ngày giờ" />
         </div>
         <!--Attach files-->
         <div class="col-6 col-lg-3 pt-2">
@@ -105,7 +126,7 @@
                     <MyTextEdit @bind-Text="Model.CarType"
                                 Literal="Số loại" />
                 </div>
-                <div class="col-4" style="padding-left:4px">
+                <div class="col-4" style="padding-left:4px;">
                     <MyTextEdit @bind-Text="Model.LicensePlate"
                                 Literal="Biển kiểm soát"
                                 InputCssClass="color-blue font-bold"
@@ -275,7 +296,7 @@
                     <MyTextEdit @bind-Text="Model.VCXContractNo"
                                 Literal="Số HĐ VCX"
                                 InputCssClass="color-blue font-bold"
-                                CssClass="insucontractno-focus" />
+                                CssClass="vcxcontractno-focus" />
                 </div>
                 <div class="col-4" style="padding-left:4px;padding-right:4px">
                     <MyDateEdit @bind-Date="Model.VCXFromDate"
@@ -284,19 +305,23 @@
                 <div class="col-4" style="padding-left:0">
                     <MyDateEdit @bind-Date="Model.VCXToDate"
                                 Literal="Đến ngày"
-                                CssClass="insutodate-focus" />
+                                CssClass="vcxtodate-focus" />
                 </div>
             </div>
             <!--Thanh toán phí BH, ngày thanh toán-->
             <div class="row">
                 <div class="col-6">
-                    <MyTextEdit @bind-Text="Model.VCXPayStatus"
-                                ReadOnly="true"
-                                Literal="Thanh toán" />
+                    <MyMuteLabel Literal="Thanh toán" />
+                    <DxComboBox Value="Model.VCXPayStatus"
+                                Data="InsuPayStatusList"
+                                AllowUserInput="true"
+                                FilteringMode="DataGridFilteringMode.Contains"
+                                TextFieldName="@(nameof(OptionListModel.ItemName))"
+                                ValueFieldName="@(nameof(OptionListModel.ItemName))"
+                                TextChanged="@((string text) => Model.VCXPayStatus = text)" />
                 </div>
                 <div class="col-6">
                     <MyDateEdit @bind-Date="Model.VCXPayDate"
-                                ReadOnly="true"
                                 Literal="Ngày" />
                 </div>
             </div>
@@ -305,23 +330,26 @@
                 <div class="col-12">
                     <MyMemoEdit @bind-Text="Model.VCXContent"
                                 Rows="2"
-                                ReadOnly="true"
                                 Literal="Điều khoản" />
                 </div>
             </div>
             <!--Điều khoản bổ sung-->
             <div class="row">
                 <div class="col-12">
-                    <MyTextEdit @bind-Text="Model.VCXRules"
-                                ReadOnly="true"
-                                Literal="Điều khoản bổ sung" />
+                    <MyMuteLabel Literal="Điều khoản bổ sung" />
+                    <DxComboBox Value="Model.VCXRules"
+                                Data="VCXRulesList"
+                                AllowUserInput="true"
+                                FilteringMode="DataGridFilteringMode.Contains"
+                                TextFieldName="@(nameof(OptionListModel.ItemName))"
+                                ValueFieldName="@(nameof(OptionListModel.ItemName))"
+                                TextChanged="@((string text) => Model.VCXRules = text)" />
                 </div>
             </div>
             <!--Khấu trừ-->
             <div class="row">
                 <div class="col-12">
                     <MyTextEdit @bind-Text="Model.VCXDeduct"
-                                ReadOnly="true"
                                 Literal="Khấu trừ" />
                 </div>
             </div>
@@ -332,7 +360,7 @@
                     <MyTextEdit @bind-Text="Model.TNDSContractNo"
                                 Literal="Số HĐ TNDS"
                                 InputCssClass="color-blue font-bold"
-                                CssClass="insucontractno-focus" />
+                                CssClass="tndscontractno-focus" />
                 </div>
                 <div class="col-4" style="padding-left:4px;padding-right:4px">
                     <MyDateEdit @bind-Date="Model.TNDSFromDate"
@@ -341,19 +369,23 @@
                 <div class="col-4" style="padding-left:0">
                     <MyDateEdit @bind-Date="Model.TNDSToDate"
                                 Literal="Đến ngày"
-                                CssClass="insutodate-focus" />
+                                CssClass="tndstodate-focus" />
                 </div>
             </div>
             <!--Thanh toán phí BH, ngày thanh toán-->
             <div class="row">
                 <div class="col-6">
-                    <MyTextEdit @bind-Text="Model.TNDSPayStatus"
-                                ReadOnly="true"
-                                Literal="Thanh toán" />
+                    <MyMuteLabel Literal="Thanh toán" />
+                    <DxComboBox Value="Model.TNDSPayStatus"
+                                Data="InsuPayStatusList"
+                                AllowUserInput="true"
+                                FilteringMode="DataGridFilteringMode.Contains"
+                                TextFieldName="@(nameof(OptionListModel.ItemName))"
+                                ValueFieldName="@(nameof(OptionListModel.ItemName))"
+                                TextChanged="@((string text) => Model.TNDSPayStatus = text)" />
                 </div>
                 <div class="col-6">
                     <MyDateEdit @bind-Date="Model.TNDSPayDate"
-                                ReadOnly="true"
                                 Literal="Ngày" />
                 </div>
             </div>
@@ -362,10 +394,10 @@
                 <div class="col-12">
                     <MyMemoEdit @bind-Text="Model.TNDSContent"
                                 Rows="3"
-                                ReadOnly="true"
                                 Literal="Điều khoản" />
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -379,25 +411,26 @@
                     Thông tin tiếp nhận hồ sơ
                 </div>
             </div>
-            <!--Ngày tiếp nhận-->
+            <!--Ngày giờ-->
             <div class="row align-items-end">
                 <div class="col-6">
                     <MyDateEdit @bind-Date="Model.AcceptDatetime"
                                 ReadOnly="true"
                                 Format="dd/MM/yyyy HH:mm"
-                                Literal="Ngày tiếp nhận"
+                                Literal="Ngày giờ"
                                 InputCssClass="color-green" />
                 </div>
+                <!--Trạng thái-->
                 <div class="col-6">
                     <DxCheckBox @bind-Checked="@Model.AcceptStatus"
                                 Enabled="false">
-                        <label style="color:green; font-weight:bold"> Nhận hồ sơ </label>
+                        <label style="color:green; font-weight:bold">Nhận hồ sơ</label>
                     </DxCheckBox>
                 </div>
             </div>
             <!--Người tiếp nhận-->
             <div class="row">
-                <div class="col-12">
+                <div class="col-6">
                     <MyTextEdit @bind-Text="Model.AcceptPersonName"
                                 ReadOnly="true"
                                 Literal="Người tiếp nhận" />
@@ -412,6 +445,50 @@
                                 Literal="Ghi chú" />
                 </div>
             </div>
+            <!--==============================================-->
+            <!--Thông tin sửa chữa-->
+            <div class="row mt-3" style="margin-right:50px">
+                <div class="col-12 border border-primary bg-info text-white">
+                    Thông tin sửa chữa
+                </div>
+            </div>
+            <!--Ngày bàn giao xe-->
+            <div class="row">
+                <div class="col-6">
+                    <MyDateEdit @bind-Date="Model.RepairDoneDatetime"
+                                Format="dd/MM/yyyy HH:mm"
+                                ReadOnly="true"
+                                Literal="Ngày giao xe"
+                                InputCssClass="color-green" />
+                </div>
+            </div>
+            <!--Ghi chú-->
+            <div class="row">
+                <div class="col-12">
+                    <MyMemoEdit @bind-Text="Model.RepairNotes"
+                                Rows="2"
+                                ReadOnly="true"
+                                Literal="Ghi chú sửa chữa" />
+                </div>
+            </div>
+            <!--Đã sửa xong-->
+            <div class="row mt-3">
+                <div class="col-6">
+                    <DxCheckBox @bind-Checked="@Model.RepairStatus"
+                                Enabled="false">
+                        <label style="color:green; font-weight:bold"> Đã sửa xong </label>
+                    </DxCheckBox>
+                </div>
+            </div>
+            <!--Nghiệm thu-->
+            <div class="row mt-3">
+                <div class="col-12">
+                    <DxCheckBox @bind-Checked="@Model.AprRepairStatus"
+                                Enabled="@Model.RepairStatus">
+                        <label style="color:maroon;"> Nghiệm thu </label>
+                    </DxCheckBox>
+                </div>
+            </div>
         </div>
 
         <!--mid---------------------------------------------------------------->
@@ -423,26 +500,20 @@
                 </div>
             </div>
             <!--Ngày trình-->
-            <div class="row align-items-end">
+            <div class="row">
                 <div class="col-6">
                     <MyDateEdit @bind-Date="Model.ReqDateTime"
                                 ReadOnly="true"
                                 Format="dd/MM/yyyy HH:mm"
-                                Literal="Ngày giờ xử lý"
+                                Literal="Ngày trình"
                                 InputCssClass="color-green" />
                 </div>
+                <!--Cán bộ bồi thường-->
                 <div class="col-6">
-                    <DxCheckBox @bind-Checked="@Model.CompenStatus"
-                                Enabled="false">
-                        <label style="color:green; font-weight:bold"> Xử lý hồ sơ </label>
-                    </DxCheckBox>
-                </div>
-            </div>
-            <!--Cán bộ bồi thường-->
-            <div class="row">
-                <div class="col-12">
-                    <MyTextEdit @bind-Text="Model.ReqPersonName"
+                    <MyComboBox @bind-Value="ReqPerson"
+                                Data="UserList"
                                 ReadOnly="true"
+                                TextFieldName="@(nameof(UserAccountModel.Fullname))"
                                 Literal="Cán bộ bồi thường" />
                 </div>
             </div>
@@ -451,18 +522,147 @@
                 <div class="col-12">
                     <MyMemoEdit @bind-Text="Model.ReqContent"
                                 Rows="2"
-                                ReadOnly="true"
+                                ReadOnly="Model.AprStatus"
                                 Literal="Nhận định của cán bộ bồi thường" />
+                </div>
+            </div>
+            <!--Ước lượng tổn thất-->
+            <div class="row">
+                <div class="col-12">
+                    <MyMuteLabel Literal="Ước lượng tổn thất" />
+                    <DxMaskedInput @bind-Value="Model.EstDamageAmount"
+                                   ReadOnly="Model.AprStatus"
+                                   Mask="N0"
+                                   InputCssClass="color-red font-bold text-align-right" />
+                </div>
+            </div>
+            <!--Chấp nhận bồi thường-->
+            <div class="row mt-3">
+                <div class="col-12">
+                    <DxCheckBox @bind-Checked="@Model.CompenStatus"
+                                Enabled="!Model.AprStatus">
+                        <label style="color:green; font-weight:bold"> Chấp nhận bồi thường </label>
+                    </DxCheckBox>
+                </div>
+            </div>
+            <!--Yêu cầu báo giá-->
+            <div class="row mt-3">
+                <div class="col-6">
+                    <DxCheckBox @bind-Checked="@Model.EstReqStatus"
+                                Enabled="@(Model.CompenStatus && !Model.AprStatus)">
+                        <label style="color:blue;"> Yêu cầu báo giá </label>
+                    </DxCheckBox>
+                </div>
+                <div class="col-6">
+                    <DxCheckBox @bind-Checked="@Model.EstDoneStatus"
+                                Enabled="false">
+                        <label style="color:navy;">Đã báo giá xong </label>
+                    </DxCheckBox>
+                </div>
+            </div>
+            <!--Chấp nhận báo giá-->
+            <div class="row mt-3">
+                <div class="col-12">
+                    <DxCheckBox @bind-Checked="@Model.EstAprStatus"
+                                Enabled="@(Model.CompenStatus && !Model.AprStatus)">
+                        <label style="color:maroon;"> Chấp nhận báo giá </label>
+                    </DxCheckBox>
                 </div>
             </div>
             <!--Đơn vị sửa chữa-->
             <div class="row">
                 <div class="col-12">
-                    <MyTextEdit @bind-Text="Model.RepairerName"
-                                ReadOnly="true"
-                                Literal="Đơn vị sửa chữa" />
+                    <MyComboBox @bind-Value="Repairer"
+                                Data="RepairerList"
+                                AllowUserInput="true"
+                                ReadOnly="Model.AprStatus"
+                                TextFieldName="@(nameof(RepairerMasterModel.RepairerName))"
+                                SelectedItemChanged="@((RepairerMasterModel selectedRow) => {
+                                                           Model.RepairerID = selectedRow.RepairerID;
+                                                           Model.RepairerName = selectedRow.RepairerName;
+                                                           Model.EstPersonID = selectedRow.EstPersonID;
+                                                           Model.EstPersonName = selectedRow.EstPersonName;
+                                                           //Can bo boi thuong = garage
+                                                           if (string.IsNullOrWhiteSpace(selectedRow.EstPersonID))
+                                                           {
+                                                               Model.EstPersonID = WebUserCredential.Username;
+                                                               Model.EstPersonName = WebUserCredential.Fullname;
+                                                           }
+                                                       })"
+                                Literal="Đơn vị sửa chữa"
+                                CssClass="repairerid-focusid" />
                 </div>
             </div>
+            <!--Chi tiet bao gia-->
+            <div class="row justify-content-center mt-3">
+                <MyButton BtnCss="btn btn-warning"
+                          Text="Chi tiết báo giá sửa chữa"
+                          OnClick="ShowEstimation"
+                          Width="15rem">
+                    <Icon>
+                        <i class="fa fa-calculator" aria-hidden="true" style="padding-right:10px"></i>
+                    </Icon>
+                </MyButton>
+            </div>
+            <!--Diễn giải tính toán bồi thường-->
+            <div class="row">
+                <div class="col-12">
+                    <MyMemoEdit @bind-Text="Model.CompenCalDescription"
+                                Rows="3"
+                                ReadOnly="Model.AprStatus"
+                                Literal="Diễn giải tính toán bồi thường" />
+                </div>
+            </div>
+
+            <!--Chế tài, khấu trừ-->
+            <div class="row">
+                <div class="col-6">
+                    <MyMuteLabel Literal="% Chế tài" />
+                    <DxMaskedInput Value="Model.DiscountRate"
+                                   ValueChanged="@((double newValue) => DiscountRate_OnValueChanged(newValue))"
+                                   ReadOnly="Model.AprStatus"
+                                   Mask="p0"
+                                   InputCssClass="color-blue font-bold text-align-right" />
+                </div>
+                <div class="col-6">
+                    <MyMuteLabel Literal="Khấu trừ" />
+                    <DxMaskedInput Value="Model.TipAmount"
+                                   ValueChanged="@((double newValue) => TipAmount_OnValueChanged(newValue))"
+                                   ReadOnly="Model.AprStatus"
+                                   Mask="N0"
+                                   InputCssClass="font-bold color-maroon text-align-right" />
+                </div>
+            </div>
+            <!--Tiền đền bù-->
+            <div class="row">
+                <div class="col-12">
+                    <MyNumEdit @bind-Value="Model.ClaimPrice"
+                               ReadOnly="true"
+                               Mask="N0"
+                               Literal="Tiền đền bù"
+                               InputCssClass="color-blue font-bold" />
+                </div>
+            </div>
+            <!--Thanh toan cho khach hang-->
+            <div class="row mt-2">
+                <div class="col-12">
+                    <DxCheckBox @bind-Checked="@Model.IsPayForCustomer"
+                                Enabled="true">
+                        <label> Thanh toán cho khách hàng </label>
+                    </DxCheckBox>
+                </div>
+            </div>
+            <!--Thanh toán cho-->
+            <div class="row mt-0 mb-0 p-0">
+                <div class="col-12">
+                    <DxTextBox @bind-Text="Model.PaymentTo"
+                               ReadOnly="!Model.IsPayForCustomer"
+                               InputCssClass="color-maroon font-bold" />
+                </div>
+            </div>
+
+
+
         </div>
 
         <!--right-------------------------------------------------------------->
@@ -470,16 +670,16 @@
             <!--Duyệt bồi thường-->
             <div class="row mt-3" style="margin-right:50px">
                 <div class="col-12 border border-primary bg-info text-white">
-                    Tình trạng duyệt, chi trả
+                    Thông tin duyệt
                 </div>
             </div>
-            <!--Ngày giờ, trạng thái-->
+            <!--Ngày giờ, trạng thái duyệt-->
             <div class="row align-items-end">
                 <div class="col-6">
                     <MyDateEdit @bind-Date="Model.AprDateTime"
                                 Format="dd/MM/yyyy HH:mm"
                                 ReadOnly="true"
-                                Literal="Ngày giờ duyệt"
+                                Literal="Ngày giờ"
                                 InputCssClass="color-blue" />
                 </div>
                 <div class="col-6">
@@ -489,14 +689,41 @@
                     </DxCheckBox>
                 </div>
             </div>
+            <!--Người duyệt-->
+            <div class="row">
+                <div class="col-12">
+                    <MyComboBox @bind-Value="AprPerson"
+                                Data="UserList"
+                                AllowUserInput="true"
+                                TextFieldName="@(nameof(UserAccountModel.Fullname))"
+                                SelectedItemChanged="@((UserAccountModel selectedRow) => {
+                                                           Model.AprPersonID = selectedRow.UserName;
+                                                           Model.AprPersonName = selectedRow.Fullname;
+                                                       })"
+                                Literal="Người duyệt"
+                                CssClass="aprperson-focusid" />
+                </div>
+            </div>
+            <!--Nội dung duyệt-->
+            <div class="row">
+                <MyMemoEdit @bind-Text="Model.AprContent"
+                            Rows="2"
+                            ReadOnly="true"
+                            Literal="Nội dung duyệt" />
+            </div>
             <!--Chi trả bồi thường-->
+            <div class="row mt-3" style="margin-right:50px">
+                <div class="col-12 border border-primary bg-info text-white">
+                    Chi trả bồi thường
+                </div>
+            </div>
             <!--Ngày giờ-->
             <div class="row align-items-end">
                 <div class="col-6">
                     <MyDateEdit @bind-Date="Model.PayDateTime"
                                 Format="dd/MM/yyyy HH:mm"
                                 ReadOnly="true"
-                                Literal="Ngày giờ chi trả"
+                                Literal="Ngày giờ"
                                 InputCssClass="color-maroon" />
                 </div>
                 <div class="col-6">
@@ -506,15 +733,32 @@
                     </DxCheckBox>
                 </div>
             </div>
+            <!--Người chi trả-->
+            <div class="row">
+                <div class="col-12">
+                    <MyComboBox @bind-Value="PayPerson"
+                                Data="UserList"
+                                ReadOnly="true"
+                                TextFieldName="@(nameof(UserAccountModel.Fullname))"
+                                Literal="Người chi trả" />
+                </div>
+            </div>
+            <!--Nội dung chi trả-->
+            <div class="row">
+                <div class="col-12">
+                    <MyMemoEdit @bind-Text="Model.PayContent"
+                                Rows="2"
+                                ReadOnly="true"
+                                Literal="Nội dung chi trả" />
+                </div>
+            </div>
         </div>
     </div>
-
-    <div class="row justify-content-center mt-2">
-        <!--OK, Cancel-->
+    <!--OK, Cancel-->
+    <div class="row mt-3 pt-1 justify-content-center align-items-center" style="border-top: 1px solid grey">
         <MyButtonSave OnClick="SaveMain" />
         <MyButtonCancel OnClick="CloseMain" />
     </div>
-
 </div>
 
 <!--Attach files-->
@@ -530,8 +774,30 @@
     </BodyContentTemplate>
 </MyPopup>
 
+<!--Estimation-->
+<MyPopup @bind-Visible="@EstimationVisbible"
+         HeaderText="Chi tiết báo giá"
+         Height="700px"
+         Width="1200px"
+         ZIndex="1002">
+    <BodyContentTemplate>
+        <ClaimEstimation ClaimNo="@Model.ClaimNo"
+                          ReqPersonName="@Model.ReqPersonName"
+                          BranchName="@Model.BranchName"
+                          RepairerName="@Model.RepairerName"
+                          @bind-Visible="@EstimationVisbible"
+                          RoleMode="@(Model.AprStatus? 0:1)"
+                          OnValidSumit="@((value) => RepairEstimation_Submit(value))" />
+    </BodyContentTemplate>
+</MyPopup>
+
+
 
 @code {
+
+    #region Variables
+    [CascadingParameter]
+    protected ProgramInfo Program { get; set; }
     //Parameters and events
     [Parameter]
     public string ClaimNo { get; set; } = "";
@@ -548,15 +814,32 @@
 
     //Master
     private List<UserAccountModel> UserList = new List<UserAccountModel>();
+    private List<RepairerMasterModel> RepairerList = new List<RepairerMasterModel>();
     private List<BranchMasterModel> BranchList = new List<BranchMasterModel>();
     private DxComboBox<BranchMasterModel, BranchMasterModel> RefBranchID;
     private BranchMasterModel SelectedBranch;
-    //BusinessTargetList
+    //
+    //Optionlist
     private List<OptionListModel> BusinessTargetList = new List<OptionListModel>();
     private List<OptionListModel> DriveLicenseLevelList = new List<OptionListModel>();
+    private List<OptionListModel> VCXRulesList = new List<OptionListModel>();
+    private List<OptionListModel> InsuPayStatusList = new List<OptionListModel>();
     //
-    private CompenRequestModel Model = new CompenRequestModel();
+    private RepairerMasterModel Repairer { get; set; }
+    private UserAccountModel ReqPerson { get; set; }
+    private UserAccountModel AprPerson { get; set; }
+    private UserAccountModel PayPerson { get; set; }
+    //Status at open
+    private bool OriCompenStatus = false;
+    private bool OriEstReqStatus = false;
+    private bool OriEstDoneStatus = false;
+    private bool OriEstAprStatus = false;
+    private bool OriAprRepairStatus = false;
+
+
+    private ClaimRequestModel Model = new ClaimRequestModel();
     private string AttachFileText = "File đính kèm (0 files)";
+    #endregion
 
     #region Initialization
     protected override async Task OnInitializedAsync()
@@ -580,13 +863,18 @@
     async Task LoadMaster()
     {
         //...
+        RepairerList = await masterService.Load_RepairerList();
+        UserList = await masterService.Load_UserList();
         BranchList = await masterService.Load_BranchList();
+        //
         BusinessTargetList = await masterService.Load_OptionList("004");
         DriveLicenseLevelList = await masterService.Load_OptionList("005");
+        VCXRulesList = await masterService.Load_OptionList("006");
+        InsuPayStatusList = await masterService.Load_OptionList("007");
     }
     async Task InitMain()
     {
-        Model = new CompenRequestModel();
+        Model = new ClaimRequestModel();
         Model.UpdMode = 1;
 
         //ClaimNo
@@ -628,7 +916,6 @@
         return "";
     }
 
-
     #endregion
 
     #region MainForm
@@ -649,12 +936,18 @@
             //
             request.StringValue = ClaimNo;
             //Call api
-            var response = await ClaimServiceClient.GetCompenRequestAsync(request);
+            var response = await ClaimServiceClient.GetClaimRequestAsync(request);
             // Success
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
                 //Show success
-                ClassHelper.CopyPropertiesDataDateConverted(response.CompenRequest, Model);
+                ClassHelper.CopyPropertiesDataDateConverted(response.ClaimRequest, Model);
+
+                //ReqPerson, AprPersonID, PayPersonID, repairer
+                if (!string.IsNullOrWhiteSpace(Model.ReqPersonID)) ReqPerson = UserList.Find(x => x.UserName == Model.ReqPersonID);
+                if (!string.IsNullOrWhiteSpace(Model.AprPersonID)) AprPerson = UserList.Find(x => x.UserName == Model.AprPersonID);
+                if (!string.IsNullOrWhiteSpace(Model.PayPersonID)) PayPerson = UserList.Find(x => x.UserName == Model.PayPersonID);
+                if (!string.IsNullOrWhiteSpace(Model.RepairerID)) Repairer = RepairerList.Find(x => x.RepairerID == Model.RepairerID);
                 //BusinessTargetList
                 if (!BusinessTargetList.Exists(x => x.ItemName.Contains(Model.BusinessTarget)))
                 {
@@ -671,8 +964,37 @@
                         ItemName = Model.DriveLicenseLevel
                     });
                 }
+                //VCXRules
+                if (!VCXRulesList.Exists(x => x.ItemName.Contains(Model.VCXRules)))
+                {
+                    VCXRulesList.Add(new OptionListModel()
+                    {
+                        ItemName = Model.VCXRules
+                    });
+                }
+                //InsuPayStatusList
+                if (!InsuPayStatusList.Exists(x => x.ItemName.Contains(Model.VCXPayStatus)))
+                {
+                    InsuPayStatusList.Add(new OptionListModel()
+                    {
+                        ItemName = Model.VCXPayStatus
+                    });
+                }
+                if (!InsuPayStatusList.Exists(x => x.ItemName.Contains(Model.TNDSPayStatus)))
+                {
+                    InsuPayStatusList.Add(new OptionListModel()
+                    {
+                        ItemName = Model.TNDSPayStatus
+                    });
+                }
                 //SelectedBranch
                 if (!string.IsNullOrWhiteSpace(Model.BranchID)) SelectedBranch = BranchList.Find(x => x.BranchID == Model.BranchID);
+                //Backup status at open
+                OriCompenStatus = Model.CompenStatus;
+                OriEstReqStatus = Model.EstReqStatus;
+                OriEstDoneStatus = Model.EstDoneStatus;
+                OriEstAprStatus = Model.EstAprStatus;
+                OriAprRepairStatus = Model.AprRepairStatus;
                 //
                 Model.UpdMode = 2;
 
@@ -725,10 +1047,10 @@
 
     async Task<bool> ValidateForm()
     {
-        //Skip if approved
-        if (Model.AcceptStatus)
+        //Validate: Process
+        if (!Model.AcceptStatus || Model.PayStatus)
         {
-            toastService.ShowWarning("Hồ sơ đã thụ lý nên không thể chỉnh sữa.", "Không cho phép");
+            toastService.ShowWarning("Hồ sơ không cho phép chỉnh sửa", "Không cho phép");
             return false;
         }
         //BranchID
@@ -773,19 +1095,40 @@
             await JsRuntime.InvokeAsync<string>("focusEditor", "licensetodate-focus");
             return false;
         }
-        //InsuToDate
+        //VCXToDate
         if (Model.VCXToDate < Model.VCXFromDate)
         {
             toastService.ShowWarning("Hiệu lực HĐ: đến ngày", "Không được nhỏ hơn ngày bắt đầu.");
-            await JsRuntime.InvokeAsync<string>("focusEditor", "insutodate-focus");
+            await JsRuntime.InvokeAsync<string>("focusEditor", "vcxtodate-focus");
+            return false;
+        }
+        //TNDSToDate
+        if (Model.TNDSToDate < Model.TNDSFromDate)
+        {
+            toastService.ShowWarning("Hiệu lực HĐ: đến ngày", "Không được nhỏ hơn ngày bắt đầu.");
+            await JsRuntime.InvokeAsync<string>("focusEditor", "tndstodate-focus");
             return false;
         }
 
         //VCXContractNo
         if (string.IsNullOrWhiteSpace(Model.VCXContractNo))
         {
-            toastService.ShowWarning("HĐBH số", "Bắt buột nhập.");
-            await JsRuntime.InvokeAsync<string>("focusEditor", "insucontractno-focus");
+            toastService.ShowWarning("Số HĐ VCX", "Bắt buột nhập.");
+            await JsRuntime.InvokeAsync<string>("focusEditor", "vcxcontractno-focus");
+            return false;
+        }
+        //AprPersonID: người duyệt
+        if (Model.EstAprStatus && string.IsNullOrWhiteSpace(Model.AprPersonID))
+        {
+            toastService.ShowWarning("Người duyệt", "Bắt buột nhập.");
+            await JsRuntime.InvokeAsync<string>("focusEditor", "aprperson-focusid");
+            return false;
+        }
+        //AprPersonID: đơn vị sửa chữa
+        if (Model.EstReqStatus && string.IsNullOrWhiteSpace(Model.RepairerID))
+        {
+            toastService.ShowWarning("Đơn vị sửa chữa", "Bắt buột nhập.");
+            await JsRuntime.InvokeAsync<string>("focusEditor", "repairerid-focusid");
             return false;
         }
         //
@@ -800,8 +1143,23 @@
             var validateRes = await ValidateForm();
             if (!validateRes) return;
 
+            //Process
+            if (!OriCompenStatus && Model.CompenStatus)
+            {
+                Model.ReqDateTime = DateTime.Now;
+                Model.ReqPersonID = WebUserCredential.Username;
+                Model.ReqPersonName = WebUserCredential.Fullname;
+            }
+
+            //EstReqDateTime
+            if (!OriEstReqStatus && Model.EstReqStatus) Model.EstReqDateTime = DateTime.Now;
+            //EstAprDateTime
+            if (!OriEstAprStatus && Model.EstAprStatus) Model.EstAprDateTime = DateTime.Now;
+            //AprRepairDatetime
+            if (!OriAprRepairStatus && Model.AprRepairStatus) Model.AprRepairDatetime = DateTime.Now;
+
             //Request
-            var request = new SaveCompenRequest_Request();
+            var request = new SaveClaimRequest_Request();
             var Credential = new Claim.Services.UserCredential()
             {
                 Username = WebUserCredential.Username,
@@ -811,10 +1169,29 @@
             };
             request.Credential = Credential;
             //
-            request.CompenRequest = new grpcCompenRequestModel();
-            ClassHelper.CopyPropertiesDataDateConverted(Model, request.CompenRequest);
+            request.ClaimRequest = new grpcClaimRequestModel();
+            ClassHelper.CopyPropertiesDataDateConverted(Model, request.ClaimRequest);
+
+            //ReqPerson
+            if (ReqPerson != null)
+            {
+                request.ClaimRequest.ReqPersonID = ReqPerson.UserName;
+                request.ClaimRequest.ReqPersonName = ReqPerson.Fullname;
+            }
+            //AprPerson
+            if (AprPerson != null)
+            {
+                request.ClaimRequest.AprPersonID = AprPerson.UserName;
+                request.ClaimRequest.AprPersonName = AprPerson.Fullname;
+            }
+            // PayPerson
+            if (PayPerson != null)
+            {
+                request.ClaimRequest.PayPersonID = PayPerson.UserName;
+                request.ClaimRequest.PayPersonName = PayPerson.Fullname;
+            }
             //Call api
-            var response = await ClaimServiceClient.SaveCompenRequestAsync(request);
+            var response = await ClaimServiceClient.SaveClaimRequestAsync(request);
             // Success
             if (response == null || response.ReturnCode != GrpcReturnCode.OK)
             {
@@ -850,7 +1227,33 @@
         EstimationVisbible = true;
         StateHasChanged();
     }
+
+    void DiscountRate_OnValueChanged(double newValue)
+    {
+        Model.DiscountRate = newValue;
+        Model.DiscountAmount = Math.Round(Model.AprRepairPrice * Model.DiscountRate, 0);
+        Derived_ClaimPrice();
+    }
+    void TipAmount_OnValueChanged(double newValue)
+    {
+        Model.TipAmount = newValue;
+        Derived_ClaimPrice();
+    }
+
+    private void Derived_ClaimPrice()
+    {
+        Model.ClaimPrice = Model.AprRepairPrice + Model.AprVAT - Model.DiscountAmount - Model.TipAmount;
+    }
+
+    private async void RepairEstimation_Submit(RepairEstimation_ReturnModel estReturn)
+    {
+        Model.EstRepairPrice = estReturn.EstRepairPrice;
+        Model.DealRepairPrice = estReturn.DealRepairPrice;
+        //
+        await Get_AttachFileCount();
+    }
     #endregion
+
 
 
 }

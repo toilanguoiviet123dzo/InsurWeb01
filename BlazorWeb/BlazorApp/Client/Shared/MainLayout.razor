@@ -3,13 +3,13 @@
 
 <div class="page">
     <div class="sidebar">
-        <NavMenu @bind-Title="Title" />
+        <NavMenu @bind-Program="Program" />
     </div>
     <div class="main">
         <div class="top-row px-4">
             <div style="width:100%">
                 <div style="float:left">
-                    <h3>@Title</h3>
+                    <h3>@Program.ProgramName</h3>
                 </div>
                 <div style="float:right">
                     <LoginDisplay />
@@ -17,7 +17,9 @@
             </div>
         </div>
         <div class="content px-0 px-lg-4">
-            @Body
+            <CascadingValue Value="Program">
+                @Body
+            </CascadingValue>
         </div>
     </div>
 </div>
@@ -28,8 +30,8 @@
                 SuccessIcon="fa fa-thumbs-up"
                 ErrorIcon="fa fa-bug"
                 WarningIcon="fa fa-warning"
-                InfoIcon="fa fa-info"/>
+                InfoIcon="fa fa-info" />
 
-@code{
-    public string Title { get; set; } = "";
+@code {
+    public ProgramInfo Program { get; set; } = new ProgramInfo("", "");
 }}

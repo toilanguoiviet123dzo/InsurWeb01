@@ -1,4 +1,4 @@
-﻿@page "/repairer-master"
+﻿@page "/RepairerMaster"
 @using Admin.Services
 @using Claim.Services
 @using System.Collections.ObjectModel;
@@ -22,33 +22,33 @@
                 RowInsertStart="@(() => OnRowEditStarting(null))">
         <Columns>
             <DxDataGridColumn Field="@nameof(RepairerMasterModel.RepairerID)"
-                              Caption="ID"
-                              Width="8rem" />
+                              Caption="Mã"
+                              Width="6rem" />
             <DxDataGridColumn Field="@nameof(RepairerMasterModel.RepairerName)"
                               Caption="Tên"
                               Width="12rem" />
             <DxDataGridColumn Field="@nameof(RepairerMasterModel.PhoneNo)"
                               Caption="Phone"
-                              Width="8rem" />
+                              Width="7rem" />
             <DxDataGridColumn Field="@nameof(RepairerMasterModel.Email)"
                               Caption="Email"
-                              Width="15rem" />
+                              Width="12rem" />
             <DxDataGridColumn Field="@nameof(RepairerMasterModel.Address)"
                               Caption="Địa chỉ"
-                              Width="20rem" />
+                              Width="17rem" />
+            <DxDataGridColumn Field="@nameof(RepairerMasterModel.EstPersonName)"
+                              Caption="Người phụ trách"
+                              Width="10rem" />
             <DxDataGridColumn Field="@nameof(RepairerMasterModel.Notes)"
                               Caption="Ghi chú"
                               Width="10rem" />
-            <DxDataGridColumn Field="@nameof(RepairerMasterModel.EstPersonName)"
-                              Caption="Người phụ trách"
-                              Width="12rem" />
             <DxDataGridColumn Field="@nameof(RepairerMasterModel.StatusName)"
                               Caption="Trạng thái"
-                              Width="8rem" />
+                              Width="6rem" />
             <DxDataGridDateEditColumn Field="@nameof(RepairerMasterModel.ModifiedOn)"
                                       Caption="ModifiedOn"
                                       DisplayFormat="dd/MM/yyyy HH:mm"
-                                      Width="10rem" />
+                                      Width="9rem" />
             <!--Command columns-->
             <MyGridCommand Grid="grid"
                            ShowAddnew="true"
@@ -60,9 +60,9 @@
             <EditForm Model="@EditContext" Context="EditFormContext" OnValidSubmit="@UpdateRow">
                 <DataAnnotationsValidator />
                 <DxFormLayout>
-                    <DxFormLayoutItem Caption="ID: " ColSpanMd="12" Context="FormLayoutContext">
+                    <DxFormLayoutItem Caption="Mã: " ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
-                            <DxTextBox @bind-Text="@EditContext.RepairerID" />
+                            <DxTextBox @bind-Text="@EditContext.RepairerID" InputCssClass="text-uppercase" />
                             <ValidationMessage For="@(() => EditContext.RepairerID)" />
                         </Template>
                     </DxFormLayoutItem>
@@ -87,11 +87,6 @@
                             <DxTextBox @bind-Text="@EditContext.Address" />
                         </Template>
                     </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Ghi chú: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.Notes" />
-                        </Template>
-                    </DxFormLayoutItem>
                     <DxFormLayoutItem Caption="Người phụ trách: " ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
                             <DxComboBox @bind-Value="@EditContext.EstPersonID"
@@ -104,6 +99,11 @@
                                                                    EditContext.EstPersonID = value.UserName;
                                                                    EditContext.EstPersonName = value.Fullname;
                                                                })" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Ghi chú: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxTextBox @bind-Text="@EditContext.Notes" />
                         </Template>
                     </DxFormLayoutItem>
                     <DxFormLayoutItem Caption="Hữu hiệu" ColSpanMd="12" Context="FormLayoutContext">
@@ -119,9 +119,11 @@
     </DxDataGrid>
 </div>
 
-<ConfirmDialog Message="@ConfirmMessage" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
+<MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
 
-@code{
+@code {
+    [CascadingParameter]
+    protected ProgramInfo Program { get; set; }
     private int PageRowCount = MyConstant.Grid_PageRowCount;
     FormEditContext EditContext = null;
     // Detail data
@@ -149,7 +151,7 @@
     async Task LoadMaster()
     {
         //...
-        UserList= await masterService.Load_UserList();
+        UserList = await masterService.Load_UserList();
     }
 
     async Task DisplayMain()
@@ -158,15 +160,15 @@
         {
             //Filter
             var requestString = new Claim.Services.Empty_Request()
-            {
-                Credential = new Claim.Services.UserCredential()
                 {
-                    Username = WebUserCredential.Username,
-                    RoleID = WebUserCredential.RoleID,
-                    AccessToken = WebUserCredential.AccessToken,
-                    ApiKey = WebUserCredential.ApiKey
-                }
-            };
+                    Credential = new Claim.Services.UserCredential()
+                    {
+                        Username = WebUserCredential.Username,
+                        RoleID = WebUserCredential.RoleID,
+                        AccessToken = WebUserCredential.AccessToken,
+                        ApiKey = WebUserCredential.ApiKey
+                    }
+                };
 
             //Get data from DB
             DetailData.Clear();
@@ -194,7 +196,7 @@
             toastService.ShowError(ex.Message, "Load dữ liệu thất bại.");
         }
     }
-    
+
     #endregion
 
     #region Save
@@ -219,12 +221,12 @@
             //Request
             var request = new SaveRepairerMaster_Request();
             var Credential = new Claim.Services.UserCredential()
-            {
-                Username = WebUserCredential.Username,
-                RoleID = WebUserCredential.RoleID,
-                AccessToken = WebUserCredential.AccessToken,
-                ApiKey = WebUserCredential.ApiKey
-            };
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                };
             request.Credential = Credential;
             // Convert to DB row
             request.Record = new grpcRepairerMasterModel();

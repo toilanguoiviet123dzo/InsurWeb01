@@ -17,7 +17,13 @@ namespace BlazorApp.Client.Common
         public const int ResourceArchiveMode_InsideDB = 1;
         public const int ResourceArchiveMode_OutsideDB = 2;
 
-
+        //MessageBoxIcon
+        public const int MessageBoxIcon_Information = 1;
+        public const int MessageBoxIcon_Question = 2;
+        public const int MessageBoxIcon_Exclamation = 3;
+        public const int MessageBoxIcon_Stop = 4;
+        public const int MessageBoxIcon_Error = 5;
+        
 
     }// end class
 }

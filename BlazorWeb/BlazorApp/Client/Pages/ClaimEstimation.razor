@@ -1,5 +1,4 @@
-﻿@page "/repairestimation"
-@using Admin.Services
+﻿@using Admin.Services
 @using Claim.Services
 @using Resource.Services
 @using System.Collections.ObjectModel;
@@ -11,8 +10,6 @@
 @inject IToastService toastService
 @using System.Collections.Concurrent
 @using System.Threading
-
-
 <br />
 
 <style>
@@ -304,7 +301,7 @@
     </div>
 </div>
 <!--Confirm dialog-->
-<ConfirmDialog Message="@ConfirmMessage" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
+<MessageBox Title="Báo giá" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
 
 <!--Attach files-->
 <MyPopup @bind-Visible="@AttachFileVisbible"
@@ -788,7 +785,7 @@
                 returnModel.AprVAT = AprVAT;
 
                 //Update Total
-                var totalRequest = new UpdateTotalCompenRequest_Request();
+                var totalRequest = new UpdateTotalClaimRequest_Request();
                 totalRequest.Credential = new Claim.Services.UserCredential()
                 {
                     Username = WebUserCredential.Username,
@@ -803,7 +800,7 @@
                 totalRequest.EstVAT = AprVAT;
                 totalRequest.DealVAT = DealVAT;
                 totalRequest.AprVAT = AprVAT;
-                var totalResponse = await ClaimServiceClient.UpdateTotalCompenRequestAsync(totalRequest);
+                var totalResponse = await ClaimServiceClient.UpdateTotalClaimRequestAsync(totalRequest);
                 if (totalResponse == null || totalResponse.ReturnCode != GrpcReturnCode.OK)
                 {
                     toastService.ShowError("", "Lưu báo giá thất bại.");

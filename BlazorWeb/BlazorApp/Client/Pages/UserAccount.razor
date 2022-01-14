@@ -1,4 +1,4 @@
-﻿@page "/useraccount"
+﻿@page "/UserAccount"
 @using Admin.Services
 @using System.Collections.ObjectModel;
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
@@ -33,8 +33,7 @@
                 HorizontalScrollBarMode="ScrollBarMode.Auto"
                 RowEditStart="@(dataRow => OnRowEditStarting(dataRow))"
                 RowInsertStart="@(() => OnRowEditStarting(null))"
-                PopupEditFormHeaderText="@PopupEditFormHeaderText"
-                PopupEditFormCssClass="editform-header-addnew">
+                PopupEditFormHeaderText="@PopupEditFormHeaderText">
         <Columns>
             <DxDataGridColumn Field="@nameof(UserAccountModel.UserName)"
                               Caption="Account"
@@ -167,9 +166,11 @@
     </DxDataGrid>
 </div>
 
-<ConfirmDialog Message="@ConfirmMessage" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
+<MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
 
 @code {
+    [CascadingParameter]
+    protected ProgramInfo Program { get; set; }
     private int PageRowCount = MyConstant.Grid_PageRowCount;
     FormEditContext EditContext = null;
     // Detail data
@@ -432,7 +433,7 @@
         DeletedRow = dataRow;
 
         //Show popup confirm
-        ConfirmMessage = "Xóa dòng?";
+        ConfirmMessage = "Xóa người dùng?";
         ConfirmAction = "DeleteRow";
         ConfirmVisible = true;
         StateHasChanged();

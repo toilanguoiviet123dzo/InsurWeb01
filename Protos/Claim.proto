@@ -5,12 +5,12 @@ package grpcClaimService;
 
 //Services
 service grpcClaimService {    
-    //CompenRequest
-    rpc SaveCompenRequest (SaveCompenRequest_Request) returns (String_Response);
-    rpc GetCompenRequest (String_Request) returns (GetCompenRequest_Response);
-    rpc GetCompenRequestList (GetCompenRequestList_Request) returns (GetCompenRequestList_Response);
-    rpc UpdateTotalCompenRequest (UpdateTotalCompenRequest_Request) returns (Empty_Response);
-    rpc UpdateStatusCompenRequest (UpdateStatusCompenRequest_Request) returns (Empty_Response);
+    //ClaimRequest
+    rpc SaveClaimRequest (SaveClaimRequest_Request) returns (String_Response);
+    rpc GetClaimRequest (String_Request) returns (GetClaimRequest_Response);
+    rpc GetClaimRequestList (GetClaimRequestList_Request) returns (GetClaimRequestList_Response);
+    rpc UpdateTotalClaimRequest (UpdateTotalClaimRequest_Request) returns (Empty_Response);
+    rpc UpdateStatusClaimRequest (UpdateStatusClaimRequest_Request) returns (Empty_Response);
 
     //RepairEstimation
     rpc SaveRepairEstimation (SaveRepairEstimation_Request) returns (Empty_Response);
@@ -97,7 +97,6 @@ message grpcBranchMasterModel {
     string ID = 1;
     string BranchID = 2;
     string BranchName = 3;
-    string InternalID = 4;
     string Discriptions = 5;
     int32 DspOrder = 6;
     bool Enabled = 7;
@@ -110,7 +109,7 @@ message GetBranchMaster_Response {
     //
     repeated grpcBranchMasterModel Records = 3;
 }
-message UpdateTotalCompenRequest_Request {
+message UpdateTotalClaimRequest_Request {
     UserCredential Credential = 1;
     //
     string ClaimNo = 2;
@@ -121,7 +120,7 @@ message UpdateTotalCompenRequest_Request {
     double DealVAT = 81;
     double AprVAT = 82;
 }
-message UpdateStatusCompenRequest_Request {
+message UpdateStatusClaimRequest_Request {
     UserCredential Credential = 1;
     //
     string ClaimNo = 2;
@@ -165,20 +164,20 @@ message GetAttachFileCount_Request {
     int32 DocumentLevel = 3;
 }
 
-message SaveCompenRequest_Request {
+message SaveClaimRequest_Request {
     UserCredential Credential = 1;
     //
     bool IsApproval = 2;
-    grpcCompenRequestModel CompenRequest = 3;
+    grpcClaimRequestModel ClaimRequest = 3;
     
 }
-message GetCompenRequest_Response {
+message GetClaimRequest_Response {
     int32 ReturnCode = 1;
     string MsgCode = 2;
     //
-    grpcCompenRequestModel CompenRequest = 3;
+    grpcClaimRequestModel ClaimRequest = 3;
 }
-message grpcCompenRequestModel {
+message grpcClaimRequestModel {
     string ID = 1;
     string CustomerID = 2;
     string CustomerName = 3;
@@ -379,7 +378,7 @@ message GetAttachFiles_Response {
     //
     repeated grpcAttachFileModel AttachFiles = 3;
 }
-message GetCompenRequestList_Request {
+message GetClaimRequestList_Request {
     UserCredential Credential = 1;
     //
     string CustomerID = 2;
@@ -395,11 +394,11 @@ message GetCompenRequestList_Request {
     google.protobuf.Timestamp StartDate = 12;
     google.protobuf.Timestamp EndDate = 13;
 }
-message GetCompenRequestList_Response {
+message GetClaimRequestList_Response {
     int32 ReturnCode = 1;
     string MsgCode = 2;
     //
-    repeated grpcCompenRequestModel CompenRequests = 3;
+    repeated grpcClaimRequestModel ClaimRequests = 3;
 }
 
 

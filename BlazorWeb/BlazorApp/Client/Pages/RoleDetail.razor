@@ -1,4 +1,4 @@
-﻿@page "/roledetail"
+﻿@page "/RoleDetail"
 @using Admin.Services
 @using System.Collections.ObjectModel;
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
@@ -136,13 +136,15 @@
     </div>
 </div>
 
-<ConfirmDialog Message="@ConfirmMessage" @bind-Visible="@PopupVisible" confirm="@ConfirmHandler" />
+<MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
 
 @code{
     // Popup
+    [CascadingParameter]
+    protected ProgramInfo Program { get; set; }
     private string ConfirmMessage = "";
     private string ConfirmAction = "";
-    private bool PopupVisible = false;
+    private bool ConfirmVisible = false;
     // RoleList
     private readonly List<RoleListModel> ListRoleList = new List<RoleListModel>();
     // RoleDetail
@@ -420,7 +422,7 @@
         // Show popup confirm
         ConfirmMessage = "Cancel changed?";
         ConfirmAction = "CancelSaveMain";
-        PopupVisible = true;
+        ConfirmVisible = true;
         StateHasChanged();
     }
     // Show confirm delete SaveMain
@@ -429,9 +431,9 @@
     {
         DeletedRow = dataRow;
         // Show popup confirm
-        ConfirmMessage = "Delete row?";
+        ConfirmMessage = "Xóa dòng dữ liệu?";
         ConfirmAction = "DeleteRow";
-        PopupVisible = true;
+        ConfirmVisible = true;
         StateHasChanged();
     }
     // Show confirm save SaveMain
@@ -446,7 +448,7 @@
         // Show popup confirm
         ConfirmMessage = "Save changed?";
         ConfirmAction = "SaveMain";
-        PopupVisible = true;
+        ConfirmVisible = true;
         StateHasChanged();
     }
     // Confirm Cancel, Delete, Save
@@ -463,7 +465,7 @@
             SaveMain();
         }
         // Close confirm delete popup
-        PopupVisible = false;
+        ConfirmVisible = false;
         StateHasChanged();
     }
     // Cancel edit main

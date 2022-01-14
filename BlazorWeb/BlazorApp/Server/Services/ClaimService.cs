@@ -33,20 +33,20 @@ namespace BlazorApp.Server.Services
             _logger = logger;
         }
         //-------------------------------------------------------------------------------------------------------/
-        // SaveCompenRequest
+        // SaveClaimRequest
         //-------------------------------------------------------------------------------------------------------/
-        public override async Task<Claim.Services.String_Response> SaveCompenRequest(SaveCompenRequest_Request request, ServerCallContext context)
+        public override async Task<Claim.Services.String_Response> SaveClaimRequest(SaveClaimRequest_Request request, ServerCallContext context)
         {
             var response = new Claim.Services.String_Response();
             response.ReturnCode = GrpcReturnCode.OK;
             try
             {
-                switch (request.CompenRequest.UpdMode)
+                switch (request.ClaimRequest.UpdMode)
                 {
                     //add new
                     case 1:
                         var newRecord = new mdClaimRequest();
-                        ClassHelper.CopyPropertiesData(request.CompenRequest, newRecord);
+                        ClassHelper.CopyPropertiesData(request.ClaimRequest, newRecord);
                         newRecord.ID = "";
                         newRecord.ModifiedOn = DateTime.UtcNow;
 
@@ -76,10 +76,10 @@ namespace BlazorApp.Server.Services
 
                     //update
                     case 2:
-                        var oldRecord = await DB.Find<mdClaimRequest>().OneAsync(request.CompenRequest.ID);
+                        var oldRecord = await DB.Find<mdClaimRequest>().OneAsync(request.ClaimRequest.ID);
                         if (oldRecord != null)
                         {
-                            ClassHelper.CopyPropertiesData(request.CompenRequest, oldRecord);
+                            ClassHelper.CopyPropertiesData(request.ClaimRequest, oldRecord);
                             oldRecord.ModifiedOn = DateTime.UtcNow;
 
                             //Update Estimation for approval
@@ -98,15 +98,15 @@ namespace BlazorApp.Server.Services
 
                     //delete
                     case 3:
-                        //mdCompenRequest
-                        await DB.DeleteAsync<mdClaimRequest>(request.CompenRequest.ID);
+                        //mdClaimRequest
+                        await DB.DeleteAsync<mdClaimRequest>(request.ClaimRequest.ID);
 
                         //mdRepairEstimation
-                        await DB.DeleteAsync<mdRepairEstimation>(x => x.ClaimNo == request.CompenRequest.ClaimNo);
+                        await DB.DeleteAsync<mdRepairEstimation>(x => x.ClaimNo == request.ClaimRequest.ClaimNo);
 
                         //Delete resource
                         var findRecords = await DB.Find<mdAttachFile>()
-                                                  .Match(a => a.VoucherNo == request.CompenRequest.ClaimNo)
+                                                  .Match(a => a.VoucherNo == request.ClaimRequest.ClaimNo)
                                                   .ExecuteAsync();
                         if (findRecords != null)
                         {
@@ -120,7 +120,7 @@ namespace BlazorApp.Server.Services
                             }
                         }
                         //Delete mdAttachFile
-                        await DB.DeleteAsync<mdAttachFile>(x => x.VoucherNo == request.CompenRequest.ClaimNo);
+                        await DB.DeleteAsync<mdAttachFile>(x => x.VoucherNo == request.ClaimRequest.ClaimNo);
                         //
                         break;
                     default:
@@ -132,18 +132,18 @@ namespace BlazorApp.Server.Services
             {
                 response.ReturnCode = GrpcReturnCode.Error_ByServer;
                 response.MsgCode = ex.Message;
-                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "SaveCompenRequest", "Exception", response.ReturnCode, ex.Message);
+                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "SaveClaimRequest", "Exception", response.ReturnCode, ex.Message);
             }
             return await Task.FromResult(response);
         }
         
 
         //-------------------------------------------------------------------------------------------------------/
-        // GetCompenRequest
+        // GetClaimRequest
         //-------------------------------------------------------------------------------------------------------/
-        public override async Task<GetCompenRequest_Response> GetCompenRequest(Claim.Services.String_Request request, ServerCallContext context)
+        public override async Task<GetClaimRequest_Response> GetClaimRequest(Claim.Services.String_Request request, ServerCallContext context)
         {
-            var response = new GetCompenRequest_Response();
+            var response = new GetClaimRequest_Response();
             response.ReturnCode = GrpcReturnCode.OK;
             response.MsgCode = "";
             //
@@ -161,15 +161,15 @@ namespace BlazorApp.Server.Services
                 else
                 {
                     //OK
-                    response.CompenRequest = new grpcCompenRequestModel();
-                    ClassHelper.CopyPropertiesData(findRecord, response.CompenRequest);
+                    response.ClaimRequest = new grpcClaimRequestModel();
+                    ClassHelper.CopyPropertiesData(findRecord, response.ClaimRequest);
                 }
             }
             catch (Exception ex)
             {
                 response.ReturnCode = GrpcReturnCode.Error_ByServer;
                 response.MsgCode = ex.Message;
-                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "GetCompenRequest", "Exception", response.ReturnCode, ex.Message);
+                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "GetClaimRequest", "Exception", response.ReturnCode, ex.Message);
             }
             //
             return await Task.FromResult(response);
@@ -424,11 +424,11 @@ namespace BlazorApp.Server.Services
         }
 
         //-------------------------------------------------------------------------------------------------------/
-        // GetCompenRequestList
+        // GetClaimRequestList
         //-------------------------------------------------------------------------------------------------------/
-        public override async Task<GetCompenRequestList_Response> GetCompenRequestList(Claim.Services.GetCompenRequestList_Request request, ServerCallContext context)
+        public override async Task<GetClaimRequestList_Response> GetClaimRequestList(Claim.Services.GetClaimRequestList_Request request, ServerCallContext context)
         {
-            var response = new GetCompenRequestList_Response();
+            var response = new GetClaimRequestList_Response();
             response.ReturnCode = GrpcReturnCode.OK;
             response.MsgCode = "";
             //
@@ -491,9 +491,9 @@ namespace BlazorApp.Server.Services
                 {
                     findRecords.ForEach(item =>
                     {
-                        var grpcItem = new grpcCompenRequestModel();
+                        var grpcItem = new grpcClaimRequestModel();
                         ClassHelper.CopyPropertiesData(item, grpcItem);
-                        response.CompenRequests.Add(grpcItem);
+                        response.ClaimRequests.Add(grpcItem);
                     });
                 }
             }
@@ -501,7 +501,7 @@ namespace BlazorApp.Server.Services
             {
                 response.ReturnCode = GrpcReturnCode.Error_ByServer;
                 response.MsgCode = ex.Message;
-                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "GetCompenRequest", "Exception", response.ReturnCode, ex.Message);
+                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "GetClaimRequest", "Exception", response.ReturnCode, ex.Message);
             }
             //
             return await Task.FromResult(response);
@@ -575,9 +575,9 @@ namespace BlazorApp.Server.Services
             return await Task.FromResult(response);
         }
         //-------------------------------------------------------------------------------------------------------/
-        // UpdateTotalCompenRequest
+        // UpdateTotalClaimRequest
         //-------------------------------------------------------------------------------------------------------/
-        public override async Task<Claim.Services.Empty_Response> UpdateTotalCompenRequest(UpdateTotalCompenRequest_Request request, ServerCallContext context)
+        public override async Task<Claim.Services.Empty_Response> UpdateTotalClaimRequest(UpdateTotalClaimRequest_Request request, ServerCallContext context)
         {
             var response = new Claim.Services.Empty_Response();
             response.ReturnCode = GrpcReturnCode.OK;
@@ -613,15 +613,15 @@ namespace BlazorApp.Server.Services
             {
                 response.ReturnCode = GrpcReturnCode.Error_ByServer;
                 response.MsgCode = ex.Message;
-                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "UpdateTotalCompenRequest", "Exception", response.ReturnCode, ex.Message);
+                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "UpdateTotalClaimRequest", "Exception", response.ReturnCode, ex.Message);
             }
             //
             return await Task.FromResult(response);
         }
         //-------------------------------------------------------------------------------------------------------/
-        // UpdateStatusCompenRequest
+        // UpdateStatusClaimRequest
         //-------------------------------------------------------------------------------------------------------/
-        public override async Task<Claim.Services.Empty_Response> UpdateStatusCompenRequest(Claim.Services.UpdateStatusCompenRequest_Request request, ServerCallContext context)
+        public override async Task<Claim.Services.Empty_Response> UpdateStatusClaimRequest(Claim.Services.UpdateStatusClaimRequest_Request request, ServerCallContext context)
         {
             var response = new Claim.Services.Empty_Response();
             response.ReturnCode = GrpcReturnCode.OK;
@@ -649,7 +649,7 @@ namespace BlazorApp.Server.Services
             {
                 response.ReturnCode = GrpcReturnCode.Error_ByServer;
                 response.MsgCode = ex.Message;
-                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "UpdateTotalCompenRequest", "Exception", response.ReturnCode, ex.Message);
+                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "UpdateTotalClaimRequest", "Exception", response.ReturnCode, ex.Message);
             }
             //
             return await Task.FromResult(response);

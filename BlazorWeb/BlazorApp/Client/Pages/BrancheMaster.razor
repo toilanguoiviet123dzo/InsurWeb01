@@ -1,4 +1,4 @@
-﻿@page "/branch-master"
+﻿@page "/BrancheMaster"
 @using Admin.Services
 @using Claim.Services
 @using System.Collections.ObjectModel;
@@ -26,9 +26,6 @@
             <DxDataGridColumn Field="@nameof(BranchMasterModel.BranchName)"
                               Caption="Tên"
                               Width="12rem" />
-            <DxDataGridColumn Field="@nameof(BranchMasterModel.InternalID)"
-                              Caption="Mã BEST cty"
-                              Width="5rem" />
             <DxDataGridColumn Field="@nameof(BranchMasterModel.Discriptions)"
                               Caption="Ghi chú"
                               Width="15rem" />
@@ -55,7 +52,7 @@
                 <DxFormLayout>
                     <DxFormLayoutItem Caption="Mã: " ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
-                            <DxTextBox @bind-Text="@EditContext.BranchID" />
+                            <DxTextBox @bind-Text="@EditContext.BranchID" InputCssClass="text-uppercase"/>
                             <ValidationMessage For="@(() => EditContext.BranchID)" />
                         </Template>
                     </DxFormLayoutItem>
@@ -63,11 +60,6 @@
                         <Template>
                             <DxTextBox @bind-Text="@EditContext.BranchName" />
                             <ValidationMessage For="@(() => EditContext.BranchName)" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Mã BEST cty: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.InternalID" />
                         </Template>
                     </DxFormLayoutItem>
                     <DxFormLayoutItem Caption="Ghi chú: " ColSpanMd="12" Context="FormLayoutContext">
@@ -93,9 +85,11 @@
     </DxDataGrid>
 </div>
 
-<ConfirmDialog Message="@ConfirmMessage" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
+<MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
 
 @code{
+    [CascadingParameter]
+    protected ProgramInfo Program { get; set; }
     private int PageRowCount = MyConstant.Grid_PageRowCount;
     FormEditContext EditContext = null;
     // Detail data
@@ -251,7 +245,6 @@
         // Update for edit field
         EditContext.EditingRow.BranchID = EditContext.BranchID;
         EditContext.EditingRow.BranchName = EditContext.BranchName;
-        EditContext.EditingRow.InternalID = EditContext.InternalID;
         EditContext.EditingRow.Discriptions = EditContext.Discriptions;
         EditContext.EditingRow.DspOrder = EditContext.DspOrder;
         EditContext.EditingRow.Enabled = EditContext.Enabled;
@@ -293,7 +286,6 @@
             //Edit context -> Editable data only
             BranchID = EditingRow.BranchID;
             BranchName = EditingRow.BranchName;
-            InternalID = EditingRow.InternalID;
             Discriptions = EditingRow.Discriptions;
             DspOrder = EditingRow.DspOrder;
             Enabled = EditingRow.Enabled;

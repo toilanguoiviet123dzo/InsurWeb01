@@ -101,9 +101,9 @@
 </div>
 
 
-
-
 @code {
+    [CascadingParameter]
+    protected ProgramInfo Program { get; set; }
     [Parameter]
     public int RoleMode { get; set; } = 2;  //0: View 1: Báo giá 2: Thương lượng 3: Duyệt
     [Parameter]

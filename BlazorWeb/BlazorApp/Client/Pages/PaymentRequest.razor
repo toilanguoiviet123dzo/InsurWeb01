@@ -709,7 +709,7 @@
          Width="1200px"
          ZIndex="1002">
     <BodyContentTemplate>
-        <RepairEstimation ClaimNo="@Model.ClaimNo"
+        <ClaimEstimation ClaimNo="@Model.ClaimNo"
                           ReqPersonName="@Model.ReqPersonName"
                           BranchName="@Model.BranchName"
                           RepairerName="@Model.RepairerName"
@@ -721,6 +721,8 @@
 
 
 @code {
+    [CascadingParameter]
+    protected ProgramInfo Program { get; set; }
     //Parameters and events
     [Parameter]
     public string ClaimNo { get; set; } = "";
@@ -746,7 +748,7 @@
     //
     private bool OriPayStatus = false;
     //
-    private CompenRequestModel Model = new CompenRequestModel();
+    private ClaimRequestModel Model = new ClaimRequestModel();
     private string AttachFileText = "File đính kèm (0 files)";
 
     #region Initialization
@@ -778,7 +780,7 @@
     }
     async Task InitMain()
     {
-        Model = new CompenRequestModel();
+        Model = new ClaimRequestModel();
         Model.UpdMode = 1;
 
         //ClaimNo
@@ -840,12 +842,12 @@
             //
             request.StringValue = ClaimNo;
             //Call api
-            var response = await ClaimServiceClient.GetCompenRequestAsync(request);
+            var response = await ClaimServiceClient.GetClaimRequestAsync(request);
             // Success
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
                 //Show success
-                ClassHelper.CopyPropertiesDataDateConverted(response.CompenRequest, Model);
+                ClassHelper.CopyPropertiesDataDateConverted(response.ClaimRequest, Model);
                 //
                 OriPayStatus = Model.PayStatus;
                 //ReqPerson, AprPersonID, PayPersonID, repairer
@@ -932,7 +934,7 @@
             }
 
             //Request
-            var request = new SaveCompenRequest_Request();
+            var request = new SaveClaimRequest_Request();
             var Credential = new Claim.Services.UserCredential()
             {
                 Username = WebUserCredential.Username,
@@ -942,29 +944,29 @@
             };
             request.Credential = Credential;
             //
-            request.CompenRequest = new grpcCompenRequestModel();
-            ClassHelper.CopyPropertiesDataDateConverted(Model, request.CompenRequest);
+            request.ClaimRequest = new grpcClaimRequestModel();
+            ClassHelper.CopyPropertiesDataDateConverted(Model, request.ClaimRequest);
 
             //ReqPerson
             if (ReqPerson != null)
             {
-                request.CompenRequest.ReqPersonID = ReqPerson.UserName;
-                request.CompenRequest.ReqPersonName = ReqPerson.Fullname;
+                request.ClaimRequest.ReqPersonID = ReqPerson.UserName;
+                request.ClaimRequest.ReqPersonName = ReqPerson.Fullname;
             }
             //AprPerson
             if (AprPerson != null)
             {
-                request.CompenRequest.AprPersonID = AprPerson.UserName;
-                request.CompenRequest.AprPersonName = AprPerson.Fullname;
+                request.ClaimRequest.AprPersonID = AprPerson.UserName;
+                request.ClaimRequest.AprPersonName = AprPerson.Fullname;
             }
             // PayPerson
             if (PayPerson != null)
             {
-                request.CompenRequest.PayPersonID = PayPerson.UserName;
-                request.CompenRequest.PayPersonName = PayPerson.Fullname;
+                request.ClaimRequest.PayPersonID = PayPerson.UserName;
+                request.ClaimRequest.PayPersonName = PayPerson.Fullname;
             }
             //Call api
-            var response = await ClaimServiceClient.SaveCompenRequestAsync(request);
+            var response = await ClaimServiceClient.SaveClaimRequestAsync(request);
             // Success
             if (response == null || response.ReturnCode != GrpcReturnCode.OK)
             {

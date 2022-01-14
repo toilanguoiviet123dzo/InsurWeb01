@@ -6,9 +6,9 @@ namespace BlazorApp.Client.BindingModels
     public class RepairerMasterModel
     {
         public string ID { get; set; } = "";
-        [Required]
+        [Required(ErrorMessage = "Bắt buộc nhập.")]
         public string RepairerID { get; set; } = "";
-        [Required]
+        [Required(ErrorMessage = "Bắt buộc nhập.")]
         public string RepairerName { get; set; } = "";
         public string PhoneNo { get; set; } = "";
         public string Email { get; set; } = "";

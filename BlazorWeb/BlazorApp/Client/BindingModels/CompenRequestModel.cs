@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BlazorApp.Client.BindingModels
 {
-    public class CompenRequestModel
+    public class ClaimRequestModel
     {
         public string ID { get; set; } = "";
         public string CustomerID { get; set; } = "";

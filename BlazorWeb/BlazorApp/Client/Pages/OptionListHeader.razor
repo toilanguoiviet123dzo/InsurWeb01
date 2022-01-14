@@ -1,4 +1,4 @@
-﻿@page "/listnamemaster"
+﻿@page "/OptionListHeader"
 @using Admin.Services
 @using System.Collections.ObjectModel
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
@@ -67,14 +67,16 @@
     <br />
 </div>
 
-<ConfirmDialog Message="@ConfirmMessage" @bind-Visible="@PopupVisible" confirm="@ConfirmHandler" />
+<MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
 
 
 @code{
+    [CascadingParameter]
+    protected ProgramInfo Program { get; set; }
     // Popup
     private string ConfirmMessage = "";
     private string ConfirmAction = "";
-    private bool PopupVisible = false;
+    private bool ConfirmVisible = false;
     // OptionListHeader
     readonly ObservableCollection<OptionListHeaderModel> DetailData = new ObservableCollection<OptionListHeaderModel>();
     // Init
@@ -172,9 +174,9 @@
     {
         DeletedRow = dataRow;
         // Show popup confirm
-        ConfirmMessage = "Delete row?";
+        ConfirmMessage = "Xóa dòng dữ liệu?";
         ConfirmAction = "DeleteRow";
-        PopupVisible = true;
+        ConfirmVisible = true;
         StateHasChanged();
     }
 
@@ -188,7 +190,7 @@
         }
 
         // Close confirm delete popup
-        PopupVisible = false;
+        ConfirmVisible = false;
         StateHasChanged();
     }
 

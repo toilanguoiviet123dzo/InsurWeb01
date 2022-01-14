@@ -12,7 +12,6 @@ namespace BlazorApp.Server.Models
     {
         public string BranchID { get; set; } = "";
         public string BranchName { get; set; } = "";
-        public string InternalID { get; set; } = "";
         public string Discriptions { get; set; } = "";
         public int DspOrder { get; set; }
         public bool Enabled { get; set; }

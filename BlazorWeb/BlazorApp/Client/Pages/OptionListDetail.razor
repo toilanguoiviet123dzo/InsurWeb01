@@ -1,4 +1,4 @@
-﻿@page "/optionlist"
+﻿@page "/OptionListDetail"
 @using Admin.Services
 @using System.Collections.ObjectModel;
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
@@ -25,7 +25,8 @@
                 HtmlRowDecoration="@OnHtmlRowDecoration"
                 HorizontalScrollBarMode="ScrollBarMode.Auto"
                 RowEditStart="@(dataRow => OnRowEditStarting(dataRow))"
-                RowInsertStart="@(() => OnRowEditStarting(null))">
+                RowInsertStart="@(() => OnRowEditStarting(null))"
+                PopupEditFormHeaderText="@PopupEditFormHeaderText">
         <Columns>
             <DxDataGridColumn Field="@nameof(OptionListModel.ItemName)"
                               Caption="Tên hạng mục"
@@ -106,9 +107,11 @@
     </DxDataGrid>
 </div>
 
-<ConfirmDialog Message="@ConfirmMessage" @bind-Visible="@PopupVisible" confirm="@ConfirmHandler" />
+<MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
 
-@code{
+@code {
+    [CascadingParameter]
+    protected ProgramInfo Program { get; set; }
     FormEditContext EditContext = null;
     // ListCode
     private readonly List<OptionListHeaderModel> ListCodeData = new List<OptionListHeaderModel>();
@@ -117,7 +120,8 @@
     // Popup
     private string ConfirmMessage = "";
     private string ConfirmAction = "";
-    private bool PopupVisible = false;
+    private bool ConfirmVisible = false;
+    private string PopupEditFormHeaderText = "";
     //
     protected override async Task OnInitializedAsync()
     {
@@ -143,15 +147,15 @@
         try
         {
             var request = new Empty_Request()
-            {
-                Credential = new UserCredential()
                 {
-                    Username = WebUserCredential.Username,
-                    RoleID = WebUserCredential.RoleID,
-                    AccessToken = WebUserCredential.AccessToken,
-                    ApiKey = WebUserCredential.ApiKey
-                }
-            };
+                    Credential = new UserCredential()
+                    {
+                        Username = WebUserCredential.Username,
+                        RoleID = WebUserCredential.RoleID,
+                        AccessToken = WebUserCredential.AccessToken,
+                        ApiKey = WebUserCredential.ApiKey
+                    }
+                };
             ListCodeData.Clear();
             var response = await adminServiceClient.GetOptionListHeaderAsync(request);
             if (response != null && response.ReturnCode == 200)
@@ -179,16 +183,16 @@
         {
             //Filter
             var requestString = new String_Request()
-            {
-                Credential = new UserCredential()
                 {
-                    Username = WebUserCredential.Username,
-                    RoleID = WebUserCredential.RoleID,
-                    AccessToken = WebUserCredential.AccessToken,
-                    ApiKey = WebUserCredential.ApiKey
-                },
-                StringValue = SelectedListCode
-            };
+                    Credential = new UserCredential()
+                    {
+                        Username = WebUserCredential.Username,
+                        RoleID = WebUserCredential.RoleID,
+                        AccessToken = WebUserCredential.AccessToken,
+                        ApiKey = WebUserCredential.ApiKey
+                    },
+                    StringValue = SelectedListCode
+                };
 
             //Get data from DB
             DetailData.Clear();
@@ -223,7 +227,7 @@
             DeleteRow();
         }
         //Close confirm delete popup
-        PopupVisible = false;
+        ConfirmVisible = false;
         StateHasChanged();
     }
 
@@ -235,12 +239,12 @@
             //Request
             var request = new SaveOptionList_Request();
             var Credential = new UserCredential()
-            {
-                Username = WebUserCredential.Username,
-                RoleID = WebUserCredential.RoleID,
-                AccessToken = WebUserCredential.AccessToken,
-                ApiKey = WebUserCredential.ApiKey
-            };
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                };
             request.Credential = Credential;
             // Convert to DB row
             request.Record = new grpcOptionList();
@@ -278,9 +282,9 @@
         DeletedRow = dataRow;
 
         //Show popup confirm
-        ConfirmMessage = "Delete row?";
+        ConfirmMessage = "Xóa dòng dữ liệu?";
         ConfirmAction = "DeleteRow";
-        PopupVisible = true;
+        ConfirmVisible = true;
         StateHasChanged();
     }
 
@@ -374,6 +378,7 @@
         // Insert row
         if (editingRow == null)
         {
+            PopupEditFormHeaderText = "Tạo mới";
             editingRow = new OptionListModel();
             editingRow.UpdMode = -1;
             //Init row here
@@ -385,9 +390,11 @@
         else
         {
             //Update row
+            PopupEditFormHeaderText = "Cập nhật";
             editingRow.UpdMode = 2;
             EditContext = new FormEditContext(editingRow, 2);
         }
+        this.StateHasChanged();
     }
 
     // Color of edit data

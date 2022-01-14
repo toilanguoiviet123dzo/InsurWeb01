@@ -405,7 +405,7 @@
          Width="1200px"
          ZIndex="1002">
     <BodyContentTemplate>
-        <RepairEstimation ClaimNo="@Model.ClaimNo"
+        <ClaimEstimation ClaimNo="@Model.ClaimNo"
                           ReqPersonName="@Model.ReqPersonName"
                           BranchName="@Model.BranchName"
                           RepairerName="@Model.RepairerName"
@@ -444,7 +444,7 @@
     private bool OriEstDoneStatus = false;
     private bool OriRepairStatus = false;
 
-    private CompenRequestModel Model = new CompenRequestModel();
+    private ClaimRequestModel Model = new ClaimRequestModel();
     private string AttachFileText = "File đính kèm (0 files)";
     private int EstRole = 2;    // edit
 
@@ -482,7 +482,7 @@
     }
     async Task InitMain()
     {
-        Model = new CompenRequestModel();
+        Model = new ClaimRequestModel();
         Model.UpdMode = 1;
 
         //ClaimNo
@@ -544,12 +544,12 @@
             //
             request.StringValue = ClaimNo;
             //Call api
-            var response = await ClaimServiceClient.GetCompenRequestAsync(request);
+            var response = await ClaimServiceClient.GetClaimRequestAsync(request);
             // Success
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
                 //Show success
-                ClassHelper.CopyPropertiesDataDateConverted(response.CompenRequest, Model);
+                ClassHelper.CopyPropertiesDataDateConverted(response.ClaimRequest, Model);
 
                 //ReqPerson, AprPersonID, PayPersonID, repairer
                 if (!string.IsNullOrWhiteSpace(Model.ReqPersonID)) ReqPerson = UserList.Find(x => x.UserName == Model.ReqPersonID);
@@ -636,7 +636,7 @@
             if (!OriRepairStatus && Model.RepairStatus) Model.RepairDoneDatetime = DateTime.Now;
 
             //Request
-            var request = new SaveCompenRequest_Request();
+            var request = new SaveClaimRequest_Request();
             var Credential = new Claim.Services.UserCredential()
             {
                 Username = WebUserCredential.Username,
@@ -646,10 +646,10 @@
             };
             request.Credential = Credential;
             //
-            request.CompenRequest = new grpcCompenRequestModel();
-            ClassHelper.CopyPropertiesDataDateConverted(Model, request.CompenRequest);
+            request.ClaimRequest = new grpcClaimRequestModel();
+            ClassHelper.CopyPropertiesDataDateConverted(Model, request.ClaimRequest);
             //Call api
-            var response = await ClaimServiceClient.SaveCompenRequestAsync(request);
+            var response = await ClaimServiceClient.SaveClaimRequestAsync(request);
             // Success
             if (response == null || response.ReturnCode != GrpcReturnCode.OK)
             {

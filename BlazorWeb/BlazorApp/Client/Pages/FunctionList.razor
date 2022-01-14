@@ -1,4 +1,4 @@
-﻿@page "/functionlist"
+﻿@page "/FunctionList"
 @using Admin.Services
 @using System.Collections.ObjectModel;
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
@@ -114,16 +114,18 @@
     </div>
 </div>
 
-<ConfirmDialog Message="@ConfirmMessage" @bind-Visible="@PopupVisible" confirm="@ConfirmHandler" />
+<MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true  MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
 
 @code{
+    [CascadingParameter]
+    protected ProgramInfo Program { get; set; }
     FormEditContext EditContext = null;
     // Detail data
     readonly ObservableCollection<FunctionListModel> DetailData = new ObservableCollection<FunctionListModel>();
     // Popup
     private string ConfirmMessage = "";
     private string ConfirmAction = "";
-    private bool PopupVisible = false;
+    private bool ConfirmVisible = false;
     //
     protected override async Task OnInitializedAsync()
     {
@@ -194,7 +196,7 @@
             CancelSaveMain();
         }
         //Close confirm delete popup
-        PopupVisible = false;
+        ConfirmVisible = false;
         StateHasChanged();
     }
 
@@ -210,7 +212,7 @@
         //Show popup confirm
         ConfirmMessage = "Cancel changed?";
         ConfirmAction = "CancelSaveMain";
-        PopupVisible = true;
+        ConfirmVisible = true;
         StateHasChanged();
     }
     async void CancelSaveMain()
@@ -231,7 +233,7 @@
         //Show popup confirm
         ConfirmMessage = "Save changed?";
         ConfirmAction = "SaveMain";
-        PopupVisible = true;
+        ConfirmVisible = true;
         StateHasChanged();
     }
 
@@ -333,9 +335,9 @@
         DeletedRow = dataRow;
 
         //Show popup confirm
-        ConfirmMessage = "Delete row?";
+        ConfirmMessage = "Xóa dòng dữ liệu?";
         ConfirmAction = "DeleteRow";
-        PopupVisible = true;
+        ConfirmVisible = true;
         StateHasChanged();
     }
 

@@ -1,4 +1,4 @@
-﻿@page "/customer-request-list"
+﻿@page "/ClaimRequest"
 @using Admin.Services
 @using Claim.Services
 @using Resource.Services
@@ -33,98 +33,100 @@
                 </HeaderCellTemplate>
                 <CellTemplate>
                     <div style="display:flex;justify-content:center">
-                        @if (((CompenRequestListModel)context).AcceptStatus)
+                        @if (((ClaimRequestListModel)context).AcceptStatus)
                         {
                             <!--View-->
                             <div class="text-center" style="width:3rem">
-                                <a class="fas fa-eye" style="font-size: 24px; color: black" @onclick="@(() => OnRowEditStarting(context as CompenRequestListModel))"></a>
+                                <a class="fas fa-eye" style="font-size: 24px; color: black" @onclick="@(() => OnRowEditStarting(context as ClaimRequestListModel))"></a>
                             </div>
                         }
                         else
                         {
                             <!--Edit-->
                             <div class="text-center" style="width:2.5rem">
-                                <a class="fa fa-pencil" style="font-size:24px" @onclick="@(() => OnRowEditStarting(context as CompenRequestListModel))"></a>
+                                <a class="fa fa-pencil" style="font-size:24px" @onclick="@(() => OnRowEditStarting(context as ClaimRequestListModel))"></a>
                             </div>
                             <!--Delete-->
                             <div class="text-center" style="width:2.5rem">
-                                <a class="fa fa-times" style="font-size:24px; color:red" @onclick="@(() => OnRowRemoving(context as CompenRequestListModel))"></a>
+                                <a class="fa fa-times" style="font-size:24px; color:red" @onclick="@(() => OnRowRemoving(context as ClaimRequestListModel))"></a>
                             </div>
                         }
                     </div>
                 </CellTemplate>
             </DxDataGridCommandColumn>
             <!--columns-->
-            <DxDataGridColumn Field="@nameof(CompenRequestListModel.ClaimNo)"
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.ClaimNo)"
                               Caption="Số HSBT"
                               SortOrder="DataGridColumnSortOrder.Descending"
                               Width="6rem" />
-            <DxDataGridDateEditColumn Field="@nameof(CompenRequestListModel.AcceptDatetime)"
+            <DxDataGridDateEditColumn Field="@nameof(ClaimRequestListModel.AcceptDatetime)"
                                       Caption="Ngày tiếp nhận"
                                       DisplayFormat="dd/MM/yyyy HH:mm"
                                       Width="9rem" />
-            <DxDataGridColumn Field="@nameof(CompenRequestListModel.StatusName)"
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.StatusName)"
                               Caption="Trạng thái"
                               Width="8rem" />
-            <DxDataGridColumn Field="@nameof(CompenRequestListModel.BranchName)"
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.BranchName)"
                               Caption="Chi nhánh"
                               Width="8rem" />
-            <DxDataGridColumn Field="@nameof(CompenRequestListModel.CarOwner)"
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.CarOwner)"
                               Caption="Tên NĐBH"
                               Width="10rem" />
-            <DxDataGridColumn Field="@nameof(CompenRequestListModel.PhoneNo)"
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.PhoneNo)"
                               Caption="Điện thoại"
                               Width="7rem" />
-            <DxDataGridColumn Field="@nameof(CompenRequestListModel.VCXContractNo)"
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.VCXContractNo)"
                               Caption="Số HĐBH"
                               Width="7rem" />
-            <DxDataGridColumn Field="@nameof(CompenRequestListModel.LicensePlate)"
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.LicensePlate)"
                               Caption="BKS (SK/SM)"
                               Width="7rem" />
-            <DxDataGridDateEditColumn Field="@nameof(CompenRequestListModel.CompenDateTime)"
+            <DxDataGridDateEditColumn Field="@nameof(ClaimRequestListModel.CompenDateTime)"
                                       Caption="Ngày yêu cầu"
                                       DisplayFormat="dd/MM/yyyy HH:mm"
                                       Width="9rem" />
-            <DxDataGridDateEditColumn Field="@nameof(CompenRequestListModel.AccidentDateTime)"
+            <DxDataGridDateEditColumn Field="@nameof(ClaimRequestListModel.AccidentDateTime)"
                                       Caption="Ngày tổn thất"
                                       DisplayFormat="dd/MM/yyyy HH:mm"
                                       Width="9rem" />
-            <DxDataGridColumn Field="@nameof(CompenRequestListModel.AccidentPlace)"
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.AccidentPlace)"
                               Caption="Nơi xảy ra tai nạn"
                               Width="12rem" />
-            <DxDataGridSpinEditColumn Field="@nameof(CompenRequestListModel.EstDamageAmount)"
+            <DxDataGridSpinEditColumn Field="@nameof(ClaimRequestListModel.EstDamageAmount)"
                                       DisplayFormat="N0"
                                       Caption="Ước tổn thất"
                                       Width="8rem" />
-            <DxDataGridColumn Field="@nameof(CompenRequestListModel.ReqPersonName)"
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.ReqPersonName)"
                               Caption="Cán bộ bồ thường"
                               Width="10rem" />
         </Columns>
     </DxDataGrid>
 </div>
 <!--Confirm dialog-->
-<ConfirmDialog Message="@ConfirmMessage" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
+<MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
 
 <!--Edit compen request-->
-<MyPopup @bind-Visible="@CompenRequestVisible"
+<MyPopup @bind-Visible="@ClaimEditVisible"
          VerticalAlignment="@VerticalAlignment.Top"
          HeaderText="Tờ trình"
          Width="1300px"
          ZIndex="1001">
     <BodyContentTemplate>
-        <CustomerRequest @bind-Visible="@CompenRequestVisible"
-                         ClaimNo="@ClaimNo"
-                         OnValidSumit="@(async() => await DisplayMain())" />
+        <ClaimRequestEdit @bind-Visible="@ClaimEditVisible"
+                      ClaimNo="@ClaimNo"
+                      OnValidSumit="@(async() => await DisplayMain())" />
     </BodyContentTemplate>
 </MyPopup>
 
 
-@code{
+@code {
+    [CascadingParameter]
+    protected ProgramInfo Program { get; set; }
     private int PageRowCount = MyConstant.Grid_PageRowCount;
     //
     // Detail data
-    DxDataGrid<CompenRequestListModel> grid;
-    readonly ObservableCollection<CompenRequestListModel> DetailData = new ObservableCollection<CompenRequestListModel>();
+    DxDataGrid<ClaimRequestListModel> grid;
+    readonly ObservableCollection<ClaimRequestListModel> DetailData = new ObservableCollection<ClaimRequestListModel>();
     // User list
     private List<UserAccountModel> UserList = new List<UserAccountModel>();
     private List<CodeNameModel> StatusList = new List<CodeNameModel>() {
@@ -143,7 +145,7 @@
     private string ConfirmAction = "";
     private string ConfirmMessage = "";
     private bool ConfirmVisible = false;
-    private bool CompenRequestVisible { get; set; } = false;
+    private bool ClaimEditVisible { get; set; } = false;
     //
     protected override async Task OnInitializedAsync()
     {
@@ -160,14 +162,14 @@
         try
         {
             //Filter
-            var request = new Claim.Services.GetCompenRequestList_Request();
+            var request = new Claim.Services.GetClaimRequestList_Request();
             request.Credential = new Claim.Services.UserCredential()
-            {
-                Username = WebUserCredential.Username,
-                RoleID = WebUserCredential.RoleID,
-                AccessToken = WebUserCredential.AccessToken,
-                ApiKey = WebUserCredential.ApiKey
-            };
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                };
             //CustomerID
             request.CustomerID = WebUserCredential.Username;
             //Full datetime
@@ -177,15 +179,15 @@
             //Get data from DB
             DetailData.Clear();
             //
-            var response = await ClaimServiceClient.GetCompenRequestListAsync(request);
+            var response = await ClaimServiceClient.GetClaimRequestListAsync(request);
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
-                if (response.CompenRequests != null)
+                if (response.ClaimRequests != null)
                 {
-                    foreach (var item in response.CompenRequests)
+                    foreach (var item in response.ClaimRequests)
                     {
                         //Parrent grid
-                        var dataRow = new CompenRequestListModel();
+                        var dataRow = new ClaimRequestListModel();
                         ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
                         //StatusName
                         if (!dataRow.AcceptStatus) dataRow.StatusName = "Chưa tiếp nhận";
@@ -231,7 +233,7 @@
     #endregion
 
     #region Grid main
-    void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<CompenRequestListModel> eventArgs)
+    void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<ClaimRequestListModel> eventArgs)
     {
         MyColor myColor = new MyColor();
         //CloseStatus
@@ -239,37 +241,37 @@
         //PayStatus
         if (eventArgs.DataItem.PayStatus) eventArgs.Style += myColor.DoneRowColor;
     }
-    void OnHtmlDataCellDecoration(DataGridHtmlDataCellDecorationEventArgs<CompenRequestListModel> eventArgs)
+    void OnHtmlDataCellDecoration(DataGridHtmlDataCellDecorationEventArgs<ClaimRequestListModel> eventArgs)
     {
         eventArgs.CssClass += " border-0";
         //eventArgs.Style += " ;font-weight:bold;text-align: right";
         //ClaimNo
-        if (eventArgs.FieldName == nameof(CompenRequestListModel.ClaimNo))
+        if (eventArgs.FieldName == nameof(ClaimRequestListModel.ClaimNo))
         {
             eventArgs.Style += " ;font-weight:bold; color: blue";
         }
         //VCXContractNo
-        if (eventArgs.FieldName == nameof(CompenRequestListModel.VCXContractNo))
+        if (eventArgs.FieldName == nameof(ClaimRequestListModel.VCXContractNo))
         {
             eventArgs.Style += " ;font-weight:bold; color: maroon";
         }
         //LicensePlate
-        if (eventArgs.FieldName == nameof(CompenRequestListModel.LicensePlate))
+        if (eventArgs.FieldName == nameof(ClaimRequestListModel.LicensePlate))
         {
             eventArgs.Style += " ;font-weight:bold; color: navy";
         }
         //CompenDateTime
-        if (eventArgs.FieldName == nameof(CompenRequestListModel.CompenDateTime))
+        if (eventArgs.FieldName == nameof(ClaimRequestListModel.CompenDateTime))
         {
             eventArgs.Style += " ;font-weight:bold; color: green";
         }
         //AccidentDateTime
-        if (eventArgs.FieldName == nameof(CompenRequestListModel.AccidentDateTime))
+        if (eventArgs.FieldName == nameof(ClaimRequestListModel.AccidentDateTime))
         {
             eventArgs.Style += " ;font-weight:bold; color: maroon";
         }
         //EstDamageAmount
-        if (eventArgs.FieldName == nameof(CompenRequestListModel.EstDamageAmount))
+        if (eventArgs.FieldName == nameof(ClaimRequestListModel.EstDamageAmount))
         {
             eventArgs.Style += " ;font-weight:bold; color: blue; text-align: right";
         }
@@ -282,8 +284,8 @@
     }
 
     //Confirm delete
-    CompenRequestListModel DeletedRow = null;
-    void OnRowRemoving(CompenRequestListModel dataRow)
+    ClaimRequestListModel DeletedRow = null;
+    void OnRowRemoving(ClaimRequestListModel dataRow)
     {
         //Validate skip if approved
         if (dataRow.AprStatus)
@@ -305,18 +307,18 @@
         try
         {
             //call api
-            var request = new Claim.Services.SaveCompenRequest_Request();
+            var request = new Claim.Services.SaveClaimRequest_Request();
             request.Credential = new Claim.Services.UserCredential()
-            {
-                Username = WebUserCredential.Username,
-                RoleID = WebUserCredential.RoleID,
-                AccessToken = WebUserCredential.AccessToken,
-                ApiKey = WebUserCredential.ApiKey
-            };
-            request.CompenRequest.ClaimNo = DeletedRow.ClaimNo;
-            request.CompenRequest.UpdMode = 3;
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                };
+            request.ClaimRequest.ClaimNo = DeletedRow.ClaimNo;
+            request.ClaimRequest.UpdMode = 3;
             //
-            var response = await ClaimServiceClient.SaveCompenRequestAsync(request);
+            var response = await ClaimServiceClient.SaveClaimRequestAsync(request);
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
                 DetailData.Remove(DeletedRow);
@@ -333,7 +335,7 @@
     }
 
     //Get data for edit/insert
-    void OnRowEditStarting(CompenRequestListModel editingRow)
+    void OnRowEditStarting(ClaimRequestListModel editingRow)
     {
         if (editingRow == null)
         {
@@ -345,7 +347,7 @@
             //ClaimNo
             ClaimNo = editingRow.ClaimNo;
         }
-        CompenRequestVisible = true;
+        ClaimEditVisible = true;
         StateHasChanged();
     }
     //Update row

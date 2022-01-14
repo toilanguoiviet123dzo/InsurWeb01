@@ -220,6 +220,8 @@
 </DxPopup>
 
 @code{
+    [CascadingParameter]
+    protected ProgramInfo Program { get; set; }
     // Popup
     private string ConfirmMessage = "";
     private string ConfirmAction = "";
@@ -421,7 +423,7 @@
     {
         DeletedRow = dataRow;
         // Show popup confirm
-        ConfirmMessage = "Delete row?";
+        ConfirmMessage = "Xóa dòng dữ liệu?";
         ConfirmAction = "DeleteRow";
         PopupVisible = true;
         StateHasChanged();
@@ -637,7 +639,7 @@
     {
         DeletedRowChild = dataRow;
         // Show popup confirm
-        ConfirmMessageChild = "Delete row?";
+        ConfirmMessageChild = "Xóa dòng dữ liệu?";
         ConfirmActionChild = "DeleteRow";
         PopupVisibleChild = true;
         StateHasChanged();

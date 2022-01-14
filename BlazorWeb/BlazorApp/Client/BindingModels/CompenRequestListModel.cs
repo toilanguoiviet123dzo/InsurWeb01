@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BlazorApp.Client.BindingModels
 {
-    public class CompenRequestListModel
+    public class ClaimRequestListModel
     {
         public string ClaimNo { get; set; } = "";
         public DateTime AcceptDatetime { get; set; }

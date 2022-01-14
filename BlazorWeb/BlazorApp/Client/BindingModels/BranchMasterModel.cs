@@ -10,7 +10,6 @@ namespace BlazorApp.Client.BindingModels
         public string BranchID { get; set; } = "";
         [Required(ErrorMessage = "Bắt buộc nhập.")]
         public string BranchName { get; set; } = "";
-        public string InternalID { get; set; } = "";
         public string Discriptions { get; set; } = "";
         public int DspOrder { get; set; }
         public bool Enabled { get; set; }

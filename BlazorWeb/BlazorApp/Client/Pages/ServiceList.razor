@@ -1,75 +1,79 @@
-﻿@page "/RoleList"
+﻿@page "/ServiceList"
 @using Admin.Services
-@using System.Collections.ObjectModel;
-@inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
-@inject IJSRuntime JsRuntime;
+@using System.Collections.ObjectModel
+@inject grpcAdminService.grpcAdminServiceClient adminServiceClient
 @inject IToastService toastService
 
 <br />
 <div style="width:100%">
     <DxDataGrid @ref="@grid"
-                Data="@DetailData"
+                Data="@detailData"
                 EditMode="DataGridEditMode.PopupEditForm"
-                PageSize="18"
+                PageSize="20"
                 ShowFilterRow="true"
                 HtmlRowDecoration="@OnHtmlRowDecoration"
                 HorizontalScrollBarMode="ScrollBarMode.Auto"
                 RowEditStart="@(dataRow => OnRowEditStarting(dataRow))"
                 RowInsertStart="@(() => OnRowEditStarting(null))">
         <Columns>
-
-            <DxDataGridColumn Field="@nameof(RoleListModel.RoleID)"
-                              Caption="RoleID"
-                              Width="5rem" />
-            <DxDataGridColumn Field="@nameof(RoleListModel.RoleName)"
-                              Caption="RoleName"
+            <DxDataGridColumn Field="@nameof(ServiceListModel.ID)" Visible="false" />
+            <DxDataGridColumn Field="@nameof(ServiceListModel.ServiceName)"
                               Width="15rem" />
-            <DxDataGridColumn Field="@nameof(RoleListModel.Discriptions)"
-                              Caption="Descriptions"
-                              Width="10rem%" />
-            <DxDataGridColumn Field="@nameof(RoleListModel.DspOrder)"
-                              Caption="Display order"
-                              Width="8rem" />
-            <DxDataGridDateEditColumn Field="@nameof(RoleListModel.CreatedOn)"
-                                      Caption="CreatedOn"
+            <DxDataGridColumn Field="@nameof(ServiceListModel.Descriptions)"
+                              Width="10rem" />
+            <DxDataGridColumn Field="@nameof(ServiceListModel.Host)"
+                              Width="10rem" />
+            <DxDataGridSpinEditColumn Field="@nameof(ServiceListModel.Port)"
+                                      Width="5rem" />
+            <DxDataGridColumn Field="@nameof(ServiceListModel.Url)"
+                              Width="20rem" />
+            <DxDataGridDateEditColumn Field="@nameof(ServiceListModel.CreatedOn)"
                                       DisplayFormat="dd/MM/yyyy HH:mm"
+                                      EditorVisible="false"
                                       Width="10rem" />
-            <DxDataGridDateEditColumn Field="@nameof(RoleListModel.ModifiedOn)"
-                                      Caption="ModifiedOn"
+            <DxDataGridDateEditColumn Field="@nameof(ServiceListModel.ModifiedOn)"
                                       DisplayFormat="dd/MM/yyyy HH:mm"
-                                      Width="10rem%" />
+                                      EditorVisible="false"
+                                      Width="10rem" />
             <!--Command columns-->
             <MyGridCommand Grid="grid"
                            ShowAddnew="true"
                            ShowEdit="true"
                            ShowDelete="true"
-                           OnRowRemoving="@((context) => OnRowRemoving(context as RoleListModel))" />
+                           OnRowRemoving="@((context) => OnRowRemoving(context as ServiceListModel))" />
         </Columns>
         <EditFormTemplate>
             <EditForm Model="@EditContext" Context="EditFormContext" OnValidSubmit="@UpdateRow">
                 <DataAnnotationsValidator />
                 <DxFormLayout>
-                    <DxFormLayoutItem Caption="Role ID: " ColSpanMd="12" Context="FormLayoutContext">
+                    <DxFormLayoutItem Caption="ServiceName: " ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
-                            <DxTextBox @bind-Text="@EditContext.RoleID" />
-                            <ValidationMessage For="@(() => EditContext.RoleID)" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Role Name: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.RoleName" />
-                            <ValidationMessage For="@(() => EditContext.RoleName)" />
+                            <DxTextBox @bind-Text="@EditContext.ServiceName" />
+                            <ValidationMessage For="@(() => EditContext.ServiceName)" />
                         </Template>
                     </DxFormLayoutItem>
                     <DxFormLayoutItem Caption="Descriptions: " ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
-                            <DxTextBox @bind-Text="@EditContext.Discriptions" />
-                            <ValidationMessage For="@(() => EditContext.Discriptions)" />
+                            <DxTextBox @bind-Text="@EditContext.Descriptions" />
+                            <ValidationMessage For="@(() => EditContext.Descriptions)" />
                         </Template>
                     </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Display order: " ColSpanMd="12" Context="FormLayoutContext">
+                    <DxFormLayoutItem Caption="Host: " ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
-                            <DxTextBox @bind-Text="@EditContext.DspOrder" />
+                            <DxTextBox @bind-Text="@EditContext.Host" />
+                            <ValidationMessage For="@(() => EditContext.Host)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Port: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxSpinEdit @bind-Value="@EditContext.Port" />
+                            <ValidationMessage For="@(() => EditContext.Port)" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Url: " ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxTextBox @bind-Text="@EditContext.Url" />
+                            <ValidationMessage For="@(() => EditContext.Url)" />
                         </Template>
                     </DxFormLayoutItem>
                     <!--OK Cancel-->
@@ -86,27 +90,25 @@
 </div>
 <MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
 
-@code{
+@code {
     [CascadingParameter]
     protected ProgramInfo Program { get; set; }
     FormEditContext EditContext = null;
     // Detail data
-    readonly ObservableCollection<RoleListModel> DetailData = new ObservableCollection<RoleListModel>();
+    readonly ObservableCollection<ServiceListModel> detailData = new ObservableCollection<ServiceListModel>();
     // Popup
     private string ConfirmMessage = "";
     private string ConfirmAction = "";
     private bool ConfirmVisible = false;
     //
+
     protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
-
-        //Display data ..
-        await DisplayMain();
+        DisplayMain();
+        await Task.Delay(1);
     }
-    #region Load data
-
-    async Task DisplayMain()
+    async void DisplayMain()
     {
         try
         {
@@ -119,34 +121,33 @@
                     RoleID = WebUserCredential.RoleID,
                     AccessToken = WebUserCredential.AccessToken,
                     ApiKey = WebUserCredential.ApiKey
-                },
+                }
+
             };
 
             //Get data from DB
-            DetailData.Clear();
-            var response = await adminServiceClient.GetRoleListAsync(requestString);
+            detailData.Clear();
+            var response = await adminServiceClient.GetServiceListAsync(requestString);
             if (response != null && response.ReturnCode == 200)
             {
-                foreach (var item in response.RoleList)
+                foreach (var item in response.ServiceList)
                 {
-                    RoleListModel dataRow = new RoleListModel();
+                    ServiceListModel dataRow = new ServiceListModel();
                     ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
                     //Upd mode
                     dataRow.UpdMode = 0;
                     //
-                    DetailData.Add(dataRow);
+                    detailData.Add(dataRow);
                 }
             }
         }
         catch (Exception ex)
         {
             toastService.ShowError(ex.Message, "Load dữ liệu thất bại.");
+            throw;
         }
     }
-    #endregion
-
-    #region Save
-
+    //Save
     void ConfirmHandler()
     {
         //Delete row
@@ -168,7 +169,67 @@
         ConfirmVisible = false;
         StateHasChanged();
     }
+    //
+    //
+    async void SaveMain()
+    {
+        try
+        {
+            var hasChanged = false;
+            //Request
+            SaveServiceList_Request request = new SaveServiceList_Request();
+            var Credential = new UserCredential()
+            {
+                Username = WebUserCredential.Username,
+                RoleID = WebUserCredential.RoleID,
+                AccessToken = WebUserCredential.AccessToken,
+                ApiKey = WebUserCredential.ApiKey
+            };
+            request.Credential = Credential;
+            //
+            foreach (ServiceListModel row in detailData)
+            {
+                if (row.UpdMode != 0)
+                {
+                    //Convert to DB row
+                    var dbRow = new grpcServiceList();
+                    ClassHelper.CopyPropertiesDataDateConverted(row, dbRow);
+                    request.ServiceList.Add(dbRow);
+                    //
+                    hasChanged = true;
+                }
+            }
+            //Check changed
+            if (!hasChanged)
+            {
+                //Message no change
+                toastService.ShowInfo("", "Nothing Changed!");
+                return;
+            }
 
+            //Call api
+            var response = await adminServiceClient.SaveServiceListAsync(request);
+            // Success
+            if (response != null && response.ReturnCode == 200)
+            {
+                //Show success
+                toastService.ShowSuccess("", "Save Success!");
+            }
+            else
+            {
+                toastService.ShowError("", "Lưu dữ liệu thất bại.");
+            }
+            
+            //Reload data
+            DisplayMain();
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message, "Lưu dữ liệu thất bại.");
+        }
+
+    }
+    //
     //Cancel changed
     void ShowConfirm_CancelSaveMain()
     {
@@ -184,10 +245,10 @@
         ConfirmVisible = true;
         StateHasChanged();
     }
-    async void CancelSaveMain()
+    void CancelSaveMain()
     {
         //Reload data
-        await DisplayMain();
+        DisplayMain();
     }
 
     //Save main
@@ -209,7 +270,7 @@
     //Check changed
     bool Check_Changed()
     {
-        foreach (RoleListModel row in DetailData)
+        foreach (ServiceListModel row in detailData)
         {
             if (row.UpdMode != 0)
             {
@@ -218,76 +279,14 @@
         }
         return false;
     }
-    //
-    async void SaveMain()
-    {
-        try
-        {
-            var hasChanged = false;
-            //Request
-            SaveRoleList_Request request = new SaveRoleList_Request();
-            var Credential = new UserCredential()
-            {
-                Username = WebUserCredential.Username,
-                RoleID = WebUserCredential.RoleID,
-                AccessToken = WebUserCredential.AccessToken,
-                ApiKey = WebUserCredential.ApiKey
-            };
-            request.Credential = Credential;
-            //
-            foreach (RoleListModel row in DetailData)
-            {
-                if (row.UpdMode != 0)
-                {
-                    //Convert to DB row
-                    var dbRow = new grpcRoleList();
-                    ClassHelper.CopyPropertiesDataDateConverted(row, dbRow);
-                    request.RoleList.Add(dbRow);
-                    //
-                    hasChanged = true;
-                }
-            }
-            //Check changed
-            if (!hasChanged)
-            {
-                //Message no change
-                toastService.ShowInfo("", "Nothing Changed!");
-                return;
-            }
-            //Call api
-            var response = await adminServiceClient.SaveRoleListAsync(request);
-            // Success
-            if (response != null && response.ReturnCode == 200)
-            {
-                //Show success
-                toastService.ShowSuccess("", "Save Success!");
-            }
-            else
-            {
-                toastService.ShowError("", "Lưu dữ liệu thất bại.");
-            }
-
-            //Reload data
-            await DisplayMain();
-        }
-        catch (Exception ex)
-        {
-            toastService.ShowError(ex.Message, "Lưu dữ liệu thất bại.");
-            throw;
-        }
-    }
-
-    #endregion
-
-    #region Grid main
     //Confirm delete
-    RoleListModel DeletedRow = null;
-    void OnRowRemoving(RoleListModel dataRow)
+    ServiceListModel DeletedRow = null;
+    void OnRowRemoving(ServiceListModel dataRow)
     {
         DeletedRow = dataRow;
 
         //Show popup confirm
-        ConfirmMessage = "Xóa dòng dữ liệu?";
+        ConfirmMessage = "Delete row?";
         ConfirmAction = "DeleteRow";
         ConfirmVisible = true;
         StateHasChanged();
@@ -306,7 +305,7 @@
         if (DeletedRow.UpdMode == 1)
         {
             //Remove new row from data source
-            DetailData.Remove(DeletedRow);
+            detailData.Remove(DeletedRow);
         }
         else
         {
@@ -321,16 +320,15 @@
     async Task UpdateRow()
     {
         //Update for edit field
-        var backupRow = new RoleListModel();
+        var backupRow = new ServiceListModel();
         ClassHelper.CopyPropertiesData(EditContext.EditingRow, backupRow);
         //
-        EditContext.EditingRow.SystemID = "";
-        EditContext.EditingRow.RoleID = EditContext.RoleID;
-        EditContext.EditingRow.RoleName = EditContext.RoleName;
-        EditContext.EditingRow.Discriptions = EditContext.Discriptions;
-        EditContext.EditingRow.DspOrder = EditContext.DspOrder;
+        EditContext.EditingRow.ServiceName = EditContext.ServiceName;
+        EditContext.EditingRow.Descriptions = EditContext.Descriptions;
+        EditContext.EditingRow.Host = EditContext.Host;
+        EditContext.EditingRow.Port = EditContext.Port;
+        EditContext.EditingRow.Url = EditContext.Url;
         EditContext.EditingRow.ModifiedOn = DateTime.Now;
-
         //Update mode
         if (EditContext.EditingRow.UpdMode == 0 || EditContext.EditingRow.UpdMode == 3)
         {
@@ -341,50 +339,30 @@
         if (EditContext.EditingRow.UpdMode == -1)
         {
             EditContext.EditingRow.UpdMode = 1;
-            DetailData.Add(EditContext.EditingRow);
+            detailData.Add(EditContext.EditingRow);
         }
 
         //Close popup & refresh data
         await grid.CancelRowEdit();
         await grid.Refresh();
     }
-    // Edit row model
-    DxDataGrid<RoleListModel> grid;
-    class FormEditContext : RoleListModel
-    {
-        public FormEditContext(RoleListModel roleListModel)
-        {
-            //Saved data
-            EditingRow = roleListModel;
-
-            //Editable data only
-            SystemID = EditingRow.SystemID;
-            RoleID = EditingRow.RoleID;
-            RoleName = EditingRow.RoleName;
-            Discriptions = EditingRow.Discriptions;
-            DspOrder = EditingRow.DspOrder;
-        }
-        public RoleListModel EditingRow { get; set; }
-        public Action StateHasChanged { get; set; }
-    }
-
     //Get data for edit/insert
-    void OnRowEditStarting(RoleListModel editingRow)
+    void OnRowEditStarting(ServiceListModel editingRow)
     {
         //Init new row
         if (editingRow == null)
         {
-            editingRow = new RoleListModel();
+            editingRow = new ServiceListModel();
             //
-            //editingRow.SystemID = SelectedListCode;
             editingRow.CreatedOn = DateTime.Now;
             editingRow.ModifiedOn = DateTime.Now;
             editingRow.UpdMode = -1;
         }
         EditContext = new FormEditContext(editingRow);
     }
+
     // Color of edit data
-    void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<RoleListModel> eventArgs)
+    void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<ServiceListModel> eventArgs)
     {
         MyColor myColor = new MyColor();
         if (eventArgs.DataItem.UpdMode == 1)
@@ -394,10 +372,24 @@
         else if (eventArgs.DataItem.UpdMode == 3)
             eventArgs.Style += myColor.DeleteRowColor;
     }
-    #endregion
 
-    #region Screen items
+    // Edit row model
+    DxDataGrid<ServiceListModel> grid;
+    class FormEditContext : ServiceListModel
+    {
+        public FormEditContext(ServiceListModel ServiceListModel)
+        {
+            //Saved data
+            EditingRow = ServiceListModel;
 
-    #endregion
-    //
+            //Editable data only
+            ServiceName = EditingRow.ServiceName;
+            Descriptions = EditingRow.Descriptions;
+            Host = EditingRow.Host;
+            Port = EditingRow.Port;
+            Url = EditingRow.Url;
+        }
+        public ServiceListModel EditingRow { get; set; }
+        public Action StateHasChanged { get; set; }
+    }
 }
