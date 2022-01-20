@@ -7,31 +7,6 @@
 @inject IJSRuntime JsRuntime;
 @inject IToastService toastService
 
-<style>
-    .color-blue {
-        color: blue !important;
-    }
-
-    .color-green {
-        color: green !important;
-    }
-
-    .color-maroon {
-        color: maroon !important;
-    }
-
-    .font-bold {
-        font-weight: bold !important;
-    }
-
-    .padding-right-col12 {
-        padding-right: 15px
-    }
-
-    .padding-right-col3 {
-        padding-right: 15px
-    }
-</style>
 
 <div class="container">
     <div class="row align-items-end">
@@ -40,7 +15,7 @@
             <MyTextEdit @bind-Text="Model.ClaimNo"
                         ReadOnly="true"
                         Literal="Số tờ trình"
-                        InputCssClass="color-blue font-bold" />
+                        InputCssClass="text-blue font-weight-bold" />
         </div>
         <!--Chi nhanh BM-->
         <div class="col-6 col-lg-2">

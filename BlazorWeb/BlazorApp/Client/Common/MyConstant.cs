@@ -23,7 +23,9 @@ namespace BlazorApp.Client.Common
         public const int MessageBoxIcon_Exclamation = 3;
         public const int MessageBoxIcon_Stop = 4;
         public const int MessageBoxIcon_Error = 5;
-        
+
+
+
 
     }// end class
 }

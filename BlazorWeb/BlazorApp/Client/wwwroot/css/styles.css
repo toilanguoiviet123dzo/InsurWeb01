@@ -1,4 +1,21 @@
 ﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+/*Text color STT*/
+.text-green {
+    color: green !important;
+}
+.text-blue {
+    color: blue !important;
+}
+.text-navy {
+    color: navy !important;
+}
+.text-maroon {
+    color: maroon !important;
+}
+.text-red {
+    color: red !important;
+}
+/*Text color END*/
 
 .navigation-menu {
     width: 120px;
