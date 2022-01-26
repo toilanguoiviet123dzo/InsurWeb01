@@ -24,6 +24,7 @@ namespace BlazorApp.Client.BindingModels
         public string DocumentLevelName { get; set; }
         public int Status { get; set; }
         public string StatusName { get; set; }
+        public string BrancheID { get; set; }
         public DateTime ModifiedOn { get; set; }
         public int UpdMode { get; set; }
     }

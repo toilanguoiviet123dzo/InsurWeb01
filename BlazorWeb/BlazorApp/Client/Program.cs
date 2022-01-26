@@ -69,6 +69,7 @@ namespace BlazorApp.Client
             //Setting master
             services.AddSingleton<SettingService>();
             services.AddSingleton<MasterService>();
+            services.AddSingleton<VoucherService>();
 
             //
             return services;

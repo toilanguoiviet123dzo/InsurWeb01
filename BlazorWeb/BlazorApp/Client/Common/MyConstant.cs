@@ -25,7 +25,5 @@ namespace BlazorApp.Client.Common
         public const int MessageBoxIcon_Error = 5;
 
 
-
-
     }// end class
 }

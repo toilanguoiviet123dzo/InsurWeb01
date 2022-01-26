@@ -10,7 +10,109 @@
 @inject IToastService toastService
 @using System.Collections.Concurrent
 @using System.Threading
-<br />
+
+<!--Filter-->
+<div class="card">
+    <h5 class="card-header">Bộ lọc dữ liệu</h5>
+    <div class="card-body">
+        <div class="container">
+            <!--Row 1-------------------------------------------------->
+            <div class="row">
+                <!--Phone-->
+                <div class="col-12 col-lg-3">
+                    <MyTextEdit @bind-Text="Filter_CusPhone"
+                                Literal="Phone"
+                                InputCssClass="text-blue font-weight-bold" />
+                </div>
+                <!--Ngày tiếp nhận-->
+                <div class="col-12 col-lg-3">
+                    <MyDateTimeEdit @bind-Date="Model.ClaimDate"
+                                    Literal="Ngày tiếp nhận"
+                                    InputCssClass="text-blue" />
+                </div>
+                <!--Người tiếp nhận-->
+                <div class="col-12 col-lg-3">
+                    <MyTextEdit @bind-Text="Model.ClaimAccountName"
+                                ReadOnly="true"
+                                Literal="Người tiếp nhận" />
+                </div>
+            </div>
+
+            <!--Row 2-------------------------------------------------->
+            <div class="row">
+                <!--Phone-->
+                <div class="col-12 col-lg-3">
+                    <MyTextEdit @bind-Text="Model.CusPhone"
+                                Literal="Phone"
+                                InputCssClass="text-blue font-weight-bold"
+                                CssClass="cusphone-focus" />
+                </div>
+                <!--Tên khách hàng-->
+                <div class="col-12 col-lg-3">
+                    <MyTextEdit @bind-Text="Model.CusFullname"
+                                Literal="Tên khách hàng"
+                                CssClass="cusfullname-focus" />
+                </div>
+                <!--Email-->
+                <div class="col-12 col-lg-3">
+                    <MyTextEdit @bind-Text="Model.CusPhone"
+                                Literal="SEmail" />
+                </div>
+                <!--Số CMND/CCCD-->
+                <div class="col-12 col-lg-3">
+                    <MyTextEdit @bind-Text="Model.CusCardID"
+                                Literal="Số CMND/CCCD" />
+                </div>
+            </div>
+
+            <!--Row 3-------------------------------------------------->
+            <div class="row">
+                <!--Loại sản phẩm-->
+                <div class="col-12 col-lg-3">
+                    <MyMuteLabel Literal="Loại sản phẩm" />
+                    <DxComboBox @ref="RefProduct"
+                                @bind-Value="SelectedProduct"
+                                Data="ProductList"
+                                AllowUserInput="true"
+                                FilteringMode="DataGridFilteringMode.Contains"
+                                TextFieldName="@(nameof(OptionListModel.ItemName))"
+                                SelectedItemChanged="@((OptionListModel selectedRow) => {
+                                                   Model.TPAProductID = selectedRow.ItemCode;
+                                                   Model.TPAProductName = selectedRow.ItemName;
+                                             })" />
+                </div>
+                <!--Số IMEI thiết bị-->
+                <div class="col-12 col-lg-3">
+                    <MyTextEdit @bind-Text="Model.DeviceIMEI"
+                                Literal="Số IMEI thiết bị"
+                                InputCssClass="text-purple font-weight-bold" />
+                </div>
+                <!--Model-->
+                <div class="col-12 col-lg-3">
+                    <MyTextEdit @bind-Text="Model.DeviceModel"
+                                Literal="Model" />
+                </div>
+            </div>
+
+            <!--Row 4-------------------------------------------------->
+            <div class="row">
+                <!--Địa chỉ nhận thiết bị-->
+                <div class="col-12 col-lg-3">
+                    <MyTextEdit @bind-Text="Model.PickupAddress"
+                                Literal="Địa chỉ nhận thiết bị"
+                                CssClass="pickupaddress-focus" />
+                </div>
+                <!--Địa chỉ trả thiết bị-->
+                <div class="col-12 col-lg-3">
+                    <MyTextEdit @bind-Text="Model.ReturnAddress"
+                                Literal="Địa chỉ trả thiết bị" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <!--Parent grid-->
 <div style="width:100%">
@@ -113,21 +215,23 @@
          ZIndex="1001">
     <BodyContentTemplate>
         <ClaimRequestEdit @bind-Visible="@ClaimEditVisible"
-                      ClaimNo="@ClaimNo"
-                      OnValidSumit="@(async() => await DisplayMain())" />
+                          ClaimNo="@ClaimNo"
+                          OnValidSumit="@(async() => await DisplayMain())" />
     </BodyContentTemplate>
 </MyPopup>
 
 
 @code {
+    //Program
     [CascadingParameter]
     protected ProgramInfo Program { get; set; }
-    private int PageRowCount = MyConstant.Grid_PageRowCount;
-    //
+    
     // Detail data
+    private int PageRowCount = MyConstant.Grid_PageRowCount;
     DxDataGrid<ClaimRequestListModel> grid;
     readonly ObservableCollection<ClaimRequestListModel> DetailData = new ObservableCollection<ClaimRequestListModel>();
-    // User list
+
+    // Master
     private List<UserAccountModel> UserList = new List<UserAccountModel>();
     private List<CodeNameModel> StatusList = new List<CodeNameModel>() {
         new CodeNameModel{CodeInt = 1, Name="Chưa tiếp nhận"},
@@ -135,17 +239,24 @@
     };
     private List<CodeNameModel> TimeFlagList = new List<CodeNameModel>() {
         new CodeNameModel{CodeInt = 1,Name="Tuần này"},
-        new CodeNameModel{CodeInt = 2,Name="Tháng này"},
-        new CodeNameModel{CodeInt = 3,Name="Tháng trước"},
-        new CodeNameModel{CodeInt = 4,Name="Năm nay"},
-        new CodeNameModel{CodeInt = 5,Name="Năm trước"}
+        new CodeNameModel{CodeInt = 2,Name="Tuần trước"},
+        new CodeNameModel{CodeInt = 3,Name="Tháng này"},
+        new CodeNameModel{CodeInt = 4,Name="Tháng trước"},
+        new CodeNameModel{CodeInt = 5,Name="Năm nay"}
     };
-    private string ClaimNo = "123456";
     // Confirm dialog
     private string ConfirmAction = "";
     private string ConfirmMessage = "";
     private bool ConfirmVisible = false;
     private bool ClaimEditVisible { get; set; } = false;
+
+    //Filter
+    private string Filter_CusPhone = "";
+    private string Filter_DeviceIMEI = "";
+    private string Filter_CusFullname = "";
+    private BranchMasterModel Filter_Branch = new BranchMasterModel();
+    private OptionListModel Filter_Insure = new OptionListModel();
+    
     //
     protected override async Task OnInitializedAsync()
     {

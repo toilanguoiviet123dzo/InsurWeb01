@@ -18,6 +18,7 @@ namespace BlazorApp.Server.Models
         public string Email { get; set; } = "";
         public string Address { get; set; } = "";
         public string RoleID { get; set; } = "";
+        public string BrancheID { get; set; } = "";
         public int ApproveLevel { get; set; }
         public string ApproveLevelName { get; set; }
         public int DocumentLevel { get; set; }
