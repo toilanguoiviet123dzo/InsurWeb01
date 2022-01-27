@@ -1,48 +1,67 @@
 ﻿@typeparam T
 
-    <style>
-        .text-align-right {
-            text-align: right;
-        }
-    </style>
+<style>
+    .text-align-right {
+        text-align: right;
+    }
+</style>
 
-    <div style="width:@Width">
-        <label class="demo-text cw-320 mt-2 text-muted" style="padding: 0; margin: 0; font-size: small">@Literal</label>
-        <DxMaskedInput Value="@Value"
-                       ValueChanged="@((T value) => OnValueChanged(value))"
-                       BindValueMode="BindValueMode.OnInput"
-                       TextChanged="@(async (text) => await OnTextChanged(text))"
-                       Mask="@Mask"
-                       ReadOnly="@ReadOnly"
-                       InputCssClass="@(InputCssClass + " text-align-right" )"
-                       CssClass="@CssClass" />
-    </div>
+<div style="width:@Width">
+    <label class="text-muted" style="padding: 0; margin: 0; font-size: small">@Literal</label>
+    <DxMaskedInput Value="@Value"
+                   ValueChanged="@((T value) => OnValueChanged(value))"
+                   BindValueMode="BindValueMode.OnInput"
+                   TextChanged="@(async (text) => await OnTextChanged(text))"
+                   Mask="@Mask"
+                   ReadOnly="@ReadOnly"
+                   InputCssClass="@(InputCssClass + " text-align-right" )"
+                   CssClass="@CssClass"
+                   @attributes="Attributes"/>
+</div>
 
-    @code {
-        [Parameter]
-        public string CssClass { get; set; } = "";
-        [Parameter]
-        public string Width { get; set; } = "100%";
-        [Parameter]
-        public string Literal { get; set; } = "";
-        [Parameter]
-        public string InputCssClass { get; set; } = "";
-        [Parameter]
-        public bool ReadOnly { get; set; } = false;
-        [Parameter]
-        public string Mask { get; set; } = "N0";
-        [Parameter]
-        public T Value { get; set; }
-        [Parameter]
-        public EventCallback<T> ValueChanged { get; set; }
-        private async Task OnValueChanged(T newValue)
+@code {
+    [Parameter]
+    public bool TabStop { get; set; } = true;
+    [Parameter]
+    public string CssClass { get; set; } = "";
+    [Parameter]
+    public string Width { get; set; } = "100%";
+    [Parameter]
+    public string Literal { get; set; } = "";
+    [Parameter]
+    public string InputCssClass { get; set; } = "";
+    [Parameter]
+    public bool ReadOnly { get; set; } = false;
+    [Parameter]
+    public string Mask { get; set; } = "N0";
+    [Parameter]
+    public T Value { get; set; }
+    [Parameter]
+    public EventCallback<T> ValueChanged { get; set; }
+    private async Task OnValueChanged(T newValue)
+    {
+        await ValueChanged.InvokeAsync(newValue);
+    }
+    [Parameter]
+    public EventCallback<string> TextChanged { get; set; }
+    private async Task OnTextChanged(string newValue)
+    {
+        await TextChanged.InvokeAsync(newValue);
+    }
+
+    //Attributes
+    private Dictionary<string, object> Attributes { get; set; }
+    //
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        //ReadOnly
+        if (ReadOnly || !TabStop)
         {
-            await ValueChanged.InvokeAsync(newValue);
-        }
-        [Parameter]
-        public EventCallback<string> TextChanged { get; set; }
-        private async Task OnTextChanged(string newValue)
-        {
-            await TextChanged.InvokeAsync(newValue);
+            Attributes = new Dictionary<string, object>()
+                                            {
+                                                { "tabIndex", "-1" }
+                                            };
         }
     }
+}

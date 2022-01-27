@@ -6,7 +6,7 @@
 </style>
 
 <div>
-    <label class="demo-text cw-320 mt-2 text-muted" style="padding: 0; margin: 0; font-size: small">@Literal</label>
+    <label class="text-muted" style="padding: 0; margin: 0; font-size: small">@Literal</label>
     <DxMemo @ref="@Ref"
             Text="@Text"
             TextChanged="@((string x) => OnTextChanged(x))"
@@ -19,12 +19,12 @@
             CssClass="@CssClass"
             Rows="@Rows"
             Columns="@Columns"
-            ResizeMode="@ResizeMode" />
+            ResizeMode="@ResizeMode"/>
 </div>
 
 @code {
     [Parameter]
-    public DxMemo Ref { get; set; }
+    public bool TabStop { get; set; } = true;
     [Parameter]
     public string Literal { get; set; } = "";
     [Parameter]
@@ -34,7 +34,7 @@
     [Parameter]
     public MemoResizeMode ResizeMode { get; set; } = MemoResizeMode.VerticalAndHorizontal;
     [Parameter]
-    public int Columns { get; set; } = 100;
+    public int Columns { get; set; } = 0;
     [Parameter]
     public bool ReadOnly { get; set; } = false;
     [Parameter]
@@ -54,5 +54,30 @@
     private async Task OnTextChanged(string newValue)
     {
         await TextChanged.InvokeAsync(newValue);
+    }
+
+    //Ref
+    public DxMemo Ref { get; set; }
+
+    //Attributes
+    private Dictionary<string, object> Attributes { get; set; }
+    //
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        //Skip Tab
+        if (ReadOnly || !TabStop)
+        {
+            Attributes = new Dictionary<string, object>()
+                                            {
+                                                { "tabIndex", "-1" }
+                                            };
+        }
+    }
+
+    //Focus
+    public async void Focus()
+    {
+        await Ref.FocusAsync();
     }
 }

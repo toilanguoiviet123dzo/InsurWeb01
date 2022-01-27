@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BlazorApp.Shared.Models
+namespace BlazorApp.Client.BindingModels
 {
     public class ClaimRequestModel
     {
@@ -39,6 +39,7 @@ namespace BlazorApp.Shared.Models
         public double InsurAmount { get; set; }
         public string AcceptNotes { get; set; } = "";
         public bool AcceptStatus { get; set; }
+        public bool CancelStatus { get; set; }
         //Pickup
         public DateTime PickupReqDate { get; set; }
         public DateTime PickupDoneDate1 { get; set; }
@@ -89,7 +90,8 @@ namespace BlazorApp.Shared.Models
         public string ReturnAccountName { get; set; } = "";
         public string ReturnAddress { get; set; } = "";
         public string ReturnNotes { get; set; } = "";
-        public bool ReturnStatus { get; set; }
+        public bool ReturnStatus1 { get; set; }
+        public bool ReturnStatus2 { get; set; }
         //sumary
         public double ClaimAmount { get; set; }
         public double ApproveAmount { get; set; }

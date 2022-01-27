@@ -24,6 +24,9 @@ namespace BlazorApp.Client.Common
         public const int MessageBoxIcon_Stop = 4;
         public const int MessageBoxIcon_Error = 5;
 
+        //Action
+        public const int ConfirmAction_DeleteRow = 1;
+
 
     }// end class
 }

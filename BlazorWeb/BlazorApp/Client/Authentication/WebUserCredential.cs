@@ -12,7 +12,7 @@ namespace Cores.GrpcClient.Authentication
         public static string Username = "";
         public static string Fullname = "";
         public static string RoleID = "";
-        public static string BrancheID = "";
+        public static string BrancheID = "HCM";
         public static string AccessToken = "";
         public static string ApiKey = "apiKey5963";
         public static int ApproveLevel = 0;

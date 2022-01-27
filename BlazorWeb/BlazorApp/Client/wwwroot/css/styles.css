@@ -18,6 +18,23 @@
 .text-purple {
     color: purple !important;
 }
+
+.font-italic {
+    font-style: italic !important;
+}
+.font-normal {
+    font-style: normal !important;
+}
+.font-weight-bold {
+    font-weight: bold !important;
+}
+.font-weight-light {
+    font-weight: lighter !important;
+}
+.text-justify {
+    text-align: justify !important;
+}
+
 /*Text color END*/
 
 .navigation-menu {

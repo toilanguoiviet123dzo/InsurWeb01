@@ -11,7 +11,7 @@ using MongoDB.Driver.Linq;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using Google.Protobuf;
-using Google.Protobuf.WellKnownTypes;
+//using Google.Protobuf.WellKnownTypes;
 using System.Text;
 using Cores.Service;
 using Grpc.Net.Client;
@@ -47,28 +47,15 @@ namespace BlazorApp.Server.Services
                     case 1:
                         var newRecord = new mdClaimRequest();
                         ClassHelper.CopyPropertiesData(request.ClaimRequest, newRecord);
-                        newRecord.ID = "";
+                        newRecord.ID = newRecord.GenerateNewID();
                         newRecord.ModifiedOn = DateTime.UtcNow;
+                        newRecord.TextSearch = newRecord.CusFullname.RemoveVietnameseSign();
 
                         //Commit VoucherNo
                         var commitedVovoucher = await MyVoucher.CommitVoucherNo("001", newRecord.ClaimNo);
                         if (!string.IsNullOrWhiteSpace(commitedVovoucher))
                         {
-                            //Update Estimation + Attach file for new ClaimNo
-                            if (newRecord.ClaimNo != commitedVovoucher)
-                            {
-                                //mdAttachFile
-                                await DB.Update<mdAttachFile>()
-                                        .Match(a => a.VoucherNo == newRecord.ClaimNo)
-                                        .Modify(x => x.VoucherNo, newRecord.ClaimNo)
-                                        .ExecuteAsync();
-                            }
                             newRecord.ClaimNo = commitedVovoucher;
-                        }
-                        //Update Estimation for approval
-                        if (request.IsApproval)
-                        {
-                            
                         }
                         //
                         await newRecord.SaveAsync();
@@ -81,12 +68,7 @@ namespace BlazorApp.Server.Services
                         {
                             ClassHelper.CopyPropertiesData(request.ClaimRequest, oldRecord);
                             oldRecord.ModifiedOn = DateTime.UtcNow;
-
-                            //Update Estimation for approval
-                            if (request.IsApproval)
-                            {
-                                
-                            }
+                            oldRecord.TextSearch = oldRecord.CusFullname.RemoveVietnameseSign();
                             //
                             await oldRecord.SaveAsync();
                         }
@@ -99,28 +81,24 @@ namespace BlazorApp.Server.Services
                     //delete
                     case 3:
                         //mdClaimRequest
-                        await DB.DeleteAsync<mdClaimRequest>(request.ClaimRequest.ID);
-
-                        //mdRepairEstimation
-                        await DB.DeleteAsync<mdRepairEstimation>(x => x.ClaimNo == request.ClaimRequest.ClaimNo);
-
-                        //Delete resource
-                        var findRecords = await DB.Find<mdAttachFile>()
-                                                  .Match(a => a.VoucherNo == request.ClaimRequest.ClaimNo)
-                                                  .ExecuteAsync();
-                        if (findRecords != null)
+                        var deleteClaim = await DB.Find<mdClaimRequest>()
+                                                   .Match(x => x.ClaimNo == request.ClaimRequest.ClaimNo)
+                                                   .ExecuteFirstAsync();
+                        if (deleteClaim != null)
                         {
-                            foreach (var record in findRecords)
+                            //Delete resource
+                            foreach (var image in deleteClaim.Images)
                             {
                                 var resourceFile = new grpcResourceFileModel();
-                                resourceFile.ResourceID = record.ResourceID;
+                                resourceFile.ResourceID = image.ImageID;
                                 resourceFile.UpdMode = 3;   //Delete
                                 //
                                 var resourceID = await ResourceService.SaveResourceFile(resourceFile);
                             }
+
+                            //Delete claim
+                            await DB.DeleteAsync<mdClaimRequest>(deleteClaim.ID);
                         }
-                        //Delete mdAttachFile
-                        await DB.DeleteAsync<mdAttachFile>(x => x.VoucherNo == request.ClaimRequest.ClaimNo);
                         //
                         break;
                     default:
@@ -136,7 +114,7 @@ namespace BlazorApp.Server.Services
             }
             return await Task.FromResult(response);
         }
-        
+
 
         //-------------------------------------------------------------------------------------------------------/
         // GetClaimRequest
@@ -170,6 +148,71 @@ namespace BlazorApp.Server.Services
                 response.ReturnCode = GrpcReturnCode.Error_ByServer;
                 response.MsgCode = ex.Message;
                 MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "GetClaimRequest", "Exception", response.ReturnCode, ex.Message);
+            }
+            //
+            return await Task.FromResult(response);
+        }
+
+        //-------------------------------------------------------------------------------------------------------/
+        // GetCustomerInfo
+        //-------------------------------------------------------------------------------------------------------/
+        public override async Task<GetCustomerInfo_Response> GetCustomerInfo(Claim.Services.String_Request request, ServerCallContext context)
+        {
+            var response = new GetCustomerInfo_Response();
+            response.ReturnCode = GrpcReturnCode.OK;
+            response.MsgCode = "";
+            //
+            try
+            {
+                var findRecord = await DB.Find<mdClaimRequest>()
+                                          .Match(a => a.CusPhone == request.StringValue)
+                                          .ExecuteFirstAsync();
+                //
+                if (findRecord == null)
+                {
+                    response.ReturnCode = GrpcReturnCode.Error_201;
+                    return await Task.FromResult(response);
+                }
+                else
+                {
+                    //OK
+                    response.CusEmail = findRecord.CusEmail;
+                    response.CusFullname = findRecord.CusFullname;
+                    response.CusCardID = findRecord.CusCardID;
+                    response.PickupAddress = findRecord.PickupAddress;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ReturnCode = GrpcReturnCode.Error_ByServer;
+                response.MsgCode = ex.Message;
+                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "GetCustomerInfo", "Exception", response.ReturnCode, ex.Message);
+            }
+            //
+            return await Task.FromResult(response);
+        }
+
+        //-------------------------------------------------------------------------------------------------------/
+        // GetInsureContract
+        //-------------------------------------------------------------------------------------------------------/
+        public override async Task<GetInsureContract_Response> GetInsureContract(Claim.Services.GetInsureContract_Request request, ServerCallContext context)
+        {
+            var response = new GetInsureContract_Response();
+            response.ReturnCode = GrpcReturnCode.OK;
+            response.MsgCode = "";
+            //
+            try
+            {
+                //Todo: Call ebao api for get contract info
+                response.InsurStartDate = DateTime.UtcNow.ToTimestamp();
+                response.InsurEndDate = DateTime.UtcNow.AddYears(1).ToTimestamp();
+                response.InsurAmount = 999999999;
+            }
+            catch (Exception ex)
+            {
+                response.ReturnCode = GrpcReturnCode.Error_ByServer;
+                response.MsgCode = ex.Message;
+                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "GetInsureContract", "Exception", response.ReturnCode, ex.Message);
             }
             //
             return await Task.FromResult(response);
@@ -436,54 +479,36 @@ namespace BlazorApp.Server.Services
             {
                 var query = DB.Find<mdClaimRequest>();
 
-                //CustomerID
-                if (!string.IsNullOrWhiteSpace(request.CustomerID)) query.Match(a => a.CustomerID == request.CustomerID);
-                //ReqPersonID
-                if (!string.IsNullOrWhiteSpace(request.ReqPersonID)) query.Match(a => a.ReqPersonID == request.ReqPersonID);
-                //EstPersonID
-                if (!string.IsNullOrWhiteSpace(request.EstPersonID)) query.Match(a => a.EstPersonID == request.EstPersonID);
-                //AprPersonID
-                if (!string.IsNullOrWhiteSpace(request.AprPersonID)) query.Match(a => a.AprPersonID == request.AprPersonID);
-                //PayPersonID
-                if (!string.IsNullOrWhiteSpace(request.PayPersonID)) query.Match(a => a.PayPersonID == request.PayPersonID);
-                //PhoneNo
-                if (!string.IsNullOrWhiteSpace(request.PhoneNo)) query.Match(a => a.PhoneNo.Contains(request.PhoneNo));
-                //CarOwner
-                if (!string.IsNullOrWhiteSpace(request.CarOwner)) query.Match(a => a.CarOwner.Contains(request.CarOwner));
-                //ClaimNo
-                if (!string.IsNullOrWhiteSpace(request.ClaimNo)) query.Match(a => a.ClaimNo.Contains(request.ClaimNo));
-                //LicensePlate
-                if (!string.IsNullOrWhiteSpace(request.LicensePlate)) query.Match(a => a.LicensePlate.Contains(request.LicensePlate));
-
-                //Not Accept
-                if (request.Status == 1) query.Match(a => !a.AcceptStatus);
-                //Not process
-                if (request.Status == 2) query.Match(a => a.AcceptStatus && !a.CompenStatus);
-                //Not req est
-                if (request.Status == 3) query.Match(a => a.CompenStatus && !a.EstReqStatus);
-                //Not done est
-                if (request.Status == 4) query.Match(a => a.EstReqStatus && !a.EstDoneStatus);
-                //Not Accept est
-                if (request.Status == 5) query.Match(a => a.EstDoneStatus && !a.EstAprStatus);
-                //Not approve
-                if (request.Status == 6) query.Match(a => a.EstAprStatus && !a.AprStatus);
-                //Not repair
-                if (request.Status == 7) query.Match(a => a.AprStatus && !a.RepairStatus);
-                //Not repair Accept
-                if (request.Status == 8) query.Match(a => a.RepairStatus && !a.AprRepairStatus);
-                //Not payment
-                if (request.Status == 9) query.Match(a => a.AprRepairStatus && !a.PayStatus);
-
+                // CusPhone
+                if (!string.IsNullOrWhiteSpace(request.CusPhone)) query.Match(a => a.CusPhone.Contains(request.CusPhone));
+                //DeviceIMEI
+                if (!string.IsNullOrWhiteSpace(request.DeviceIMEI)) query.Match(a => a.DeviceIMEI.Contains(request.DeviceIMEI));
+                //CusFullname
+                if (!string.IsNullOrWhiteSpace(request.CusFullname)) query.Match(a => a.CusFullname.RemoveVietnameseSign().Contains(request.CusFullname));
+                //BrancheID
+                if (!string.IsNullOrWhiteSpace(request.BrancheID)) query.Match(a => a.BrancheID == request.BrancheID);
+                //InsurCompanyID
+                if (!string.IsNullOrWhiteSpace(request.InsurCompanyID)) query.Match(a => a.InsurCompanyID == request.InsurCompanyID);
+                //Status
+                if (request.Status == 1) query.Match(a => a.AcceptStatus == request.StatusCheck ? true : false);
+                if (request.Status == 2) query.Match(a => a.PickupStatus1 == request.StatusCheck ? true : false);
+                if (request.Status == 3) query.Match(a => a.PickupStatus2 == request.StatusCheck ? true : false);
+                if (request.Status == 4) query.Match(a => a.CheckStatus == request.StatusCheck ? true : false);
+                if (request.Status == 5) query.Match(a => a.EstimationStatus == request.StatusCheck ? true : false);
+                if (request.Status == 6) query.Match(a => a.ApproveStatus == request.StatusCheck ? true : false);
+                if (request.Status == 7) query.Match(a => a.RepairStatus == request.StatusCheck ? true : false);
+                if (request.Status == 8) query.Match(a => a.ReturnStatus1 == request.StatusCheck ? true : false);
+                if (request.Status == 9) query.Match(a => a.ReturnStatus2 == request.StatusCheck ? true : false);
+                //Time range
                 //StartDate
                 if (request.StartDate.ToDateTime().ToString("yyyyMMdd") != DateTime.Today.MinShortDateString())
                 {
-                    query.Match(a => a.CompenDateTime >= request.StartDate.ToDateTime());
+                    query.Match(a => a.ClaimDate >= request.StartDate.ToDateTime());
                 }
                 //EndDate
                 if (request.EndDate.ToDateTime().ToString("yyyyMMdd") != DateTime.Today.MaxShortDateString())
                 {
-                    query.Match(a => a.CompenDateTime <= request.EndDate.ToDateTime());
-                    //
+                    query.Match(a => a.ClaimDate <= request.EndDate.ToDateTime());
                 }
                 var findRecords = await query.ExecuteAsync();
                 //
@@ -493,6 +518,7 @@ namespace BlazorApp.Server.Services
                     {
                         var grpcItem = new grpcClaimRequestModel();
                         ClassHelper.CopyPropertiesData(item, grpcItem);
+                        //
                         response.ClaimRequests.Add(grpcItem);
                     });
                 }
@@ -575,53 +601,9 @@ namespace BlazorApp.Server.Services
             return await Task.FromResult(response);
         }
         //-------------------------------------------------------------------------------------------------------/
-        // UpdateTotalClaimRequest
-        //-------------------------------------------------------------------------------------------------------/
-        public override async Task<Claim.Services.Empty_Response> UpdateTotalClaimRequest(UpdateTotalClaimRequest_Request request, ServerCallContext context)
-        {
-            var response = new Claim.Services.Empty_Response();
-            response.ReturnCode = GrpcReturnCode.OK;
-            response.MsgCode = "";
-            //
-            try
-            {
-                var findRecord = await DB.Find<mdClaimRequest>()
-                                         .Match(x => x.ClaimNo == request.ClaimNo)
-                                         .ExecuteFirstAsync();
-                //
-                if (findRecord != null)
-                {
-                    findRecord.EstRepairPrice = request.EstRepairPrice;
-                    findRecord.DealRepairPrice = request.DealRepairPrice;
-                    findRecord.AprRepairPrice = request.AprRepairPrice;
-                    findRecord.EstVAT = request.EstVAT;
-                    findRecord.DealVAT = request.DealVAT;
-                    findRecord.AprVAT = request.AprVAT;
-                    //Derived
-                    findRecord.DiscountAmount = Math.Round((findRecord.AprRepairPrice + findRecord.AprVAT) * findRecord.DiscountRate, 0);
-                    findRecord.ClaimPrice = findRecord.AprRepairPrice + findRecord.AprVAT - findRecord.DiscountAmount - findRecord.TipAmount;
-
-                    //Save
-                    await findRecord.SaveAsync();
-                }
-                else
-                {
-                    response.ReturnCode = GrpcReturnCode.Error_201;
-                }
-            }
-            catch (Exception ex)
-            {
-                response.ReturnCode = GrpcReturnCode.Error_ByServer;
-                response.MsgCode = ex.Message;
-                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "UpdateTotalClaimRequest", "Exception", response.ReturnCode, ex.Message);
-            }
-            //
-            return await Task.FromResult(response);
-        }
-        //-------------------------------------------------------------------------------------------------------/
         // UpdateStatusClaimRequest
         //-------------------------------------------------------------------------------------------------------/
-        public override async Task<Claim.Services.Empty_Response> UpdateStatusClaimRequest(Claim.Services.UpdateStatusClaimRequest_Request request, ServerCallContext context)
+        public override async Task<Claim.Services.Empty_Response> CancelClaimRequest(Claim.Services.String_Request request, ServerCallContext context)
         {
             var response = new Claim.Services.Empty_Response();
             response.ReturnCode = GrpcReturnCode.OK;
@@ -630,13 +612,12 @@ namespace BlazorApp.Server.Services
             try
             {
                 var findRecord = await DB.Find<mdClaimRequest>()
-                                         .Match(x => x.ClaimNo == request.ClaimNo)
+                                         .Match(x => x.ClaimNo == request.StringValue)
                                          .ExecuteFirstAsync();
                 //
                 if (findRecord != null)
                 {
-                    if (request.IsUpdateAcceptStatus) findRecord.AcceptStatus = request.AcceptStatus;
-                    if (request.IsUpdateCancelStatus) findRecord.CancelStatus = request.CancelStatus;
+                    findRecord.CancelStatus = true;
                     //Save
                     await findRecord.SaveAsync();
                 }
@@ -649,7 +630,7 @@ namespace BlazorApp.Server.Services
             {
                 response.ReturnCode = GrpcReturnCode.Error_ByServer;
                 response.MsgCode = ex.Message;
-                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "UpdateTotalClaimRequest", "Exception", response.ReturnCode, ex.Message);
+                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "CancelClaimRequest", "Exception", response.ReturnCode, ex.Message);
             }
             //
             return await Task.FromResult(response);

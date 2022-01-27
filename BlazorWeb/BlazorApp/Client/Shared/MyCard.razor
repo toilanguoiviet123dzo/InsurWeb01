@@ -1,0 +1,13 @@
+﻿<div class="card mb-2">
+    <h6 class="card-header p-1 text-muted font-italic">@Title</h6>
+    <div class="card-body px-0 pt-1 pb-2">
+        @CardBody
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = "";
+    [Parameter]
+    public RenderFragment CardBody { get; set; }
+}

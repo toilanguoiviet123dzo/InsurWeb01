@@ -83,7 +83,7 @@ namespace Cores.Utilities
             "ýỳỵỷỹ",
             "ÝỲỴỶỸ"
         };
-        public static void RemoveVietnameseSign(this string s)
+        public static string RemoveVietnameseSign(this string s)
         {
             //Replace sign
             for (int i = 1; i < VietnameseSigns.Length; i++)
@@ -91,6 +91,8 @@ namespace Cores.Utilities
                 for (int j = 0; j < VietnameseSigns[i].Length; j++)
                     s = s.Replace(VietnameseSigns[i][j], VietnameseSigns[0][i - 1]);
             }
+            //
+            return s;
         }
         public static string Base64Encode(string plainText)
         {

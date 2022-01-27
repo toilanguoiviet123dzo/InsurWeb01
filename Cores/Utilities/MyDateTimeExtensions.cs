@@ -91,6 +91,10 @@ namespace Cores.Utilities
         {
             return Timestamp.FromDateTime(dt.ToUniversalTime());
         }
+        public static DateTime ToLocalDateFromTimestamp(this Timestamp dt)
+        {
+            return dt.ToDateTime().ToLocalTime();
+        }
         public static DateTime ToDateTime(this Timestamp dt)
         {
             return dt.ToDateTime();

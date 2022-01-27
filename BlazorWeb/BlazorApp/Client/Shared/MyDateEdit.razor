@@ -1,16 +1,19 @@
 ﻿<div style="width:@Width">
-    <label class="demo-text cw-320 mt-2 text-muted" style="padding: 0; margin: 0; font-size: small">@Literal</label>
+    <label class="text-muted" style="padding: 0; margin: 0; font-size: small">@Literal</label>
     <DxDateEdit CssClass="@CssClass"
                 InputCssClass="@InputCssClass"
                 Format="@Format"
                 Mask="@Format"
                 ReadOnly="@ReadOnly"
                 DateChanged="@((DateTime newValue) => OnDateChanged(newValue))"
-                Date="@Date"/>
+                Date="@Date"
+                @attributes="Attributes"/>
 </div>
 @code {
     [Parameter]
-    public string Width { get; set; } = "100%";
+    public bool TabStop { get; set; } = true;
+    [Parameter]
+    public string Width { get; set; } = "10rem";
     [Parameter]
     public string Literal { get; set; } = "";
     [Parameter]
@@ -28,5 +31,20 @@
     private async Task OnDateChanged(DateTime newValue)
     {
         await DateChanged.InvokeAsync(newValue);
+    }
+    //Attributes
+    private Dictionary<string, object> Attributes { get; set; }
+    //
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        //ReadOnly
+        if (ReadOnly || !TabStop)
+        {
+            Attributes = new Dictionary<string, object>()
+                                            {
+                                                { "tabIndex", "-1" }
+                                            };
+        }
     }
 }

@@ -1,21 +1,25 @@
-﻿@typeparam TData
+﻿@typeparam TValue
 <div style="width:@Width">
-    <label class="demo-text cw-320 mt-2 text-muted" style="padding:0;margin:0;font-size:small">@Literal</label>
-    <DxComboBox Data="@Data"
+    <label class="text-muted" style="padding:0;margin:0;font-size:small">@Literal</label>
+    <DxComboBox @ref="Ref"
+                Data="@Data"
                 Value="@Value"
-                ValueChanged="@((TData selectedValue) => OnValueChanged(selectedValue))"
-                SelectedItemChanged="@((TData selectedValue) => OnSelectedItemChanged(selectedValue))"
+                ValueChanged="@((TValue selectedValue) => OnValueChanged(selectedValue))"
+                SelectedItemChanged="@((TValue selectedValue) => OnSelectedItemChanged(selectedValue))"
                 TextFieldName="@TextFieldName"
                 ClearButtonDisplayMode="@ClearButtonDisplayMode"
                 AllowUserInput="@AllowUserInput"
                 ReadOnly="@ReadOnly"
                 InputCssClass="@InputCssClass"
                 CssClass="@CssClass"
-                FilteringMode="DataGridFilteringMode.Contains">
+                FilteringMode="DataGridFilteringMode.Contains"
+                @attributes="Attributes">
     </DxComboBox>
 </div>
 
 @code {
+    [Parameter]
+    public bool TabStop { get; set; } = true;
     [Parameter]
     public string Width { get; set; } = "100%";
     [Parameter]
@@ -29,7 +33,7 @@
     [Parameter]
     public DataEditorClearButtonDisplayMode ClearButtonDisplayMode { get; set; } = DataEditorClearButtonDisplayMode.Never;
     [Parameter]
-    public List<TData> Data { get; set; } = new List<TData>();
+    public List<TValue> Data { get; set; } = new List<TValue>();
     [Parameter]
     public bool ReadOnly { get; set; } = false;
     [Parameter]
@@ -37,19 +41,45 @@
 
     //Value
     [Parameter]
-    public TData Value { get; set; }
+    public TValue Value { get; set; }
     [Parameter]
-    public EventCallback<TData> ValueChanged { get; set; }
-    private async Task OnValueChanged(TData newValue)
+    public EventCallback<TValue> ValueChanged { get; set; }
+    private async Task OnValueChanged(TValue newValue)
     {
+        Value = newValue;
         await ValueChanged.InvokeAsync(newValue);
     }
 
     //SelectedItemChanged
     [Parameter]
-    public EventCallback<TData> SelectedItemChanged { get; set; }
-    private async void OnSelectedItemChanged(TData newValue)
+    public EventCallback<TValue> SelectedItemChanged { get; set; }
+    private async void OnSelectedItemChanged(TValue newValue)
     {
+        Value = newValue;
         await SelectedItemChanged.InvokeAsync(newValue);
+    }
+
+    //Ref
+    private DxComboBox<TValue, TValue> Ref;
+
+    //Attributes
+    private Dictionary<string, object> Attributes { get; set; }
+    //
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        //ReadOnly
+        if (ReadOnly || !TabStop)
+        {
+            Attributes = new Dictionary<string, object>()
+                                            {
+                                                { "tabIndex", "-1" }
+                                            };
+        }
+    }
+    //Focus
+    public async void Focus()
+    {
+        await Ref.FocusAsync();
     }
 }

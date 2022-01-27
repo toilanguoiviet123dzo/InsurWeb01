@@ -12,109 +12,111 @@
 @using System.Threading
 
 <!--Filter-->
-<div class="card">
-    <h5 class="card-header">Bộ lọc dữ liệu</h5>
-    <div class="card-body">
-        <div class="container">
+<MyCard Title="Bộ lọc dữ liệu">
+    <CardBody>
+        <div class="container-fluid">
             <!--Row 1-------------------------------------------------->
             <div class="row">
                 <!--Phone-->
-                <div class="col-12 col-lg-3">
+                <div class="col-12 col-lg-2">
                     <MyTextEdit @bind-Text="Filter_CusPhone"
                                 Literal="Phone"
                                 InputCssClass="text-blue font-weight-bold" />
                 </div>
-                <!--Ngày tiếp nhận-->
-                <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.ClaimDate"
-                                    Literal="Ngày tiếp nhận"
-                                    InputCssClass="text-blue" />
+                <!--Số IMEI thiết bị-->
+                <div class="col-12 col-lg-2">
+                    <MyTextEdit @bind-Text="Filter_DeviceIMEI"
+                                Literal="Số IMEI thiết bị"
+                                InputCssClass="text-purple font-weight-bold" />
                 </div>
-                <!--Người tiếp nhận-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.ClaimAccountName"
-                                ReadOnly="true"
-                                Literal="Người tiếp nhận" />
+                <!--Tên khách hàng-->
+                <div class="col-12 col-lg-2">
+                    <MyTextEdit @bind-Text="Filter_CusFullname"
+                                Literal="Tên khách hàng" />
+                </div>
+                <!--Chi nhánh bồi thường-->
+                <div class="col-12 col-lg-2">
+                    <MyMuteLabel Literal="Chi nhánh bồi thường" />
+                    <DxComboBox @bind-Value="Filter_Branch"
+                                Data="BranchList"
+                                AllowUserInput="true"
+                                FilteringMode="DataGridFilteringMode.Contains"
+                                TextFieldName="@(nameof(BranchMasterModel.BranchName))" />
                 </div>
             </div>
 
             <!--Row 2-------------------------------------------------->
             <div class="row">
-                <!--Phone-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.CusPhone"
-                                Literal="Phone"
-                                InputCssClass="text-blue font-weight-bold"
-                                CssClass="cusphone-focus" />
-                </div>
-                <!--Tên khách hàng-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.CusFullname"
-                                Literal="Tên khách hàng"
-                                CssClass="cusfullname-focus" />
-                </div>
-                <!--Email-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.CusPhone"
-                                Literal="SEmail" />
-                </div>
-                <!--Số CMND/CCCD-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.CusCardID"
-                                Literal="Số CMND/CCCD" />
-                </div>
-            </div>
-
-            <!--Row 3-------------------------------------------------->
-            <div class="row">
-                <!--Loại sản phẩm-->
-                <div class="col-12 col-lg-3">
-                    <MyMuteLabel Literal="Loại sản phẩm" />
-                    <DxComboBox @ref="RefProduct"
-                                @bind-Value="SelectedProduct"
-                                Data="ProductList"
+                <!--Công ty bảo hiểm-->
+                <div class="col-12 col-lg-2">
+                    <MyMuteLabel Literal="Công ty bảo hiểm" />
+                    <DxComboBox @bind-Value="Filter_Insure"
+                                Data="InsureList"
                                 AllowUserInput="true"
                                 FilteringMode="DataGridFilteringMode.Contains"
-                                TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                SelectedItemChanged="@((OptionListModel selectedRow) => {
-                                                   Model.TPAProductID = selectedRow.ItemCode;
-                                                   Model.TPAProductName = selectedRow.ItemName;
-                                             })" />
+                                TextFieldName="@(nameof(OptionListModel.ItemName))" />
                 </div>
-                <!--Số IMEI thiết bị-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.DeviceIMEI"
-                                Literal="Số IMEI thiết bị"
-                                InputCssClass="text-purple font-weight-bold" />
+                <!--Thời gian-->
+                <div class="col-12 col-lg-2">
+                    <MyComboBox @bind-Value="Filter_TimeFlag"
+                                Data="TimeFlagList"
+                                TextFieldName="@(nameof(CodeNameModel.Name))"
+                                AllowUserInput="true"
+                                SelectedItemChanged="@((CodeNameModel selectedItem) =>
+                                                       {
+                                                            var timeRange = MyDateTimeSelector.Select_DateTimeRange1(selectedItem);
+                                                            Filter_StartDate = timeRange.StartDate;
+                                                            Filter_EndDate = timeRange.EndDate;
+                                                            this.StateHasChanged();
+                                                       })"
+                                ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                                Literal="Thời gian" />
                 </div>
-                <!--Model-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.DeviceModel"
-                                Literal="Model" />
+                <!--StartDate, EndDate-->
+                <div class="col-12 col-lg-4">
+                    <div class="row">
+                        <div class="col-6">
+                            <MyDateEdit @bind-Date="Filter_StartDate"
+                                        Format="dd/MM/yyyy"
+                                        Literal="Từ ngày" />
+                        </div>
+                        <div class="col-6">
+                            <MyDateEdit @bind-Date="Filter_EndDate"
+                                        Format="dd/MM/yyyy"
+                                        Literal="Đến ngày" />
+                        </div>
+                    </div>
+                </div>
+                <!--Trạng thái-->
+                <div class="col-6 col-lg-2 pr-lg-4">
+                    <div class="row align-items-end">
+                        <div class="col-8">
+                            <MyComboBox @bind-Value="Filter_Status"
+                                        Data="StatusList"
+                                        TextFieldName="@(nameof(CodeNameModel.Name))"
+                                        AllowUserInput="true"
+                                        ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                                        Literal="Trạng thái" />
+                        </div>
+                        <div class="col-4">
+                            <!--Check Chưa/Xong-->
+                            <DxCheckBox Checked="@StatusCheck"
+                                        CheckedChanged="@((bool newValue) => {
+                                                      StatusCheck = newValue;
+                                                      CheckName = newValue? "Xong" : "Chưa";
+                                                  })">
+                                <label> @CheckName </label>
+                            </DxCheckBox>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!--Row 4-------------------------------------------------->
-            <div class="row">
-                <!--Địa chỉ nhận thiết bị-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.PickupAddress"
-                                Literal="Địa chỉ nhận thiết bị"
-                                CssClass="pickupaddress-focus" />
-                </div>
-                <!--Địa chỉ trả thiết bị-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.ReturnAddress"
-                                Literal="Địa chỉ trả thiết bị" />
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+        </div><!--End container-->
+    </CardBody>
+</MyCard>
 
-
-
-<!--Parent grid-->
+<!--Grid-->
 <div style="width:100%">
     <DxDataGrid @ref="@grid"
                 Data="@DetailData"
@@ -130,7 +132,7 @@
             <DxDataGridCommandColumn Width="5rem" VisibleIndex="0">
                 <HeaderCellTemplate>
                     <div class="text-center">
-                        <a class="fa fa-plus" style="font-size:24px" @onclick="@(() => OnRowEditStarting(null))"></a>
+                        <a class="fa fa-plus fa-2x" @onclick="@(() => OnRowEditStarting(null))"></a>
                     </div>
                 </HeaderCellTemplate>
                 <CellTemplate>
@@ -139,18 +141,18 @@
                         {
                             <!--View-->
                             <div class="text-center" style="width:3rem">
-                                <a class="fas fa-eye" style="font-size: 24px; color: black" @onclick="@(() => OnRowEditStarting(context as ClaimRequestListModel))"></a>
+                                <a class="fas fa-eye fa-2x" @onclick="@(() => OnRowEditStarting(context as ClaimRequestListModel))"></a>
                             </div>
                         }
                         else
                         {
                             <!--Edit-->
                             <div class="text-center" style="width:2.5rem">
-                                <a class="fa fa-pencil" style="font-size:24px" @onclick="@(() => OnRowEditStarting(context as ClaimRequestListModel))"></a>
+                                <a class="fa fa-pencil fa-2x" @onclick="@(() => OnRowEditStarting(context as ClaimRequestListModel))"></a>
                             </div>
                             <!--Delete-->
                             <div class="text-center" style="width:2.5rem">
-                                <a class="fa fa-times" style="font-size:24px; color:red" @onclick="@(() => OnRowRemoving(context as ClaimRequestListModel))"></a>
+                                <a class="fa fa-times fa-2x text-danger" @onclick="@(() => OnRowRemoving(context as ClaimRequestListModel))"></a>
                             </div>
                         }
                     </div>
@@ -158,49 +160,41 @@
             </DxDataGridCommandColumn>
             <!--columns-->
             <DxDataGridColumn Field="@nameof(ClaimRequestListModel.ClaimNo)"
-                              Caption="Số HSBT"
+                              Caption="Số tiếp nhận"
                               SortOrder="DataGridColumnSortOrder.Descending"
                               Width="6rem" />
-            <DxDataGridDateEditColumn Field="@nameof(ClaimRequestListModel.AcceptDatetime)"
+            <DxDataGridDateEditColumn Field="@nameof(ClaimRequestListModel.ClaimDate)"
                                       Caption="Ngày tiếp nhận"
                                       DisplayFormat="dd/MM/yyyy HH:mm"
                                       Width="9rem" />
             <DxDataGridColumn Field="@nameof(ClaimRequestListModel.StatusName)"
                               Caption="Trạng thái"
-                              Width="8rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.BranchName)"
-                              Caption="Chi nhánh"
-                              Width="8rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.CarOwner)"
-                              Caption="Tên NĐBH"
+                              Width="7rem" />
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.CusFullname)"
+                              Caption="Tên khách hàng"
                               Width="10rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.PhoneNo)"
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.CusPhone)"
                               Caption="Điện thoại"
+                              Width="6rem" />
+            <DxDataGridDateEditColumn Field="@nameof(ClaimRequestListModel.IncidentDate)"
+                                      Caption="Ngày sự cố"
+                                      DisplayFormat="dd/MM/yyyy"
+                                      Width="6rem" />
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.DeviceModel)"
+                              Caption="Model thiết bị"
+                              Width="8rem" />
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.DeviceIMEI)"
+                              Caption="Số IMEI thiết bị"
+                              Width="8rem" />
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.PickupAddress)"
+                              Caption="Địa chỉ lấy thiết bị"
+                              Width="8rem" />
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.ClaimAccountName)"
+                              Caption="Người tiếp nhận"
                               Width="7rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.VCXContractNo)"
-                              Caption="Số HĐBH"
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.BrancheName)"
+                              Caption="Chi nhánh bồi thường"
                               Width="7rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.LicensePlate)"
-                              Caption="BKS (SK/SM)"
-                              Width="7rem" />
-            <DxDataGridDateEditColumn Field="@nameof(ClaimRequestListModel.CompenDateTime)"
-                                      Caption="Ngày yêu cầu"
-                                      DisplayFormat="dd/MM/yyyy HH:mm"
-                                      Width="9rem" />
-            <DxDataGridDateEditColumn Field="@nameof(ClaimRequestListModel.AccidentDateTime)"
-                                      Caption="Ngày tổn thất"
-                                      DisplayFormat="dd/MM/yyyy HH:mm"
-                                      Width="9rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.AccidentPlace)"
-                              Caption="Nơi xảy ra tai nạn"
-                              Width="12rem" />
-            <DxDataGridSpinEditColumn Field="@nameof(ClaimRequestListModel.EstDamageAmount)"
-                                      DisplayFormat="N0"
-                                      Caption="Ước tổn thất"
-                                      Width="8rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.ReqPersonName)"
-                              Caption="Cán bộ bồ thường"
-                              Width="10rem" />
         </Columns>
     </DxDataGrid>
 </div>
@@ -211,7 +205,7 @@
 <MyPopup @bind-Visible="@ClaimEditVisible"
          VerticalAlignment="@VerticalAlignment.Top"
          HeaderText="Tờ trình"
-         Width="1300px"
+         Width="1100px"
          ZIndex="1001">
     <BodyContentTemplate>
         <ClaimRequestEdit @bind-Visible="@ClaimEditVisible"
@@ -225,28 +219,20 @@
     //Program
     [CascadingParameter]
     protected ProgramInfo Program { get; set; }
-    
+
     // Detail data
     private int PageRowCount = MyConstant.Grid_PageRowCount;
     DxDataGrid<ClaimRequestListModel> grid;
     readonly ObservableCollection<ClaimRequestListModel> DetailData = new ObservableCollection<ClaimRequestListModel>();
 
     // Master
-    private List<UserAccountModel> UserList = new List<UserAccountModel>();
-    private List<CodeNameModel> StatusList = new List<CodeNameModel>() {
-        new CodeNameModel{CodeInt = 1, Name="Chưa tiếp nhận"},
-        new CodeNameModel{CodeInt = 2, Name="Chưa Xử lý"}
-    };
-    private List<CodeNameModel> TimeFlagList = new List<CodeNameModel>() {
-        new CodeNameModel{CodeInt = 1,Name="Tuần này"},
-        new CodeNameModel{CodeInt = 2,Name="Tuần trước"},
-        new CodeNameModel{CodeInt = 3,Name="Tháng này"},
-        new CodeNameModel{CodeInt = 4,Name="Tháng trước"},
-        new CodeNameModel{CodeInt = 5,Name="Năm nay"}
-    };
-    // Confirm dialog
-    private string ConfirmAction = "";
+    private List<BranchMasterModel> BranchList = new List<BranchMasterModel>();
+    private List<OptionListModel> InsureList = new List<OptionListModel>();
+    private List<CodeNameModel> StatusList = MyClaimStatus.Get_StatusList();
+    private List<CodeNameModel> TimeFlagList = MyDateTimeSelector.Get_TimeRangeList();
+    // Popup
     private string ConfirmMessage = "";
+    private int ConfirmAction = 0;
     private bool ConfirmVisible = false;
     private bool ClaimEditVisible { get; set; } = false;
 
@@ -254,9 +240,16 @@
     private string Filter_CusPhone = "";
     private string Filter_DeviceIMEI = "";
     private string Filter_CusFullname = "";
+    private CodeNameModel Filter_Status { get; set; }
+    private CodeNameModel Filter_TimeFlag { get; set; }
+    private DateTime Filter_StartDate { get; set; } = DateTime.Today.MinDate().ToLocalTime();
+    private DateTime Filter_EndDate { get; set; } = DateTime.Today.MaxDate().ToLocalTime();
     private BranchMasterModel Filter_Branch = new BranchMasterModel();
     private OptionListModel Filter_Insure = new OptionListModel();
-    
+    //
+    private string ClaimNo = "";
+    private bool StatusCheck = false;
+    private string CheckName = "Chưa";
     //
     protected override async Task OnInitializedAsync()
     {
@@ -281,33 +274,50 @@
                     AccessToken = WebUserCredential.AccessToken,
                     ApiKey = WebUserCredential.ApiKey
                 };
-            //CustomerID
-            request.CustomerID = WebUserCredential.Username;
-            //Full datetime
-            request.StartDate = DateTime.Today.MinDate().ToTimestamp();
-            request.EndDate = DateTime.Today.MaxDate().ToTimestamp();
-
-            //Get data from DB
-            DetailData.Clear();
+            //CusPhone
+            if (!string.IsNullOrWhiteSpace(Filter_CusPhone)) request.CusPhone = Filter_CusPhone;
+            //DeviceIMEI
+            if (!string.IsNullOrWhiteSpace(Filter_DeviceIMEI)) request.DeviceIMEI = Filter_DeviceIMEI;
+            //CusFullname
+            if (!string.IsNullOrWhiteSpace(Filter_CusFullname)) request.CusFullname = Filter_CusFullname;
+            //BrancheID
+            if (Filter_Branch != null && !string.IsNullOrWhiteSpace(Filter_Branch.BranchID)) request.BrancheID = Filter_Branch.BranchID;
+            //InsurCompanyID
+            if (Filter_Insure != null && !string.IsNullOrWhiteSpace(Filter_Insure.ItemCode)) request.InsurCompanyID = Filter_Insure.ItemCode;
+            //Status
+            if (Filter_Status != null && Filter_Status.CodeInt != 0) request.Status = Filter_Status.CodeInt;
+            //Status check
+            request.StatusCheck = StatusCheck;
+            //Time range
+            request.StartDate = Filter_StartDate.ToTimestampFromLocalTime();
+            request.EndDate = Filter_EndDate.ToTimestampFromLocalTime();
             //
             var response = await ClaimServiceClient.GetClaimRequestListAsync(request);
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
                 if (response.ClaimRequests != null)
                 {
+                    //Get data from DB
+                    DetailData.Clear();
+                    //
                     foreach (var item in response.ClaimRequests)
                     {
                         //Parrent grid
                         var dataRow = new ClaimRequestListModel();
                         ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
-                        //StatusName
-                        if (!dataRow.AcceptStatus) dataRow.StatusName = "Chưa tiếp nhận";
-                        if (dataRow.CancelStatus) dataRow.StatusName = "Đã hủy hồ sơ";
-                        if (dataRow.AcceptStatus) dataRow.StatusName = "Đã tiếp nhận";
-                        if (dataRow.CompenStatus) dataRow.StatusName = "Đang xử lý";
-                        if (dataRow.RepairStatus) dataRow.StatusName = "Đã sửa xong";
-                        if (dataRow.AprRepairStatus) dataRow.StatusName = "Đã nghiệp thu";
-                        if (dataRow.PayStatus) dataRow.StatusName = "Đã chi trả";
+                        //Status name
+                        int StatusCode = 0;
+                        if (dataRow.AcceptStatus) StatusCode = 1;
+                        if (dataRow.PickupStatus1) StatusCode = 2;
+                        if (dataRow.PickupStatus2) StatusCode = 3;
+                        if (dataRow.CheckStatus) StatusCode = 4;
+                        if (dataRow.EstimationStatus) StatusCode = 5;
+                        if (dataRow.ApproveStatus) StatusCode = 6;
+                        if (dataRow.RepairStatus) StatusCode = 7;
+                        if (dataRow.ReturnStatus1) StatusCode = 8;
+                        if (dataRow.ReturnStatus2) StatusCode = 9;
+                        if (dataRow.CancelStatus) StatusCode = 10;
+                        dataRow.StatusName = MyClaimStatus.Get_StatusName(StatusCode);
                         //
                         DetailData.Add(dataRow);
                     }
@@ -315,13 +325,13 @@
             }
             if (DetailData.Count == 0)
             {
-                toastService.ShowInfo("", "Không có dữ liệu.");
+                toastService.ShowInfo(MyMessage.Error_NoData);
             }
             await grid.Refresh();
         }
         catch
         {
-            toastService.ShowError("", "Nạp dữ liệu bị lỗi !!!");
+            toastService.ShowError(MyMessage.Error_LoadDataFailed);
         }
     }
 
@@ -332,7 +342,7 @@
     void ConfirmHandler()
     {
         //Delete row
-        if (ConfirmAction == "DeleteRow")
+        if (ConfirmAction == MyConstant.ConfirmAction_DeleteRow)
         {
             DeleteRow();
         }
@@ -347,10 +357,8 @@
     void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<ClaimRequestListModel> eventArgs)
     {
         MyColor myColor = new MyColor();
-        //CloseStatus
-        if (eventArgs.DataItem.CancelStatus) eventArgs.Style += myColor.DisabledRowColor;
-        //PayStatus
-        if (eventArgs.DataItem.PayStatus) eventArgs.Style += myColor.DoneRowColor;
+        //AcceptStatus
+        if (eventArgs.DataItem.RepairStatus) eventArgs.Style += myColor.DoneRowColor;
     }
     void OnHtmlDataCellDecoration(DataGridHtmlDataCellDecorationEventArgs<ClaimRequestListModel> eventArgs)
     {
@@ -361,30 +369,20 @@
         {
             eventArgs.Style += " ;font-weight:bold; color: blue";
         }
-        //VCXContractNo
-        if (eventArgs.FieldName == nameof(ClaimRequestListModel.VCXContractNo))
+        //ClaimDate
+        if (eventArgs.FieldName == nameof(ClaimRequestListModel.ClaimDate))
         {
-            eventArgs.Style += " ;font-weight:bold; color: maroon";
+            eventArgs.Style += " ;color: green";
         }
-        //LicensePlate
-        if (eventArgs.FieldName == nameof(ClaimRequestListModel.LicensePlate))
+        //StatusName
+        if (eventArgs.FieldName == nameof(ClaimRequestListModel.StatusName))
         {
-            eventArgs.Style += " ;font-weight:bold; color: navy";
+            eventArgs.Style += " ;color: blue";
         }
-        //CompenDateTime
-        if (eventArgs.FieldName == nameof(ClaimRequestListModel.CompenDateTime))
+        //DeviceIMEI
+        if (eventArgs.FieldName == nameof(ClaimRequestListModel.DeviceIMEI))
         {
-            eventArgs.Style += " ;font-weight:bold; color: green";
-        }
-        //AccidentDateTime
-        if (eventArgs.FieldName == nameof(ClaimRequestListModel.AccidentDateTime))
-        {
-            eventArgs.Style += " ;font-weight:bold; color: maroon";
-        }
-        //EstDamageAmount
-        if (eventArgs.FieldName == nameof(ClaimRequestListModel.EstDamageAmount))
-        {
-            eventArgs.Style += " ;font-weight:bold; color: blue; text-align: right";
+            eventArgs.Style += " ;font-weight:bold";
         }
     }
 
@@ -399,16 +397,16 @@
     void OnRowRemoving(ClaimRequestListModel dataRow)
     {
         //Validate skip if approved
-        if (dataRow.AprStatus)
+        if (dataRow.AcceptStatus)
         {
-            toastService.ShowWarning("", "Tờ đã duyệt nên không thể xóa.");
+            toastService.ShowWarning(MyMessage.Error_DeleteReadOnlyData);
             return;
         }
         //
         DeletedRow = dataRow;
         //Show popup confirm
-        ConfirmMessage = "Xóa tờ trình?";
-        ConfirmAction = "DeleteRow";
+        ConfirmMessage = MyMessage.Confirm_DeleteRow;
+        ConfirmAction = MyConstant.ConfirmAction_DeleteRow;
         ConfirmVisible = true;
         StateHasChanged();
     }
@@ -434,14 +432,14 @@
             {
                 DetailData.Remove(DeletedRow);
                 //
-                toastService.ShowSuccess("", "Xóa tờ trình thành công");
+                toastService.ShowSuccess(MyMessage.Info_DeleteSucess);
                 //Refresh layout
                 await grid.Refresh();
             }
         }
         catch (Exception ex)
         {
-            toastService.ShowError(ex.Message, "Xóa tờ trình thất bại.");
+            toastService.ShowError(ex.Message, MyMessage.Error_DeleteFailed);
         }
     }
 
@@ -471,10 +469,4 @@
 
     #endregion
 
-    #region Screen items
-
-
-
-    #endregion
-    //
 }
