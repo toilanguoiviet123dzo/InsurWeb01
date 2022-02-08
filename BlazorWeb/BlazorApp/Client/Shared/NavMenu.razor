@@ -193,14 +193,14 @@
                     </li>
                 }
 
-                <!--Giao nhận-->
+                <!--Lấy thiết bị-->
                 @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("ClaimPickup"))
                 {
                     <li class="nav-item">
-                        <NavLink class="nav-link" href="ClaimPickup" @onclick="@(() => OnProgramChanged(new ProgramInfo("ClaimPickup","Giao nhận")))">
+                        <NavLink class="nav-link" href="ClaimPickup" @onclick="@(() => OnProgramChanged(new ProgramInfo("ClaimPickup","Lấy thiết bị")))">
                             <span aria-hidden="true" class="icon-padding">
                                 <i class="fas fa-truck-moving" aria-hidden="true"></i>
-                            </span> Giao nhận
+                            </span> Lấy thiết bị
                         </NavLink>
                     </li>
                 }
@@ -225,6 +225,30 @@
                             <span aria-hidden="true" class="icon-padding">
                                 <i class="fas fa-check" aria-hidden="true"></i>
                             </span> Duyệt
+                        </NavLink>
+                    </li>
+                }
+
+                <!--Trả thiết bị-->
+                @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("ClaimReturn"))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="ClaimReturn" @onclick="@(() => OnProgramChanged(new ProgramInfo("ClaimReturn","Trả thiết bị")))">
+                            <span aria-hidden="true" class="icon-padding">
+                                <i class="fa fa-reply" aria-hidden="true"></i>
+                            </span> Trả thiết bị
+                        </NavLink>
+                    </li>
+                }
+
+                <!--Chi trả-->
+                @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("ClaimPayment"))
+                {
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="ClaimPayment" @onclick="@(() => OnProgramChanged(new ProgramInfo("ClaimPayment","Chi trả")))">
+                            <span aria-hidden="true" class="icon-padding">
+                                <i class="fas fa-money" aria-hidden="true"></i>
+                            </span> Chi trả
                         </NavLink>
                     </li>
                 }

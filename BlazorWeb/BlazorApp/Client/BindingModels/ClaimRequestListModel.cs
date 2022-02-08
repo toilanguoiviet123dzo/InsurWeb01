@@ -18,17 +18,25 @@ namespace BlazorApp.Client.BindingModels
         public string BrancheName { get; set; } = "";
         public string PicAccountName { get; set; } = "";
         public DateTime CheckDoneDate { get; set; }
+        public DateTime PickupReqDate { get; set; }
 
         //Status
+        public bool ProcessStatus { get; set; }
         public bool AcceptStatus { get; set; }
+        public bool PickupReqStatus { get; set; }
         public bool PickupStatus1 { get; set; }
         public bool PickupStatus2 { get; set; }
         public bool CheckStatus { get; set; }
+        public bool EstimationReqStatus { get; set; }
         public bool EstimationStatus { get; set; }
+        public bool ApproveReqStatus { get; set; }
         public bool ApproveStatus { get; set; }
         public bool RepairStatus { get; set; }
         public bool ReturnStatus1 { get; set; }
         public bool ReturnStatus2 { get; set; }
+        public bool PayReqStatus { get; set; }
+        public bool PayStatus { get; set; }
         public bool CancelStatus { get; set; }
+        public bool CloseStatus { get; set; }
     }
 }

@@ -91,6 +91,24 @@
                                 ReadOnly="true"
                                 Literal="Model" />
                 </div>
+                <!--Mức độ ưu tiên-->
+                <div class="col-12 col-lg-3">
+                    <MyComboBox @ref="RefPriority"
+                                @bind-Value="SelectedPriority"
+                                Data="PriorityList"
+                                AllowUserInput="true"
+                                ReadOnly="true"
+                                TextFieldName="@(nameof(OptionListModel.ItemName))"
+                                SelectedItemChanged="@((OptionListModel selectedRow) => {
+                                                   Model.Priority = selectedRow.IntCode;
+                                                   PriorityCss = "";
+                                                   if (Model.Priority == 2) PriorityCss = "bg-warning";
+                                                   if (Model.Priority == 3) PriorityCss = "bg-danger";
+                                                   this.StateHasChanged();
+                                             })"
+                                InputCssClass="@PriorityCss"
+                                Literal="Mức độ ưu tiên" />
+                </div>
             </div>
 
             <!--Row 4-------------------------------------------------->
@@ -196,18 +214,27 @@
                                 InputCssClass="text-blue font-weight-bold" />
                 </div>
                 <!--Từ ngày-->
-                <div class="col-12 col-lg-2">
+                <div class="col-6 col-lg-3">
                     <MyDateTimeEdit @bind-Date="Model.InsurStartDate"
                                     Literal="Từ ngày"
                                     ReadOnly="true"
                                     InputCssClass="text-green" />
                 </div>
                 <!--Đến ngày-->
-                <div class="col-12 col-lg-2">
+                <div class="col-6 col-lg-3">
                     <MyDateTimeEdit @bind-Date="Model.InsurEndDate"
                                     Literal="Đến ngày"
                                     ReadOnly="true"
                                     InputCssClass="text-maroon" />
+                </div>
+            </div>
+            <!--Row 2-------------------------------------------------->
+            <div class="row">
+                <!--Chi nhánh bồi thường-->
+                <div class="col-12 col-lg-3">
+                    <MyTextEdit @bind-Text="Model.BrancheName"
+                                ReadOnly="true"
+                                Literal="Chi nhánh bồi thường" />
                 </div>
                 <!--Số tiền bảo hiểm-->
                 <div class="col-12 col-lg-2">
@@ -219,40 +246,12 @@
                 </div>
             </div>
 
-            <!--Row 2-------------------------------------------------->
-            <div class="row">
-                <!--Chi nhánh bồi thường-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.BrancheName"
-                                ReadOnly="true"
-                                Literal="Chi nhánh bồi thường" />
-                </div>
-                <!--Mức độ ưu tiên-->
-                <div class="col-12 col-lg-3">
-                    <MyComboBox @ref="RefPriority"
-                                @bind-Value="SelectedPriority"
-                                Data="PriorityList"
-                                AllowUserInput="true"
-                                ReadOnly="true"
-                                TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                SelectedItemChanged="@((OptionListModel selectedRow) => {
-                                                   Model.Priority = selectedRow.IntCode;
-                                                   PriorityCss = "";
-                                                   if (Model.Priority == 2) PriorityCss = "bg-warning";
-                                                   if (Model.Priority == 3) PriorityCss = "bg-danger";
-                                                   this.StateHasChanged();
-                                             })"
-                                InputCssClass="@PriorityCss"
-                                Literal="Mức độ ưu tiên" />
-                </div>
-            </div>
-
         </div><!--End container-->
     </CardBody>
 </MyCard>
 
 <!--Thông tin nhận thiết bị-->
-<MyCard Title="Thông tin nhận thiết bị">
+<MyCard @bind-IsCollapse="@PickupInfoCollapse" Title="Thông tin nhận thiết bị">
     <CardBody>
         <div class="container-fluid">
             <!--Row 1-------------------------------------------------->
@@ -295,10 +294,18 @@
 
             <!--Row 2-------------------------------------------------->
             <div class="row mt-2">
+                <!--Check: yêu cầu lấy thiết bị-->
+                <div class="col-12 col-lg-3">
+                    <DxCheckBox @bind-Checked="@Model.PickupReqStatus"
+                                CssClass="text-green"
+                                Enabled="@(!Model.PickupStatus1)">
+                        Yêu cầu lấy thiết bị
+                    </DxCheckBox>
+                </div>
                 <!--Check: đã lấy thiết bị-->
                 <div class="col-12 col-lg-3">
                     <DxCheckBox @bind-Checked="@Model.PickupStatus1"
-                                CssClass="text-green"
+                                CssClass="text-blue"
                                 Enabled="false">
                         Đã lấy thiết bị
                     </DxCheckBox>
@@ -318,8 +325,9 @@
             <div class="row mt-1">
                 <!--Ghi nhận thiết bị-->
                 <div class="col-12">
-                    <MyMemoEdit @bind-Text="Model.AcceptNotes"
+                    <MyMemoEdit @bind-Text="Model.PickupNotes"
                                 Rows="3"
+                                ReadOnly="true"
                                 Literal="Ghi chú nhận thiết bị" />
                 </div>
             </div>
@@ -329,7 +337,7 @@
 </MyCard>
 
 <!--Thông tin kiểm tra-->
-<MyCard Title="Thông tin kiểm tra">
+<MyCard @bind-IsCollapse="@CheckInfoCollapse" Title="Thông tin kiểm tra">
     <CardBody>
         <div class="container-fluid">
             <!--Row 1-------------------------------------------------->
@@ -368,13 +376,28 @@
 
             <!--Row 3-------------------------------------------------->
             <div class="row mt-2">
+                <!--Check: kiểm tra-->
+                <div class="col-12 col-lg-3">
+                    <DxCheckBox @bind-Checked="@Model.CheckStatus" CssClass="text-green">Đã kiểm tra</DxCheckBox>
+                </div>
                 <!--Check: chấp nhận bồi thường-->
                 <div class="col-12 col-lg-3">
-                    <DxCheckBox @bind-Checked="@Model.AcceptStatus" CssClass="text-green">Chấp nhận bồi thường</DxCheckBox>
+                    <DxCheckBox Checked="@Model.AcceptStatus"
+                                CssClass="text-blue"
+                                CheckedChanged="@((bool value) => {
+                                    Model.AcceptStatus = value;
+                                    if (value) Model.CancelStatus = false;
+                                })"
+                                Enabled="@Model.CheckStatus">Chấp nhận bồi thường</DxCheckBox>
                 </div>
                 <!--Check: Từ chối yêu cầu-->
                 <div class="col-12 col-lg-3">
-                    <DxCheckBox @bind-Checked="@Model.CancelStatus" CssClass="text-red">Từ chối yêu cầu</DxCheckBox>
+                    <DxCheckBox Checked="@Model.CancelStatus"
+                                CheckedChanged="@((bool value) => {
+                                    Model.CancelStatus = value;
+                                    if (value) Model.AcceptStatus = false;
+                                })"
+                                CssClass="text-red">Từ chối yêu cầu</DxCheckBox>
                 </div>
 
             </div>
@@ -426,6 +449,8 @@
     private string PriorityCss = "";
     private bool DamageInfoCollapse = true;
     private bool InsureInfoCollapse = true;
+    private bool PickupInfoCollapse = true;
+    private bool CheckInfoCollapse = true;
 
     #region Initialization
     protected override async Task OnInitializedAsync()
@@ -436,11 +461,7 @@
         await LoadMaster();
 
         //Display data ..
-        if (string.IsNullOrWhiteSpace(ClaimNo))
-        {
-            await InitMain();
-        }
-        else
+        if (!string.IsNullOrWhiteSpace(ClaimNo))
         {
             await DisplayMain();
         }
@@ -451,37 +472,6 @@
         DamageCauseList = await masterService.Load_OptionList("005");
         PriorityList = await masterService.Load_OptionList("007");
         LogisticList = await masterService.Load_OptionList("009");
-    }
-    async Task InitMain()
-    {
-        Model = new ClaimRequestModel();
-        Model.UpdMode = 1;
-
-        //ClaimNo
-        Model.ClaimNo = await voucherService.Get_NewVoucherNo();
-        //ClaimDate
-        Model.ClaimDate = DateTime.Now;
-        //ClaimAccount
-        Model.ClaimAccountID = WebUserCredential.Username;
-        Model.ClaimAccountName = WebUserCredential.Fullname;
-        //NotificationDate
-        Model.NotificationDate = DateTime.Now;
-        //IncidentDate
-        Model.IncidentDate = DateTime.Now;
-        //AccidentDateTime
-        Model.IncidentDate = DateTime.Now;
-        //DamageCause
-        if (DamageCauseList != null && DamageCauseList.Count > 0)
-        {
-            SelectedDamageCause = DamageCauseList[0];
-            Model.DamageType = SelectedDamageCause.ItemCode;
-        }
-        //DamageCause
-        if (PriorityList != null && PriorityList.Count > 0)
-        {
-            SelectedPriority = PriorityList[0];
-            Model.Priority = SelectedPriority.IntCode;
-        }
     }
     //
     #endregion
@@ -524,9 +514,17 @@
                 //
                 Model.UpdMode = 2;
             }
-            else
+
+            //show pickup
+            if (!Model.PickupStatus2)
             {
-                await InitMain();
+                PickupInfoCollapse = false;
+            }
+
+            //show check
+            if (Model.PickupStatus2)
+            {
+                CheckInfoCollapse = false;
             }
 
             //Refresh layout
@@ -584,17 +582,34 @@
             request.Credential = Credential;
             //
             request.ClaimRequest = new grpcClaimRequestModel();
-            //ReturnAddress -> PickupAddress
-            if (string.IsNullOrWhiteSpace(Model.ReturnAddress))
+            //Clear AcceptStatus
+            if (!Model.CheckStatus || Model.CancelStatus)
             {
-                Model.ReturnAddress = Model.PickupAddress;
+                Model.AcceptStatus = false;
             }
             //PickupReqDate
-            if (Model.PickupReqDate == DateTime.Today.MinDate())
+            if (Model.PickupReqStatus && Model.PickupReqDate == DateTime.Today.MinDate())
             {
                 Model.PickupReqDate = DateTime.Now;
             }
-
+            //Clear PickupReqDate
+            if (!Model.PickupReqStatus)
+            {
+                Model.PickupReqDate = DateTime.Today.MinDate();
+            }
+            //PicAccountID
+            if (string.IsNullOrWhiteSpace(Model.PicAccountID))
+            {
+                Model.PicAccountID = WebUserCredential.Username;
+                Model.PicAccountName = WebUserCredential.Fullname;
+                Model.PicPhone = WebUserCredential.PhoneNo;
+            }
+            //CancelStatus -> Reset: AcceptStatus
+            if (Model.CancelStatus)
+            {
+                Model.AcceptStatus = false;
+            }
+            //
             ClassHelper.CopyPropertiesDataDateConverted(Model, request.ClaimRequest);
             //Call api
             var response = await ClaimServiceClient.SaveClaimRequestAsync(request);

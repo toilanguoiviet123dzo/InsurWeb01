@@ -41,7 +41,9 @@ namespace BlazorApp.Server.Models
         public string InsurCompanyName { get; set; } = "";
         public double InsurAmount { get; set; }
         public string AcceptNotes { get; set; } = "";
+        public bool ProcessStatus { get; set; }
         public bool AcceptStatus { get; set; }
+        public bool CancelStatus { get; set; }
         //Pickup
         public DateTime PickupReqDate { get; set; }
         public DateTime PickupDoneDate1 { get; set; }
@@ -52,6 +54,7 @@ namespace BlazorApp.Server.Models
         public string PickupAccountName { get; set; } = "";
         public string PickupNotes { get; set; } = "";
         public string PickupAddress { get; set; } = "";
+        public bool PickupReqStatus { get; set; }
         public bool PickupStatus1 { get; set; }
         public bool PickupStatus2 { get; set; }
         //Check
@@ -75,6 +78,7 @@ namespace BlazorApp.Server.Models
         public bool RepairStatus { get; set; }
         //Estimations
         public List<EstimationModel> Estimations { get; set; } = new List<EstimationModel>();
+        public bool EstimationReqStatus { get; set; }
         public bool EstimationStatus { get; set; }
         //Approve
         public DateTime ApproveReqDate { get; set; }
@@ -82,6 +86,7 @@ namespace BlazorApp.Server.Models
         public string ApproveAccountID { get; set; } = "";
         public string ApproveAccountName { get; set; } = "";
         public string ApproveNotes { get; set; } = "";
+        public bool ApproveReqStatus { get; set; }
         public bool ApproveStatus { get; set; }
         //Return
         public DateTime ReturnReqDate { get; set; }
@@ -94,6 +99,16 @@ namespace BlazorApp.Server.Models
         public string ReturnNotes { get; set; } = "";
         public bool ReturnStatus1 { get; set; }
         public bool ReturnStatus2 { get; set; }
+        //Payment
+        public DateTime PayReqDate { get; set; }
+        public DateTime PayDoneDate { get; set; }
+        public string PayAccountID { get; set; } = "";
+        public string PayAccountName { get; set; } = "";
+        public string PayNotes { get; set; } = "";
+        public bool PayReqStatus { get; set; }
+        public bool PayStatus { get; set; }
+        //Close
+        public bool CloseStatus { get; set; }
         //sumary
         public double ClaimAmount { get; set; }
         public double ApproveAmount { get; set; }
@@ -104,8 +119,6 @@ namespace BlazorApp.Server.Models
         public List<ImageModel> Images { get; set; } = new List<ImageModel>();
         //Update History
         public List<UpdateHistoryModel> UpdateHistorys { get; set; } = new List<UpdateHistoryModel>();
-        //Cancel
-        public bool CancelStatus { get; set; }
         public string TextSearch { get; set; } = "";
         public DateTime ModifiedOn { get; set; }
         public int UpdMode { get; set; }

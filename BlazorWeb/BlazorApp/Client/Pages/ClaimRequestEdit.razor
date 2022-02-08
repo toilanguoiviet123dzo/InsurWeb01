@@ -86,7 +86,7 @@
                 <div class="col-12 col-lg-3">
                     <MyTextEdit @bind-Text="Model.DeviceIMEI"
                                 Literal="Số IMEI thiết bị"
-                                InputCssClass="text-purple font-weight-bold" />
+                                InputCssClass="text-purple font-weight-bold text-uppercase" />
                 </div>
                 <!--Model-->
                 <div class="col-12 col-lg-3">
@@ -204,7 +204,7 @@
                     <MyTextEdit Text="@Model.InsurContractNo"
                                 TextChanged="@((string x) => OnInsurContractNo_Changed(x))"
                                 Literal="Số hợp đồng"
-                                InputCssClass="text-blue font-weight-bold" />
+                                InputCssClass="text-blue font-weight-bold text-uppercase" />
                 </div>
                 <!--Từ ngày-->
                 <div class="col-12 col-lg-2">

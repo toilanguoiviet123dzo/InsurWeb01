@@ -492,17 +492,23 @@ namespace BlazorApp.Server.Services
                 if (!string.IsNullOrWhiteSpace(request.BrancheID)) query.Match(a => a.BrancheID == request.BrancheID);
                 //InsurCompanyID
                 if (!string.IsNullOrWhiteSpace(request.InsurCompanyID)) query.Match(a => a.InsurCompanyID == request.InsurCompanyID);
+                //PickupCompanyID
+                if (!string.IsNullOrWhiteSpace(request.PickupCompanyID)) query.Match(a => a.PickupCompanyID == request.PickupCompanyID);
+                //RepairCompanyID
+                if (!string.IsNullOrWhiteSpace(request.RepairCompanyID)) query.Match(a => a.RepairCompanyID == request.RepairCompanyID);
                 //Status
                 bool status = request.StatusCheck ? true : false;
-                if (request.Status == 1) query.Match(a => a.AcceptStatus == status);
+                if (request.Status == 1) query.Match(a => a.ProcessStatus == status);
                 if (request.Status == 2) query.Match(a => a.PickupStatus1 == status);
                 if (request.Status == 3) query.Match(a => a.PickupStatus2 == status);
                 if (request.Status == 4) query.Match(a => a.CheckStatus == status);
-                if (request.Status == 5) query.Match(a => a.EstimationStatus == status);
-                if (request.Status == 6) query.Match(a => a.ApproveStatus == status);
-                if (request.Status == 7) query.Match(a => a.RepairStatus == status);
-                if (request.Status == 8) query.Match(a => a.ReturnStatus1 == status);
-                if (request.Status == 9) query.Match(a => a.ReturnStatus2 == status);
+                if (request.Status == 5) query.Match(a => a.AcceptStatus == status);
+                if (request.Status == 6) query.Match(a => a.EstimationStatus == status);
+                if (request.Status == 7) query.Match(a => a.ApproveStatus == status);
+                if (request.Status == 8) query.Match(a => a.RepairStatus == status);
+                if (request.Status == 9) query.Match(a => a.ReturnStatus1 == status);
+                if (request.Status == 10) query.Match(a => a.ReturnStatus2 == status);
+                if (request.Status == 11) query.Match(a => a.CancelStatus == status);
                 //Time range
                 //StartDate
                 if (request.StartDate.ToDateTime().ToString("yyyyMMdd") != DateTime.Today.MinShortDateString())
@@ -536,6 +542,63 @@ namespace BlazorApp.Server.Services
             //
             return await Task.FromResult(response);
         }
+        //-------------------------------------------------------------------------------------------------------/
+        // GetPickupList
+        //-------------------------------------------------------------------------------------------------------/
+        public override async Task<GetClaimRequestList_Response> GetPickupList(Claim.Services.GetPickupList_Request request, ServerCallContext context)
+        {
+            var response = new GetClaimRequestList_Response();
+            response.ReturnCode = GrpcReturnCode.OK;
+            response.MsgCode = "";
+            //
+            try
+            {
+                var query = DB.Find<mdClaimRequest>();
+
+                //PickupCompanyID
+                if (!string.IsNullOrWhiteSpace(request.PickupCompanyID)) query.Match(a => a.PickupCompanyID == request.PickupCompanyID);
+
+                //PickupReqStatus = true
+                query.Match(a => a.PickupReqStatus == true);
+
+                //Status
+                bool status = request.StatusCheck ? true : false;
+                if (request.Status == 2) query.Match(a => a.PickupStatus1 == status);
+                if (request.Status == 3) query.Match(a => a.PickupStatus2 == status);
+                //Time range
+                //StartDate
+                if (request.StartDate.ToDateTime().ToString("yyyyMMdd") != DateTime.Today.MinShortDateString())
+                {
+                    query.Match(a => a.ClaimDate >= request.StartDate.ToDateTime());
+                }
+                //EndDate
+                if (request.EndDate.ToDateTime().ToString("yyyyMMdd") != DateTime.Today.MaxShortDateString())
+                {
+                    query.Match(a => a.ClaimDate <= request.EndDate.ToDateTime());
+                }
+                var findRecords = await query.ExecuteAsync();
+                //
+                if (findRecords != null && findRecords.Count > 0)
+                {
+                    findRecords.ForEach(item =>
+                    {
+                        var grpcItem = new grpcClaimRequestModel();
+                        ClassHelper.CopyPropertiesData(item, grpcItem);
+                        //
+                        response.ClaimRequests.Add(grpcItem);
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ReturnCode = GrpcReturnCode.Error_ByServer;
+                response.MsgCode = ex.Message;
+                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "GetPickupList", "Exception", response.ReturnCode, ex.Message);
+            }
+            //
+            return await Task.FromResult(response);
+        }
+
         //-------------------------------------------------------------------------------------------------------/
         // SaveRepairerMaster
         //-------------------------------------------------------------------------------------------------------/
