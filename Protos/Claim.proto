@@ -227,7 +227,8 @@ message grpcClaimRequestModel {
     google.protobuf.Timestamp NotificationDate = 17;
     string DamageCause = 18;
     string DamageType = 19;
-    string NotificationChannel = 20;
+    string NotificationChannelID = 20;
+    string NotificationChannelName = 98;
     int32 Priority = 21;
     //Insur contraction
     string InsurContractNo = 22;

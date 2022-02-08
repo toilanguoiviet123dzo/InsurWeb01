@@ -87,13 +87,16 @@ namespace BlazorApp.Server.Services
                         if (deleteClaim != null)
                         {
                             //Delete resource
-                            foreach (var image in deleteClaim.Images)
+                            if (deleteClaim.Images != null)
                             {
-                                var resourceFile = new grpcResourceFileModel();
-                                resourceFile.ResourceID = image.ImageID;
-                                resourceFile.UpdMode = 3;   //Delete
-                                //
-                                var resourceID = await ResourceService.SaveResourceFile(resourceFile);
+                                foreach (var image in deleteClaim.Images)
+                                {
+                                    var resourceFile = new grpcResourceFileModel();
+                                    resourceFile.ResourceID = image.ImageID;
+                                    resourceFile.UpdMode = 3;   //Delete
+                                                                //
+                                    var resourceID = await ResourceService.SaveResourceFile(resourceFile);
+                                }
                             }
 
                             //Delete claim
@@ -490,15 +493,16 @@ namespace BlazorApp.Server.Services
                 //InsurCompanyID
                 if (!string.IsNullOrWhiteSpace(request.InsurCompanyID)) query.Match(a => a.InsurCompanyID == request.InsurCompanyID);
                 //Status
-                if (request.Status == 1) query.Match(a => a.AcceptStatus == request.StatusCheck ? true : false);
-                if (request.Status == 2) query.Match(a => a.PickupStatus1 == request.StatusCheck ? true : false);
-                if (request.Status == 3) query.Match(a => a.PickupStatus2 == request.StatusCheck ? true : false);
-                if (request.Status == 4) query.Match(a => a.CheckStatus == request.StatusCheck ? true : false);
-                if (request.Status == 5) query.Match(a => a.EstimationStatus == request.StatusCheck ? true : false);
-                if (request.Status == 6) query.Match(a => a.ApproveStatus == request.StatusCheck ? true : false);
-                if (request.Status == 7) query.Match(a => a.RepairStatus == request.StatusCheck ? true : false);
-                if (request.Status == 8) query.Match(a => a.ReturnStatus1 == request.StatusCheck ? true : false);
-                if (request.Status == 9) query.Match(a => a.ReturnStatus2 == request.StatusCheck ? true : false);
+                bool status = request.StatusCheck ? true : false;
+                if (request.Status == 1) query.Match(a => a.AcceptStatus == status);
+                if (request.Status == 2) query.Match(a => a.PickupStatus1 == status);
+                if (request.Status == 3) query.Match(a => a.PickupStatus2 == status);
+                if (request.Status == 4) query.Match(a => a.CheckStatus == status);
+                if (request.Status == 5) query.Match(a => a.EstimationStatus == status);
+                if (request.Status == 6) query.Match(a => a.ApproveStatus == status);
+                if (request.Status == 7) query.Match(a => a.RepairStatus == status);
+                if (request.Status == 8) query.Match(a => a.ReturnStatus1 == status);
+                if (request.Status == 9) query.Match(a => a.ReturnStatus2 == status);
                 //Time range
                 //StartDate
                 if (request.StartDate.ToDateTime().ToString("yyyyMMdd") != DateTime.Today.MinShortDateString())

@@ -173,7 +173,7 @@
                 @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("ClaimRequest"))
                 {
                     <li class="nav-item">
-                        <NavLink class="nav-link" href="ClaimRequest" @onclick="@(() => OnProgramChanged(new ProgramInfo("ClaimRequest","Tiếp nhận yêu cầu bồi thường")))">
+                        <NavLink class="nav-link" href="ClaimRequest" @onclick="@(() => OnProgramChanged(new ProgramInfo("ClaimRequest","Tiếp nhận")))">
                             <span aria-hidden="true" class="icon-padding">
                                 <i class="fas fa-bell" aria-hidden="true"></i>
                             </span> Tiếp nhận
@@ -212,7 +212,7 @@
                         <NavLink class="nav-link" href="ClaimRepair" @onclick="@(() => OnProgramChanged(new ProgramInfo("ClaimRepair","Báo giá & sửa chữa")))">
                             <span aria-hidden="true" class="icon-padding">
                                 <i class="fas fa-medkit" aria-hidden="true"></i>
-                            </span> Báo giá sửa chữa
+                            </span> Báo giá & sửa chữa
                         </NavLink>
                     </li>
                 }

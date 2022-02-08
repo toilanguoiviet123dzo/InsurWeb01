@@ -1,7 +1,26 @@
 ﻿<div class="card mb-2">
-    <h6 class="card-header p-1 text-muted font-italic">@Title</h6>
+    <!--Header-->
+    <div class="card-header p-1" style="height: 2rem">
+        <div style="float:left">
+            <h6 class="text-muted font-italic">@Title</h6>
+        </div>
+        <div style="float:right">
+            @if (IsCollapse)
+            {
+                <a @onclick="@(() => Expand())"><i class="fa fa-chevron-down text-primary"></i></a>
+            }
+            else
+            {
+                <a @onclick="@(() => Collapse())"><i class="fa fa-chevron-up text-primary"></i></a>
+            }
+        </div>
+    </div>
+    <!--Body-->
     <div class="card-body px-0 pt-1 pb-2">
-        @CardBody
+        @if (!IsCollapse)
+        {
+            @CardBody
+        }
     </div>
 </div>
 
@@ -9,5 +28,22 @@
     [Parameter]
     public string Title { get; set; } = "";
     [Parameter]
+    public bool IsCollapse { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> IsCollapseChanged { get; set; }
+    [Parameter]
     public RenderFragment CardBody { get; set; }
+
+    public async void Collapse()
+    {
+        IsCollapse = true;
+        await IsCollapseChanged.InvokeAsync(IsCollapse);
+        this.StateHasChanged();
+    }
+    public async void Expand()
+    {
+        IsCollapse = false;
+        await IsCollapseChanged.InvokeAsync(IsCollapse);
+        this.StateHasChanged();
+    }
 }

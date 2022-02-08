@@ -181,7 +181,7 @@
         }
         catch (Exception ex)
         {
-            toastService.ShowError(ex.Message, "Load dữ liệu thất bại.");
+            toastService.ShowError(ex.Message, MyMessage.Error_LoadDataFailed);
         }
     }
     #endregion
@@ -205,7 +205,7 @@
         if (!Check_Changed())
         {
             //Show message: Nothing changed!
-            toastService.ShowInfo("", "Nothing Changed!");
+            toastService.ShowInfo("", MyMessage.Info_NothingChanged);
             return;
         }
         // Show popup confirm
@@ -231,7 +231,7 @@
         if (!Check_Changed())
         {
             //Show message: Nothing changed!
-            toastService.ShowInfo("", "Nothing Changed!");
+            toastService.ShowInfo("", MyMessage.Info_NothingChanged);
             return;
         }
         // Show popup confirm
@@ -360,7 +360,7 @@
             if (!hasChanged)
             {
                 //Message no change
-                toastService.ShowInfo("", "Nothing Changed!");
+                toastService.ShowInfo("", MyMessage.Info_NothingChanged);
                 return;
             }
             // Call api
@@ -369,7 +369,7 @@
             if (response.ReturnCode == 200)
             {
                 //Show success
-                toastService.ShowSuccess("", "Save Success!");
+                toastService.ShowSuccess("", MyMessage.Info_SaveSucess);
             }
             // Error call
             if (response == null)
@@ -399,7 +399,7 @@
         }
         catch (Exception ex)
         {
-            toastService.ShowError(ex.Message, "Lưu dữ liệu thất bại.");
+            toastService.ShowError(ex.Message, MyMessage.Error_SaveFailed);
         }
     }
     // Cancel edit

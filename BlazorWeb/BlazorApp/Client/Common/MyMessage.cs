@@ -23,6 +23,7 @@ namespace BlazorApp.Client.Common
         //Infor
         public const string Info_SaveSucess = "Lưu dữ liệu thành công";
         public const string Info_DeleteSucess = "Xóa dữ liệu thành công";
+        public const string Info_NothingChanged = "Không có dữ liệu thay đổi";
 
     }// end class
 }

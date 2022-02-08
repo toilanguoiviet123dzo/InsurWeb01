@@ -8,7 +8,6 @@
 @inject IJSRuntime JsRuntime;
 @inject IToastService toastService
 
-
 <!--Thông tin chung-->
 <MyCard Title="Thông tin chung">
     <CardBody>
@@ -47,22 +46,26 @@
                                 TextChanged="@((string x) => OnTextChanged_Phone(x))"
                                 Literal="Điện thoại liên hệ"
                                 InputCssClass="text-blue font-weight-bold"
+                                ReadOnly="true"
                                 CssClass="cusphone-focus" />
                 </div>
                 <!--Tên khách hàng-->
                 <div class="col-12 col-lg-3">
                     <MyTextEdit @bind-Text="Model.CusFullname"
                                 Literal="Tên khách hàng"
+                                ReadOnly="true"
                                 CssClass="cusfullname-focus" />
                 </div>
                 <!--Email-->
                 <div class="col-12 col-lg-3">
                     <MyTextEdit @bind-Text="Model.CusEmail"
+                                ReadOnly="true"
                                 Literal="Email" />
                 </div>
                 <!--Số CMND/CCCD-->
                 <div class="col-12 col-lg-3">
                     <MyTextEdit @bind-Text="Model.CusCardID"
+                                ReadOnly="true"
                                 Literal="Số CMND/CCCD" />
                 </div>
             </div>
@@ -71,26 +74,21 @@
             <div class="row">
                 <!--Loại sản phẩm-->
                 <div class="col-12 col-lg-3">
-                    <MyComboBox @ref="RefProduct"
-                                @bind-Value="SelectedProduct"
-                                Data="ProductList"
-                                AllowUserInput="true"
-                                TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                SelectedItemChanged="@((OptionListModel selectedRow) => {
-                                                   Model.TPAProductID = selectedRow.ItemCode;
-                                                   Model.TPAProductName = selectedRow.ItemName;
-                                             })"
-                                Literal="Loại sản phẩm" />
+                    <MyTextEdit @bind-Text="Model.TPAProductName"
+                                Literal="Loại sản phẩm"
+                                ReadOnly="true" />
                 </div>
                 <!--Số IMEI thiết bị-->
                 <div class="col-12 col-lg-3">
                     <MyTextEdit @bind-Text="Model.DeviceIMEI"
                                 Literal="Số IMEI thiết bị"
+                                ReadOnly="true"
                                 InputCssClass="text-purple font-weight-bold" />
                 </div>
                 <!--Model-->
                 <div class="col-12 col-lg-3">
                     <MyTextEdit @bind-Text="Model.DeviceModel"
+                                ReadOnly="true"
                                 Literal="Model" />
                 </div>
             </div>
@@ -101,11 +99,13 @@
                 <div class="col-12 col-lg-6">
                     <MyTextEdit @bind-Text="Model.PickupAddress"
                                 Literal="Địa chỉ nhận thiết bị"
+                                ReadOnly="true"
                                 CssClass="pickupaddress-focus" />
                 </div>
                 <!--Địa chỉ trả thiết bị-->
                 <div class="col-12 col-lg-6">
                     <MyTextEdit @bind-Text="Model.ReturnAddress"
+                                ReadOnly="true"
                                 Literal="Địa chỉ trả thiết bị" />
                 </div>
             </div>
@@ -114,7 +114,7 @@
 </MyCard>
 
 <!--Thông tin hư hỏng-->
-<MyCard Title="Thông tin hư hỏng">
+<MyCard @bind-IsCollapse="@DamageInfoCollapse" Title="Thông tin hư hỏng">
     <CardBody>
         <div class="container-fluid">
             <!--Row 1-------------------------------------------------->
@@ -123,25 +123,20 @@
                 <div class="col-12 col-lg-3">
                     <MyDateTimeEdit @bind-Date="Model.NotificationDate"
                                     Literal="Ngày KH thông báo"
+                                    ReadOnly="true"
                                     InputCssClass="text-green" />
                 </div>
                 <!--Ngày sự cố-->
                 <div class="col-12 col-lg-3">
                     <MyDateTimeEdit @bind-Date="Model.IncidentDate"
                                     Literal="Ngày sự cố"
+                                    ReadOnly="true"
                                     InputCssClass="text-maroon" />
                 </div>
                 <!--Kênh thông báo-->
                 <div class="col-12 col-lg-3">
-                    <MyComboBox @ref="RefChannel"
-                                @bind-Value="SelectedChannel"
-                                Data="ChannelList"
-                                AllowUserInput="true"
-                                TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                SelectedItemChanged="@((OptionListModel selectedRow) => {
-                                                            Model.NotificationChannelID = selectedRow.ItemCode;
-                                                            Model.NotificationChannelName = selectedRow.ItemName;
-                                                        })"
+                    <MyTextEdit @bind-Text="Model.NotificationChannelName"
+                                ReadOnly="true"
                                 Literal="Kênh thông báo" />
                 </div>
                 <!--Loại hư hỏng-->
@@ -162,16 +157,17 @@
             <div class="row">
                 <!--Nguyên nhân hư hỏng-->
                 <div class="col-12 col-lg-7">
-                    @*<MyMuteLabel Literal="Nguyên nhân hư hỏng" />*@
                     <MyMemoEdit @ref="RefDamageCause"
                                 @bind-Text="Model.DamageCause"
                                 Rows="5"
+                                ReadOnly="true"
                                 Literal="Nguyên nhân hư hỏng" />
                 </div>
                 <!--Ghi chú-->
                 <div class="col-12 col-lg-5">
                     <MyMemoEdit @bind-Text="Model.AcceptNotes"
                                 Rows="5"
+                                ReadOnly="true"
                                 Literal="Ghi chú" />
                 </div>
             </div>
@@ -179,24 +175,16 @@
     </CardBody>
 </MyCard>
 
-<!--Thông hợp tin đồng-->
-<MyCard Title="Thông tin hợp đồng">
+<!--Thông tin hợp đồng-->
+<MyCard @bind-IsCollapse="@InsureInfoCollapse" Title="Thông tin hợp đồng">
     <CardBody>
         <div class="container-fluid">
             <!--Row 1-------------------------------------------------->
             <div class="row">
                 <!--Công ty bảo hiểm-->
                 <div class="col-12 col-lg-3">
-                    <MyComboBox @ref="RefInsure"
-                                @bind-Value="SelectedInsure"
-                                Data="InsureList"
-                                AllowUserInput="true"
-                                TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                SelectedItemChanged="@((OptionListModel selectedRow) => {
-                                                   Model.InsurCompanyID = selectedRow.ItemCode;
-                                                   Model.InsurCompanyName = selectedRow.ItemName;
-                                                   OnInsurCompanyID_Changed(Model.InsurCompanyID);
-                                             })"
+                    <MyTextEdit @bind-Text="Model.InsurCompanyName"
+                                ReadOnly="true"
                                 Literal="Công ty bảo hiểm" />
                 </div>
                 <!--Số hợp đồng-->
@@ -204,6 +192,7 @@
                     <MyTextEdit Text="@Model.InsurContractNo"
                                 TextChanged="@((string x) => OnInsurContractNo_Changed(x))"
                                 Literal="Số hợp đồng"
+                                ReadOnly="true"
                                 InputCssClass="text-blue font-weight-bold" />
                 </div>
                 <!--Từ ngày-->
@@ -234,15 +223,8 @@
             <div class="row">
                 <!--Chi nhánh bồi thường-->
                 <div class="col-12 col-lg-3">
-                    <MyComboBox @ref="RefBranch"
-                                @bind-Value="SelectedBranch"
-                                Data="BranchList"
-                                AllowUserInput="true"
-                                TextFieldName="@(nameof(BranchMasterModel.BranchName))"
-                                SelectedItemChanged="@((BranchMasterModel selectedRow) => {
-                                                   Model.BrancheID = selectedRow.BranchID;
-                                                   Model.BrancheName = selectedRow.BranchName;
-                                             })"
+                    <MyTextEdit @bind-Text="Model.BrancheName"
+                                ReadOnly="true"
                                 Literal="Chi nhánh bồi thường" />
                 </div>
                 <!--Mức độ ưu tiên-->
@@ -251,6 +233,7 @@
                                 @bind-Value="SelectedPriority"
                                 Data="PriorityList"
                                 AllowUserInput="true"
+                                ReadOnly="true"
                                 TextFieldName="@(nameof(OptionListModel.ItemName))"
                                 SelectedItemChanged="@((OptionListModel selectedRow) => {
                                                    Model.Priority = selectedRow.IntCode;
@@ -262,6 +245,138 @@
                                 InputCssClass="@PriorityCss"
                                 Literal="Mức độ ưu tiên" />
                 </div>
+            </div>
+
+        </div><!--End container-->
+    </CardBody>
+</MyCard>
+
+<!--Thông tin nhận thiết bị-->
+<MyCard Title="Thông tin nhận thiết bị">
+    <CardBody>
+        <div class="container-fluid">
+            <!--Row 1-------------------------------------------------->
+            <div class="row">
+                <!--Công ty vận chuyển-->
+                <div class="col-12 col-lg-3">
+                    <MyComboBox @ref="RefLogistic"
+                                @bind-Value="SelectedLogistic"
+                                Data="LogisticList"
+                                AllowUserInput="true"
+                                TextFieldName="@(nameof(OptionListModel.ItemName))"
+                                SelectedItemChanged="@((OptionListModel selectedRow) => {
+                                                   Model.PickupCompanyID = selectedRow.ItemCode;
+                                                   Model.PickupCompanyName = selectedRow.ItemName;
+                                             })"
+                                Literal="Công ty vận chuyển" />
+                </div>
+                <!--Ngày yêu cầu lấy-->
+                <div class="col-12 col-lg-3">
+                    <MyDateTimeEdit @bind-Date="Model.PickupReqDate"
+                                    Literal="Ngày yêu cầu lấy"
+                                    ReadOnly="true"
+                                    InputCssClass="text-green" />
+                </div>
+                <!--Ngày lấy thiết bị-->
+                <div class="col-12 col-lg-3">
+                    <MyDateTimeEdit @bind-Date="Model.PickupDoneDate1"
+                                    Literal="Ngày lấy thiết bị"
+                                    ReadOnly="true"
+                                    InputCssClass="text-blue" />
+                </div>
+                <!--Ngày nhập thiết bị-->
+                <div class="col-12 col-lg-3">
+                    <MyDateTimeEdit @bind-Date="Model.PickupDoneDate1"
+                                    Literal="Ngày nhập thiết bị"
+                                    ReadOnly="true"
+                                    InputCssClass="text-maroon" />
+                </div>
+            </div>
+
+            <!--Row 2-------------------------------------------------->
+            <div class="row mt-2">
+                <!--Check: đã lấy thiết bị-->
+                <div class="col-12 col-lg-3">
+                    <DxCheckBox @bind-Checked="@Model.PickupStatus1"
+                                CssClass="text-green"
+                                Enabled="false">
+                        Đã lấy thiết bị
+                    </DxCheckBox>
+                </div>
+
+                <!--Check: đã nhập thiết bị-->
+                <div class="col-12 col-lg-3">
+                    <DxCheckBox @bind-Checked="@Model.PickupStatus2"
+                                CssClass="text-maroon"
+                                Enabled="false">
+                        Đã nhập thiết bị
+                    </DxCheckBox>
+                </div>
+            </div>
+
+            <!--Row 3-------------------------------------------------->
+            <div class="row mt-1">
+                <!--Ghi nhận thiết bị-->
+                <div class="col-12">
+                    <MyMemoEdit @bind-Text="Model.AcceptNotes"
+                                Rows="3"
+                                Literal="Ghi chú nhận thiết bị" />
+                </div>
+            </div>
+
+        </div><!--End container-->
+    </CardBody>
+</MyCard>
+
+<!--Thông tin kiểm tra-->
+<MyCard Title="Thông tin kiểm tra">
+    <CardBody>
+        <div class="container-fluid">
+            <!--Row 1-------------------------------------------------->
+            <div class="row">
+                <!--Ngày yêu cầu lấy-->
+                <div class="col-12 col-lg-3">
+                    <MyDateTimeEdit @bind-Date="Model.PickupReqDate"
+                                    Literal="Ngày yêu cầu lấy"
+                                    ReadOnly="true"
+                                    InputCssClass="text-green" />
+                </div>
+                <!--Ngày lấy thiết bị-->
+                <div class="col-12 col-lg-3">
+                    <MyDateTimeEdit @bind-Date="Model.PickupDoneDate1"
+                                    Literal="Ngày lấy thiết bị"
+                                    ReadOnly="true"
+                                    InputCssClass="text-blue" />
+                </div>
+                <!--Người kiểm tra-->
+                <div class="col-12 col-lg-3">
+                    <MyTextEdit @bind-Text="Model.PicAccountName"
+                                ReadOnly="true"
+                                Literal="Người phụ trách" />
+                </div>
+            </div>
+
+            <!--Row 2-------------------------------------------------->
+            <div class="row">
+                <!--Ghi chú kiểm tra-->
+                <div class="col-12">
+                    <MyMemoEdit @bind-Text="Model.CheckNotes"
+                                Rows="5"
+                                Literal="Ghi chú kiểm tra" />
+                </div>
+            </div>
+
+            <!--Row 3-------------------------------------------------->
+            <div class="row mt-2">
+                <!--Check: chấp nhận bồi thường-->
+                <div class="col-12 col-lg-3">
+                    <DxCheckBox @bind-Checked="@Model.AcceptStatus" CssClass="text-green">Chấp nhận bồi thường</DxCheckBox>
+                </div>
+                <!--Check: Từ chối yêu cầu-->
+                <div class="col-12 col-lg-3">
+                    <DxCheckBox @bind-Checked="@Model.CancelStatus" CssClass="text-red">Từ chối yêu cầu</DxCheckBox>
+                </div>
+
             </div>
 
         </div><!--End container-->
@@ -295,29 +410,22 @@
     private ClaimRequestModel Model = new ClaimRequestModel();
 
     //Master
-    private List<OptionListModel> ProductList = new List<OptionListModel>();
-    private List<OptionListModel> ChannelList = new List<OptionListModel>();
     private List<OptionListModel> DamageCauseList = new List<OptionListModel>();
     private List<OptionListModel> PriorityList = new List<OptionListModel>();
-    private List<OptionListModel> InsureList = new List<OptionListModel>();
-    private List<BranchMasterModel> BranchList = new List<BranchMasterModel>();
+    private List<OptionListModel> LogisticList = new List<OptionListModel>();
     //Selected combo value
-    private OptionListModel SelectedProduct = null;
-    private OptionListModel SelectedChannel = null;
     private OptionListModel SelectedDamageCause = null;
     private OptionListModel SelectedPriority = null;
-    private OptionListModel SelectedInsure = null;
-    private BranchMasterModel SelectedBranch = null;
+    private OptionListModel SelectedLogistic = null;
     //Ref
-    private MyComboBox<OptionListModel> RefProduct;
-    private MyComboBox<OptionListModel> RefChannel;
     private MyComboBox<OptionListModel> RefDamageType;
     private MyComboBox<OptionListModel> RefPriority;
-    private MyComboBox<OptionListModel> RefInsure;
-    private MyComboBox<BranchMasterModel> RefBranch;
+    private MyComboBox<OptionListModel> RefLogistic;
     MyMemoEdit RefDamageCause;
     //Css
     private string PriorityCss = "";
+    private bool DamageInfoCollapse = true;
+    private bool InsureInfoCollapse = true;
 
     #region Initialization
     protected override async Task OnInitializedAsync()
@@ -340,12 +448,9 @@
     //
     async Task LoadMaster()
     {
-        ProductList = await masterService.Load_OptionList("004");
         DamageCauseList = await masterService.Load_OptionList("005");
-        ChannelList = await masterService.Load_OptionList("006");
         PriorityList = await masterService.Load_OptionList("007");
-        InsureList = await masterService.Load_OptionList("008");
-        BranchList = await masterService.Load_BranchList();
+        LogisticList = await masterService.Load_OptionList("009");
     }
     async Task InitMain()
     {
@@ -359,41 +464,17 @@
         //ClaimAccount
         Model.ClaimAccountID = WebUserCredential.Username;
         Model.ClaimAccountName = WebUserCredential.Fullname;
-        //TPAProduct
-        if (ProductList != null && ProductList.Count > 0)
-        {
-            SelectedProduct = ProductList[0];
-            Model.TPAProductID = SelectedProduct.ItemCode;
-            Model.TPAProductName = SelectedProduct.ItemName;
-        }
         //NotificationDate
         Model.NotificationDate = DateTime.Now;
         //IncidentDate
         Model.IncidentDate = DateTime.Now;
         //AccidentDateTime
         Model.IncidentDate = DateTime.Now;
-        //TPAProduct
-        if (ChannelList != null && ChannelList.Count > 0)
-        {
-            SelectedChannel = ChannelList[0];
-            Model.NotificationChannelID = SelectedChannel.ItemCode;
-            Model.NotificationChannelName = SelectedChannel.ItemName;
-        }
         //DamageCause
         if (DamageCauseList != null && DamageCauseList.Count > 0)
         {
             SelectedDamageCause = DamageCauseList[0];
             Model.DamageType = SelectedDamageCause.ItemCode;
-        }
-        //Branch
-        if (BranchList != null && BranchList.Count > 0)
-        {
-            SelectedBranch = BranchList.Find(a => a.BranchID == WebUserCredential.BrancheID);
-            if (SelectedBranch != null)
-            {
-                Model.BrancheID = SelectedBranch.BranchID;
-                Model.BrancheName = SelectedBranch.BranchName;
-            }
         }
         //DamageCause
         if (PriorityList != null && PriorityList.Count > 0)
@@ -429,16 +510,10 @@
             {
                 //Show success
                 ClassHelper.CopyPropertiesDataDateConverted(response.ClaimRequest, Model);
-                //TPAProduct
-                if (!string.IsNullOrWhiteSpace(Model.TPAProductID)) SelectedProduct = ProductList.Find(x => x.ItemCode == Model.TPAProductID);
-                //Notification channel
-                if (!string.IsNullOrWhiteSpace(Model.NotificationChannelID)) SelectedChannel = ChannelList.Find(x => x.ItemCode == Model.NotificationChannelID);
                 //DamageCause
                 if (!string.IsNullOrWhiteSpace(Model.DamageType)) SelectedDamageCause = DamageCauseList.Find(x => x.ItemCode == Model.DamageType);
-                //SelectedBranch
-                if (!string.IsNullOrWhiteSpace(Model.InsurCompanyID)) SelectedInsure = InsureList.Find(x => x.ItemCode == Model.InsurCompanyID);
-                //SelectedBranch
-                if (!string.IsNullOrWhiteSpace(Model.BrancheID)) SelectedBranch = BranchList.Find(x => x.BranchID == Model.BrancheID);
+                //SelectedLogistic
+                if (!string.IsNullOrWhiteSpace(Model.PickupCompanyID)) SelectedLogistic = LogisticList.Find(x => x.ItemCode == Model.PickupCompanyID);
                 //Priority
                 SelectedPriority = PriorityList.Find(x => x.IntCode == Model.Priority);
 
@@ -463,47 +538,12 @@
         }
     }
 
-    async Task<bool> ValidateForm()
+    bool ValidateForm()
     {
         //Skip
-        if (Model.AcceptStatus)
+        if (Model.ApproveStatus)
         {
             toastService.ShowWarning("", MyMessage.Error_DataReadOnly);
-            return false;
-        }
-        //Phone
-        if (string.IsNullOrWhiteSpace(Model.CusPhone))
-        {
-            toastService.ShowWarning("Điện thoại liên hệ", "Bắt buột nhập.");
-            await JsRuntime.InvokeAsync<string>("focusEditor", "cusphone-focus");
-            return false;
-        }
-        //Tên khách hàng
-        if (string.IsNullOrWhiteSpace(Model.CusFullname))
-        {
-            toastService.ShowWarning("Tên khách hàng", "Bắt buột nhập.");
-            await JsRuntime.InvokeAsync<string>("focusEditor", "cusfullname-focus");
-            return false;
-        }
-        //TPA Product
-        if (string.IsNullOrWhiteSpace(Model.TPAProductID))
-        {
-            toastService.ShowWarning("Loại sản phẩm", "Bắt buột nhập.");
-            RefProduct.Focus();
-            return false;
-        }
-        //Địa chỉ nhận thiết bị
-        if (string.IsNullOrWhiteSpace(Model.PickupAddress))
-        {
-            toastService.ShowWarning("Địa chỉ nhận thiết bị", "Bắt buột nhập.");
-            await JsRuntime.InvokeAsync<string>("focusEditor", "pickupaddress-focus");
-            return false;
-        }
-        //Kênh thông báo
-        if (string.IsNullOrWhiteSpace(Model.NotificationChannelID))
-        {
-            toastService.ShowWarning("Kênh thông báo", "Bắt buột nhập.");
-            RefChannel.Focus();
             return false;
         }
         //Loại hư hỏng
@@ -513,25 +553,11 @@
             RefDamageType.Focus();
             return false;
         }
-        //Nguyên nhân hư hỏng
-        if (string.IsNullOrWhiteSpace(Model.DamageCause))
+        //RefLogistic
+        if (string.IsNullOrWhiteSpace(Model.PickupCompanyID))
         {
-            toastService.ShowWarning("Nguyên nhân hư hỏng", "Bắt buột nhập.");
-            RefDamageCause.Focus();
-            return false;
-        }
-        //Công ty bảo hiểm
-        if (string.IsNullOrWhiteSpace(Model.InsurCompanyID))
-        {
-            toastService.ShowWarning("Công ty bảo hiểm", "Bắt buột nhập.");
-            RefInsure.Focus();
-            return false;
-        }
-        //Chi nhánh bồi thường
-        if (string.IsNullOrWhiteSpace(Model.BrancheID))
-        {
-            toastService.ShowWarning("Chi nhánh bồi thường", "Bắt buột nhập.");
-            RefBranch.Focus();
+            toastService.ShowWarning("Công ty vận chuyển", "Bắt buột nhập.");
+            RefLogistic.Focus();
             return false;
         }
         //
@@ -543,7 +569,7 @@
         try
         {
             //Validate input data
-            var validateRes = await ValidateForm();
+            var validateRes = ValidateForm();
             if (!validateRes) return;
 
             //Request
@@ -563,7 +589,12 @@
             {
                 Model.ReturnAddress = Model.PickupAddress;
             }
-            
+            //PickupReqDate
+            if (Model.PickupReqDate == DateTime.Today.MinDate())
+            {
+                Model.PickupReqDate = DateTime.Now;
+            }
+
             ClassHelper.CopyPropertiesDataDateConverted(Model, request.ClaimRequest);
             //Call api
             var response = await ClaimServiceClient.SaveClaimRequestAsync(request);

@@ -351,7 +351,7 @@
         }
         catch (Exception ex)
         {
-            toastService.ShowError(ex.Message, "Load dữ liệu thất bại.");
+            toastService.ShowError(ex.Message, MyMessage.Error_LoadDataFailed);
         }
     }
     #endregion
@@ -416,7 +416,7 @@
         if (!Check_Changed())
         {
             //Show message: Nothing changed!
-            toastService.ShowInfo("", "Nothing Changed!");
+            toastService.ShowInfo("", MyMessage.Info_NothingChanged);
             return;
         }
         // Show popup confirm
@@ -442,7 +442,7 @@
         if (!Check_Changed())
         {
             //Show message: Nothing changed!
-            toastService.ShowInfo("", "Nothing Changed!");
+            toastService.ShowInfo("", MyMessage.Info_NothingChanged);
             return;
         }
         // Show popup confirm
@@ -545,7 +545,7 @@
             var responseDelete = await adminServiceClient.DeleteRoleDetailAsync(requestDelete);
             if (responseDelete == null || responseDelete.ReturnCode != GrpcReturnCode.OK)
             {
-                toastService.ShowError("", "Lưu dữ liệu thất bại.");
+                toastService.ShowError("", MyMessage.Error_SaveFailed);
                 return;
             }
 
@@ -584,14 +584,14 @@
             }
             else
             {
-                toastService.ShowError("", "Lưu dữ liệu thất bại.");
+                toastService.ShowError("", MyMessage.Error_SaveFailed);
             }
             // Reload data
             DisplayMain();
         }
         catch (Exception ex)
         {
-            toastService.ShowError(ex.Message, "Lưu dữ liệu thất bại.");
+            toastService.ShowError(ex.Message, MyMessage.Error_SaveFailed);
         }
     }
     // Cancel edit

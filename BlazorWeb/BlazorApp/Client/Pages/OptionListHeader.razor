@@ -122,7 +122,7 @@
         }
         catch (Exception ex)
         {
-            toastService.ShowError(ex.Message, "Load thất bại.");
+            toastService.ShowError(ex.Message, MyMessage.Error_LoadDataFailed);
         }
     }
     #endregion
@@ -282,7 +282,7 @@
             // Success
             if (response == null || response.ReturnCode != GrpcReturnCode.OK)
             {
-                toastService.ShowError("", "Lưu thất bại.");
+                toastService.ShowError("", MyMessage.Error_SaveFailed);
             }
             else
             {
@@ -294,7 +294,7 @@
         }
         catch (Exception ex)
         {
-            toastService.ShowError(ex.Message, "Lưu thất bại.");
+            toastService.ShowError(ex.Message, MyMessage.Error_SaveFailed);
         }
         //
         return false;

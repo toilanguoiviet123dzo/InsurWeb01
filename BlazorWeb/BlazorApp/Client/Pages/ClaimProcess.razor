@@ -1,4 +1,4 @@
-﻿@page "/ClaimRequest"
+﻿@page "/ClaimProcess"
 @using Admin.Services
 @using Claim.Services
 @using Resource.Services
@@ -34,16 +34,6 @@
                 <div class="col-12 col-lg-2">
                     <MyTextEdit @bind-Text="Filter_CusFullname"
                                 Literal="Tên khách hàng" />
-                </div>
-                <!--Chi nhánh bồi thường-->
-                <div class="col-12 col-lg-2">
-                    <MyMuteLabel Literal="Chi nhánh bồi thường" />
-                    <DxComboBox @bind-Value="Filter_Branch"
-                                Data="BranchList"
-                                AllowUserInput="true"
-                                ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
-                                FilteringMode="DataGridFilteringMode.Contains"
-                                TextFieldName="@(nameof(BranchMasterModel.BranchName))" />
                 </div>
             </div>
 
@@ -149,7 +139,7 @@
                 </HeaderCellTemplate>
                 <CellTemplate>
                     <div style="display:flex;justify-content:center">
-                        @if (((ClaimRequestListModel)context).AcceptStatus)
+                        @if (((ClaimRequestListModel)context).ApproveStatus)
                         {
                             <!--View-->
                             <div class="text-center" style="width:3rem">
@@ -161,10 +151,6 @@
                             <!--Edit-->
                             <div class="text-center" style="width:2.5rem">
                                 <a class="fa fa-pencil fa-2x" @onclick="@(() => OnRowEditStarting(context as ClaimRequestListModel))"></a>
-                            </div>
-                            <!--Delete-->
-                            <div class="text-center" style="width:2.5rem">
-                                <a class="fa fa-times fa-2x text-danger" @onclick="@(() => OnRowRemoving(context as ClaimRequestListModel))"></a>
                             </div>
                         }
                     </div>
@@ -201,11 +187,12 @@
             <DxDataGridColumn Field="@nameof(ClaimRequestListModel.PickupAddress)"
                               Caption="Địa chỉ lấy thiết bị"
                               Width="8rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.ClaimAccountName)"
-                              Caption="Người tiếp nhận"
-                              Width="7rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.BrancheName)"
-                              Caption="Chi nhánh bồi thường"
+            <DxDataGridDateEditColumn Field="@nameof(ClaimRequestListModel.CheckDoneDate)"
+                                      Caption="Ngày kiểm tra"
+                                      DisplayFormat="dd/MM/yyyy"
+                                      Width="6rem" />
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.PicAccountName)"
+                              Caption="Người phụ trách"
                               Width="7rem" />
         </Columns>
     </DxDataGrid>
@@ -220,7 +207,7 @@
          Width="1000px"
          ZIndex="1001">
     <BodyContentTemplate>
-        <ClaimRequestEdit @bind-Visible="@ClaimEditVisible"
+        <ClaimProcessEdit @bind-Visible="@ClaimEditVisible"
                           ClaimNo="@ClaimNo"
                           OnValidSumit="@(async() => await DisplayMain())" />
     </BodyContentTemplate>
@@ -252,11 +239,10 @@
     private string Filter_CusPhone = "";
     private string Filter_DeviceIMEI = "";
     private string Filter_CusFullname = "";
-    private CodeNameModel Filter_Status { get; set; } = new CodeNameModel { CodeInt = 1, Name = "Chấp nhận" };
+    private CodeNameModel Filter_Status { get; set; } =  new CodeNameModel { CodeInt = 1, Name = "Chấp nhận" };
     private CodeNameModel Filter_TimeFlag { get; set; }
     private DateTime Filter_StartDate { get; set; } = DateTime.Today.MinDate().ToLocalTime();
     private DateTime Filter_EndDate { get; set; } = DateTime.Today.MaxDate().ToLocalTime();
-    private BranchMasterModel Filter_Branch = null;
     private OptionListModel Filter_Insure = null;
     //
     private string ClaimNo = "";
@@ -300,7 +286,7 @@
             //CusFullname
             if (!string.IsNullOrWhiteSpace(Filter_CusFullname)) request.CusFullname = Filter_CusFullname;
             //BrancheID
-            if (Filter_Branch != null && !string.IsNullOrWhiteSpace(Filter_Branch.BranchID)) request.BrancheID = Filter_Branch.BranchID;
+            request.BrancheID = WebUserCredential.BrancheID;
             //InsurCompanyID
             if (Filter_Insure != null && !string.IsNullOrWhiteSpace(Filter_Insure.ItemCode)) request.InsurCompanyID = Filter_Insure.ItemCode;
             //Status

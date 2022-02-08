@@ -16,6 +16,10 @@ namespace BlazorApp.Client.BindingModels
         public string PickupAddress { get; set; } = "";
         public string ClaimAccountName { get; set; } = "";
         public string BrancheName { get; set; } = "";
+        public string PicAccountName { get; set; } = "";
+        public DateTime CheckDoneDate { get; set; }
+
+        //Status
         public bool AcceptStatus { get; set; }
         public bool PickupStatus1 { get; set; }
         public bool PickupStatus2 { get; set; }

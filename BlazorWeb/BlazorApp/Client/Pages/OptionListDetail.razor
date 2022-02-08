@@ -173,7 +173,7 @@
         }
         catch (Exception ex)
         {
-            toastService.ShowError(ex.Message, "Load function list thất bại.");
+            toastService.ShowError(ex.Message, MyMessage.Error_LoadDataFailed);
         }
     }
 
@@ -212,7 +212,7 @@
         }
         catch (Exception ex)
         {
-            toastService.ShowError(ex.Message, "Load dữ liệu thất bại.");
+            toastService.ShowError(ex.Message, MyMessage.Error_LoadDataFailed);
         }
     }
     #endregion
@@ -254,7 +254,7 @@
             // Success
             if (response == null || response.ReturnCode != GrpcReturnCode.OK)
             {
-                toastService.ShowError("", "Lưu thất bại.");
+                toastService.ShowError("", MyMessage.Error_SaveFailed);
             }
             else
             {
@@ -266,7 +266,7 @@
         }
         catch (Exception ex)
         {
-            toastService.ShowError(ex.Message, "Lưu thất bại.");
+            toastService.ShowError(ex.Message, MyMessage.Error_SaveFailed);
         }
         //
         return false;
@@ -372,7 +372,7 @@
         if (SelectedListCode == "")
         {
             await grid.CancelRowEdit();
-            toastService.ShowWarning("", "Please select List name before!");
+            toastService.ShowWarning("", "Chọn hạng mục trước");
         }
 
         // Insert row

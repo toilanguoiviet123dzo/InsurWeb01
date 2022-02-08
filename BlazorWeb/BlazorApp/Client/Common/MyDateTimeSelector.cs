@@ -21,6 +21,14 @@ namespace BlazorApp.Client.Common
         public static DateTimeRangeModel Select_DateTimeRange1(CodeNameModel seletedItem)
         {
             var ret = new DateTimeRangeModel();
+            //Clear
+            if (seletedItem == null)
+            {
+                ret.StartDate = DateTime.Today.MinDate();
+                ret.EndDate = DateTime.Today.MaxDate();
+                return ret;
+            }
+            
             //Tuan nay
             if (seletedItem.CodeInt == 1)
             {

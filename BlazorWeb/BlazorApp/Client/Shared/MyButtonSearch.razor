@@ -1,8 +1,8 @@
 ﻿
-<button @ref="Ref" class="btn btn-secondary" style="width:9rem; height:2rem; vertical-align:middle; margin-left:10px; margin-right:10px; padding:0" @onclick="@OnClickHandler">
-    <div style="text-align:start; color:red; display:flex">
+<button @ref="Ref" class="btn btn-success" style="width:9rem; height:2rem; vertical-align:middle; margin-left:10px; margin-right:10px; padding:0px" @onclick="@OnClickHandler">
+    <div style="text-align:start; display:flex">
         <div style="vertical-align: middle; margin-left: 10px; margin-right: 10px;">
-            <i class="fas fa-times fa-2x" aria-hidden="true"></i>
+            <i class="fas fa-search fa-2x" aria-hidden="true"></i>
         </div>
         <div style="vertical-align: middle; margin-left: 10px; font-size: medium;">
             @Literal
@@ -14,7 +14,7 @@
     [Parameter]
     public ElementReference Ref { get; set; }
     [Parameter]
-    public string Literal { get; set; } = "Cancel";
+    public string Literal { get; set; } = "Tìm kiếm";
     [Parameter]
     public EventCallback OnClick { get; set; }
 

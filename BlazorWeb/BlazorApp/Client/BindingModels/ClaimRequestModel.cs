@@ -28,7 +28,8 @@ namespace BlazorApp.Client.BindingModels
         public DateTime NotificationDate { get; set; }
         public string DamageCause { get; set; } = "";
         public string DamageType { get; set; }
-        public string NotificationChannel { get; set; } = "";
+        public string NotificationChannelID { get; set; } = "";
+        public string NotificationChannelName { get; set; } = "";
         public int Priority { get; set; }
         //Insur contraction
         public string InsurContractNo { get; set; } = "";
