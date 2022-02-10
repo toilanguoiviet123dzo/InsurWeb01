@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -64,7 +65,8 @@ namespace BlazorApp.Client.BindingModels
         public string CheckNotes { get; set; } = "";
         public bool CheckStatus { get; set; }
         //Repair
-        public DateTime RepairReqDate { get; set; }
+        public DateTime EstReqDate { get; set; }
+        public DateTime EstDoneDate { get; set; }
         public DateTime RepairDoneDate { get; set; }
         public string RepairCompanyID { get; set; } = "";
         public string RepairCompanyName { get; set; } = "";
@@ -113,8 +115,6 @@ namespace BlazorApp.Client.BindingModels
         public double DeductibleAmount { get; set; }
         public double IndemnityAmount { get; set; }
         public double RemainingAmount { get; set; }
-        //Images
-        public List<ImageModel> Images { get; set; } = new List<ImageModel>();
         //Update History
         public List<UpdateHistoryModel> UpdateHistorys { get; set; } = new List<UpdateHistoryModel>();
         //
@@ -124,25 +124,22 @@ namespace BlazorApp.Client.BindingModels
 
     public class EstimationModel
     {
+        [Range(0, 999, ErrorMessage = "Số dòng không hợp lệ")]
         public int LineNo { get; set; }
         public DateTime IssueDate { get; set; }
         public string ItemCode { get; set; } = "";
+        [Required(ErrorMessage = "Bắt buộc nhập")]
         public string ItemName { get; set; } = "";
         public bool IsReplace { get; set; }
+        [Range(1, 9999, ErrorMessage = "Số lượng không hợp lệ")]
         public double Quantity { get; set; }
+        [Range(0, 9999999999, ErrorMessage = "Đơn giá không hợp lệ")]
         public double UnitPrice { get; set; }
         public double Amount { get; set; }
+        [Range(0, 99999999999, ErrorMessage = "Số tiền duyệt không hợp lệ")]
         public double ApproveAmount { get; set; }
         public string Notes { get; set; } = "";
-    }
-
-    public class ImageModel
-    {
-        public DateTime IssueDate { get; set; }
-        public int SecureLevel { get; set; }
-        public string ImageID { get; set; } = "";
-        public string Title { get; set; } = "";
-        public string UploadAccountID { get; set; } = "";
+        public int UpdMode { get; set; }
     }
 
     public class UpdateHistoryModel

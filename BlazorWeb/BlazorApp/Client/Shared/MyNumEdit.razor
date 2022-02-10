@@ -7,16 +7,20 @@
 </style>
 
 <div style="width:@Width">
-    <label class="text-muted" style="padding: 0; margin: 0; font-size: small">@Literal</label>
+    @if (!string.IsNullOrWhiteSpace(@Literal))
+    {
+        <label class="text-muted" style="padding: 0; margin: 0; font-size: small">@Literal</label>
+    }
     <DxMaskedInput Value="@Value"
                    ValueChanged="@((T value) => OnValueChanged(value))"
-                   BindValueMode="BindValueMode.OnInput"
+                   ValueExpression="@(() => @Value)"
+                   BindValueMode="BindValueMode.OnLostFocus"
                    TextChanged="@(async (text) => await OnTextChanged(text))"
                    Mask="@Mask"
                    ReadOnly="@ReadOnly"
                    InputCssClass="@(InputCssClass + " text-align-right" )"
                    CssClass="@CssClass"
-                   @attributes="Attributes"/>
+                   @attributes="Attributes" />
 </div>
 
 @code {

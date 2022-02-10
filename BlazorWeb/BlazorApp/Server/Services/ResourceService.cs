@@ -40,7 +40,7 @@ namespace BlazorApp.Server.Services
             try
             {
                 var resourceFile = new grpcResourceFileModel();
-                ClassHelper.CopyPropertiesData(request.ResourceFile, resourceFile);
+                ClassHelper.CopyPropertiesData(request.Record, resourceFile);
                 response.StringValue = await SaveResourceFile(resourceFile);
             }
             catch (Exception ex)
@@ -48,6 +48,40 @@ namespace BlazorApp.Server.Services
                 response.ReturnCode = GrpcReturnCode.Error_ByServer;
                 response.MsgCode = ex.Message;
                 MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ResourceService", "SaveResourceFile", "Exception", response.ReturnCode, ex.Message);
+            }
+            return await Task.FromResult(response);
+        }
+
+        //-------------------------------------------------------------------------------------------------------/
+        // SaveResourceFiles
+        //-------------------------------------------------------------------------------------------------------/
+        public override async Task<Resource.Services.SaveResourceFiles_Response> SaveResourceFiles(SaveResourceFiles_Request request, ServerCallContext context)
+        {
+            var response = new Resource.Services.SaveResourceFiles_Response();
+            response.ReturnCode = GrpcReturnCode.OK;
+            try
+            {
+                if (request.Records != null && request.Records.Count > 0)
+                {
+                    foreach (var record in request.Records)
+                    {
+                        var resourceFile = new grpcResourceFileModel();
+                        ClassHelper.CopyPropertiesData(request.Records, resourceFile);
+                        //
+                        var resourceID = await SaveResourceFile(resourceFile);
+                        //
+                        var saveRes = new grpcSaveResourceFileResult();
+                        saveRes.ResourceID = resourceID;
+                        saveRes.FileName = resourceFile.FileName;
+                        response.Results.Add(saveRes);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ReturnCode = GrpcReturnCode.Error_ByServer;
+                response.MsgCode = ex.Message;
+                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ResourceService", "SaveResourceFiles", "Exception", response.ReturnCode, ex.Message);
             }
             return await Task.FromResult(response);
         }
@@ -80,7 +114,7 @@ namespace BlazorApp.Server.Services
                         saveRecord.ResourceID = MyCodeGenerator.GenResourceID();
                         saveRecord.ID = "";
                     }
-                    saveRecord.ModifiedOn = DateTime.UtcNow;
+                    saveRecord.IssueDate = DateTime.UtcNow;
 
                     //Save to local file
                     if (resourceFile.ArchiveMode == 2 && !string.IsNullOrWhiteSpace(archiveFolder))
@@ -166,15 +200,15 @@ namespace BlazorApp.Server.Services
                     }
 
                     //OK
-                    response.ResourceFile = new grpcResourceFileModel();
-                    ClassHelper.CopyPropertiesData(findRecord, response.ResourceFile);
+                    response.Record = new grpcResourceFileModel();
+                    ClassHelper.CopyPropertiesData(findRecord, response.Record);
 
                     //Load file content
                     if (findRecord.ArchiveMode == 2 && !string.IsNullOrWhiteSpace(archiveFolder))
                     {
                         string fileName = archiveFolder + findRecord.ServerFileName;
                         //
-                        response.ResourceFile.FileContent = ClassHelper.ByteString_FromByteArray(MyFile.Load_ToByteArray(fileName));
+                        response.Record.FileContent = ClassHelper.ByteString_FromByteArray(MyFile.Load_ToByteArray(fileName));
                     }
                 }
             }
@@ -187,6 +221,109 @@ namespace BlazorApp.Server.Services
             //
             return await Task.FromResult(response);
         }
+
+        //-------------------------------------------------------------------------------------------------------/
+        // GetResourceFiles
+        //-------------------------------------------------------------------------------------------------------/
+        public override async Task<GetResourceFiles_Response> GetResourceFiles(Resource.Services.GetResourceFiles_Request request, ServerCallContext context)
+        {
+            var response = new GetResourceFiles_Response();
+            response.ReturnCode = GrpcReturnCode.OK;
+            response.MsgCode = "";
+            //
+            try
+            {
+                var query = DB.Find<mdResourceFile>();
+
+                // OwnerID
+                if (!string.IsNullOrWhiteSpace(request.OwnerID)) query.Match(a => a.OwnerID == request.OwnerID);
+                // CategoryID
+                if (!string.IsNullOrWhiteSpace(request.CategoryID)) query.Match(a => a.CategoryID == request.CategoryID);
+                // FileType
+                if (!string.IsNullOrWhiteSpace(request.FileType)) query.Match(a => a.FileType == request.FileType);
+                //
+                var findRecords = await query.ExecuteAsync();
+                //
+                if (findRecords != null && findRecords.Count > 0)
+                {
+                    //archiveFolder
+                    SettingMasterModel settingMaster;
+                    string archiveFolder = "";
+                    settingMaster = await SettingMaster.GetSetting("001");
+                    archiveFolder = settingMaster == null ? "" : settingMaster.StringValue1;
+
+                    //Get files
+                    findRecords.ForEach(item =>
+                    {
+                        var record = new grpcResourceFileModel();
+                        ClassHelper.CopyPropertiesData(item, record);
+
+                        //Load file content
+                        if (record.ArchiveMode == 2 && !string.IsNullOrWhiteSpace(archiveFolder))
+                        {
+                            string fileName = archiveFolder + record.ServerFileName;
+                            //
+                            record.FileContent = ClassHelper.ByteString_FromByteArray(MyFile.Load_ToByteArray(fileName));
+                        }
+                        //
+                        response.Records.Add(record);
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ReturnCode = GrpcReturnCode.Error_ByServer;
+                response.MsgCode = ex.Message;
+                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ResourceService", "GetResourceFiles", "Exception", response.ReturnCode, ex.Message);
+            }
+            //
+            return await Task.FromResult(response);
+        }
+
+        //-------------------------------------------------------------------------------------------------------/
+        // DeleteResourceFiles
+        //-------------------------------------------------------------------------------------------------------/
+        public static async void DeleteResourceFilesByOwner(string ownerID)
+        {
+            //
+            try
+            {
+                //Delete files
+                var findRecords = await DB.Find<mdResourceFile>()
+                                          .Match(a => a.OwnerID == ownerID)
+                                          .ExecuteAsync();
+                //
+                if (findRecords != null && findRecords.Count > 0)
+                {
+                    //archiveFolder
+                    SettingMasterModel settingMaster;
+                    string archiveFolder = "";
+                    settingMaster = await SettingMaster.GetSetting("001");
+                    archiveFolder = settingMaster == null ? "" : settingMaster.StringValue1;
+
+                    //Get files
+                    findRecords.ForEach(item =>
+                    {
+                        //Remove file
+                        if (item.ArchiveMode == 2 && !string.IsNullOrWhiteSpace(archiveFolder))
+                        {
+                            string fileName = archiveFolder + item.ServerFileName;
+                            //
+                            MyFile.Delete(fileName);
+                        }
+                    });
+                }
+
+                //Delete records
+                await DB.DeleteAsync<mdResourceFile>(x => x.OwnerID == ownerID);
+            }
+            catch (Exception ex)
+            {
+                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ResourceService", "DeleteResourceFilesByOwner", "Exception", 500, ex.Message);
+            }
+        }
+
+
 
 
 

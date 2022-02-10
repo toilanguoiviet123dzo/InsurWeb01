@@ -141,17 +141,19 @@ namespace BlazorApp.Client.Services
                     {
                         foreach (var item in response.Records)
                         {
-                            //Parrent grid
-                            var dataRow = new RepairerMasterModel();
-                            ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
-                            //
-                            RepairerLists.Add(dataRow);
+                            if (item.Status == 1)
+                            {
+                                var dataRow = new RepairerMasterModel();
+                                ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
+                                //
+                                RepairerLists.Add(dataRow);
+                            }
                         }
                     }
                     //Order
                     if (RepairerLists.Count > 0)
                     {
-                        RepairerLists = RepairerLists.OrderBy(x => x.RepairerName).ToList<RepairerMasterModel>();
+                        RepairerLists = RepairerLists.OrderBy(x => x.DspOrder).ToList<RepairerMasterModel>();
                     }
                 }
             }
@@ -182,17 +184,19 @@ namespace BlazorApp.Client.Services
                     {
                         foreach (var item in response.Records)
                         {
-                            //Parrent grid
-                            var dataRow = new BranchMasterModel();
-                            ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
-                            //
-                            BranchLists.Add(dataRow);
+                            if (item.Status == 1)
+                            {
+                                var dataRow = new BranchMasterModel();
+                                ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
+                                //
+                                BranchLists.Add(dataRow);
+                            }
                         }
                     }
                     //Order
                     if (BranchLists.Count > 0)
                     {
-                        BranchLists = BranchLists.OrderBy(x => x.BranchName).ToList<BranchMasterModel>();
+                        BranchLists = BranchLists.OrderBy(x => x.DspOrder).ToList<BranchMasterModel>();
                     }
                 }
             }
@@ -201,6 +205,21 @@ namespace BlazorApp.Client.Services
             return BranchLists;
         }
         //
+        public async Task<string> Get_BrancheAddress(string brancheID)
+        {
+            if (string.IsNullOrWhiteSpace(brancheID)) return "";
+            if (BranchLists.Count == 0)
+            {
+                await Load_BranchList();
+            }
+
+            //Get address
+            var branche = BranchLists.Find(x => x.BranchID == brancheID);
+            if (branche != null) return branche.Address;
+            //
+            return "";
+        }
+
 
     }
 }

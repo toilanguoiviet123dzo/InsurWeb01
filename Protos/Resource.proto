@@ -5,10 +5,12 @@ package grpcResourceService;
 
 //Services
 service grpcResourceService {    
-    //ResourceFile
+    //ResourceFile single
     rpc SaveResourceFile (SaveResourceFile_Request) returns (String_Response);
     rpc GetResourceFile (String_Request) returns (GetResourceFile_Response);
-   
+    // multiple
+    rpc SaveResourceFiles (SaveResourceFiles_Request) returns (SaveResourceFiles_Response);
+    rpc GetResourceFiles (GetResourceFiles_Request) returns (GetResourceFiles_Response);
 }
 //======================================================
 // Common Messages
@@ -54,26 +56,61 @@ message Int_Response
 message SaveResourceFile_Request {
     UserCredential Credential = 1;
     //
-    grpcResourceFileModel ResourceFile = 2;
+    grpcResourceFileModel Record = 2;
 }
 message GetResourceFile_Response {
     int32 ReturnCode = 1;
     string MsgCode = 2;
     //
-    grpcResourceFileModel ResourceFile = 3;
+    grpcResourceFileModel Record = 3;
+}
+message SaveResourceFiles_Request {
+    UserCredential Credential = 1;
+    //
+    repeated grpcResourceFileModel Records = 2;
+}
+message SaveResourceFiles_Response {
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    repeated grpcSaveResourceFileResult Results = 3;
+}
+message grpcSaveResourceFileResult {
+    string ResourceID = 1;
+    string FileName = 2;
+}
+message GetResourceFiles_Request {
+    UserCredential Credential = 1;
+    //
+    string OwnerID = 2;
+    string CategoryID = 3;
+    string FileType = 4;
+}
+message GetResourceFiles_Response {
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    repeated grpcResourceFileModel Records = 3;
 }
 message grpcResourceFileModel {
     string ID = 1;
-    string ResourceID = 2;
+    string OwnerID = 2;
     string CategoryID = 3;
-    string FileName = 4;
-    string ServerFileName = 5;
-    bytes FileContent = 6;
-    int32 ArchiveMode = 7;
+    string ResourceID = 4;
+    string FileType = 5;
+    string Title = 6;
+    string FileName = 7;
+    string ServerFileName = 8;
+    bytes FileContent = 9;
+    int32 ArchiveMode = 10;
+    int32 SecureLevel = 11;
+    string AccountID = 12;
     //
-    google.protobuf.Timestamp ModifiedOn = 8;
-    int32 UpdMode = 9;
+    google.protobuf.Timestamp IssueDate = 13;
+    int32 UpdMode = 14;
 }
+
+
 
 
 

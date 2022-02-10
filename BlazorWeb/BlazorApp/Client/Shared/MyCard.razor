@@ -1,8 +1,14 @@
 ﻿<div class="card mb-2">
     <!--Header-->
-    <div class="card-header p-1" style="height: 2rem">
+    <div class="card-header p-1" style="height: 2rem" @ondblclick=@(() => OnCollapseChanged())>
         <div style="float:left">
-            <h6 class="text-muted font-italic">@Title</h6>
+            <h6 class="text-muted font-italic">
+                @Title
+                @if (IsCollapse)
+                {
+                    <a @onclick="@(() => Expand())" style="font-size:x-large; color:blue; cursor:pointer; margin-left:10px">...</a>
+                }
+            </h6>
         </div>
         <div style="float:right">
             @if (IsCollapse)
@@ -20,10 +26,6 @@
         @if (!IsCollapse)
         {
             @CardBody
-        }
-        else
-        {
-            <a @onclick="@(() => Expand())" style="font-size:x-large; color:blue; cursor:pointer; margin-left:10px">...</a>
         }
     </div>
 </div>
@@ -49,5 +51,17 @@
         IsCollapse = false;
         await IsCollapseChanged.InvokeAsync(IsCollapse);
         this.StateHasChanged();
+    }
+
+    public void OnCollapseChanged()
+    {
+        if (IsCollapse)
+        {
+            Expand();
+        }
+        else
+        {
+            Collapse();
+        }
     }
 }

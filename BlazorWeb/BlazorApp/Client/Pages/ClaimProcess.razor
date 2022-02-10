@@ -183,7 +183,7 @@
                               Width="8rem" />
             <DxDataGridColumn Field="@nameof(ClaimRequestListModel.PickupAddress)"
                               Caption="Địa chỉ lấy thiết bị"
-                              Width="8rem" />
+                              Width="15rem" />
             <DxDataGridDateEditColumn Field="@nameof(ClaimRequestListModel.CheckDoneDate)"
                                       Caption="Ngày kiểm tra"
                                       DisplayFormat="dd/MM/yyyy"
@@ -198,13 +198,13 @@
 <MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
 
 <!--Edit compen request-->
-<MyPopup @bind-Visible="@ClaimEditVisible"
+<MyPopup @ref="@ClaimPopup"
          VerticalAlignment="@VerticalAlignment.Top"
          HeaderText="Yêu cầu bồi thường"
          Width="1000px"
          ZIndex="1001">
     <BodyContentTemplate>
-        <ClaimProcessEdit @bind-Visible="@ClaimEditVisible"
+        <ClaimProcessEdit MyForm="@ClaimPopup"
                           ClaimNo="@ClaimNo"
                           OnValidSumit="@(async() => await DisplayMain())" />
     </BodyContentTemplate>
@@ -227,16 +227,16 @@
     private List<CodeNameModel> StatusList = MyClaimStatus.Get_StatusList();
     private List<CodeNameModel> TimeFlagList = MyDateTimeSelector.Get_TimeRangeList();
     // Popup
+    private MyPopup ClaimPopup;
     private string ConfirmMessage = "";
     private int ConfirmAction = 0;
     private bool ConfirmVisible = false;
-    private bool ClaimEditVisible { get; set; } = false;
 
     //Filter
     private string Filter_CusPhone = "";
     private string Filter_DeviceIMEI = "";
     private string Filter_CusFullname = "";
-    private CodeNameModel Filter_Status { get; set; } =  new CodeNameModel { CodeInt = 1, Name = "Thụ lý" };
+    private CodeNameModel Filter_Status { get; set; } =  new CodeNameModel { CodeInt = 5, Name = "Chấp nhận" };
     private CodeNameModel Filter_TimeFlag { get; set; }
     private DateTime Filter_StartDate { get; set; } = DateTime.Today.MinDate().ToLocalTime();
     private DateTime Filter_EndDate { get; set; } = DateTime.Today.MaxDate().ToLocalTime();
@@ -308,18 +308,7 @@
                         var dataRow = new ClaimRequestListModel();
                         ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
                         //Status name
-                        int StatusCode = 0;
-                        if (dataRow.AcceptStatus) StatusCode = 1;
-                        if (dataRow.PickupStatus1) StatusCode = 2;
-                        if (dataRow.PickupStatus2) StatusCode = 3;
-                        if (dataRow.CheckStatus) StatusCode = 4;
-                        if (dataRow.EstimationStatus) StatusCode = 5;
-                        if (dataRow.ApproveStatus) StatusCode = 6;
-                        if (dataRow.RepairStatus) StatusCode = 7;
-                        if (dataRow.ReturnStatus1) StatusCode = 8;
-                        if (dataRow.ReturnStatus2) StatusCode = 9;
-                        if (dataRow.CancelStatus) StatusCode = 10;
-                        dataRow.StatusName = MyClaimStatus.Get_StatusName(StatusCode);
+                        dataRow.StatusName = MyClaimStatus.Get_StatusName(dataRow);
                         //
                         DetailData.Add(dataRow);
                     }
@@ -459,8 +448,7 @@
             //ClaimNo
             ClaimNo = editingRow.ClaimNo;
         }
-        ClaimEditVisible = true;
-        StateHasChanged();
+        ClaimPopup.Show();
     }
     //Update row
     async Task UpdateRow()

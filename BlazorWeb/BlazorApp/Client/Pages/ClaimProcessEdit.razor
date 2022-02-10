@@ -406,6 +406,229 @@
     </CardBody>
 </MyCard>
 
+<!--Thông báo giá & sửa chữa-->
+<MyCard @bind-IsCollapse="@ReapairInfoCollapse" Title="Thông báo giá & sửa chữa">
+    <CardBody>
+        <div class="container-fluid">
+            <!--Row 1-------------------------------------------------->
+            <div class="row">
+                <!--Nơi sửa chữa-->
+                <div class="col-12 col-lg-3">
+                    <MyComboBox @ref="RefRepairer"
+                                @bind-Value="SelectedRepairer"
+                                Data="RepairerList"
+                                TextFieldName="@(nameof(RepairerMasterModel.RepairerName))"
+                                SelectedItemChanged="@((RepairerMasterModel selectedRow) => {
+                                                   Model.RepairCompanyID = selectedRow.RepairerID;
+                                                   Model.RepairCompanyName = selectedRow.RepairerName;
+                                             })"
+                                Literal="Nơi sửa chữa" />
+                </div>
+                <!--Ngày yêu cầu báo giá-->
+                <div class="col-12 col-lg-3">
+                    <MyDateTimeEdit @bind-Date="Model.EstReqDate"
+                                    Literal="Ngày yêu cầu báo giá"
+                                    ReadOnly="true"
+                                    InputCssClass="text-green" />
+                </div>
+                <!--Ngày báo giá xong-->
+                <div class="col-12 col-lg-3">
+                    <MyDateTimeEdit @bind-Date="Model.EstDoneDate"
+                                    Literal="Ngày báo giá xong"
+                                    ReadOnly="true"
+                                    InputCssClass="text-blue" />
+                </div>
+                <!--Ngày sửa chữa xong-->
+                <div class="col-12 col-lg-3">
+                    <MyDateTimeEdit @bind-Date="Model.RepairDoneDate"
+                                    Literal="Ngày sửa chữa xong"
+                                    ReadOnly="true"
+                                    InputCssClass="text-maroon" />
+                </div>
+            </div>
+
+            <!--Row 2-------------------------------------------------->
+            <div class="row mt-2">
+                <!--Check: yêu cầu báo giá-->
+                <div class="col-12 col-lg-3">
+                    <DxCheckBox @bind-Checked="@Model.EstimationReqStatus" CssClass="text-green">Yêu cầu báo giá</DxCheckBox>
+                </div>
+                <!--Check: Đã báo giá-->
+                <div class="col-12 col-lg-3">
+                    <DxCheckBox @bind-Checked="@Model.EstimationStatus" Enabled="false" CssClass="text-green">Đã báo giá</DxCheckBox>
+                </div>
+                <!--Check: Đã sửa xong-->
+                <div class="col-12 col-lg-3">
+                    <DxCheckBox @bind-Checked="@Model.RepairStatus" Enabled="false" CssClass="text-green">Đã sửa xong</DxCheckBox>
+                </div>
+            </div>
+
+            <!--Row 3-------------noi dung bao gia------------------------------------->
+            <div class="row">
+                <DxDataGrid @ref="@gridEst"
+                            Data="@Model.Estimations"
+                            ColumnResizeMode="DataGridColumnResizeMode.Component"
+                            EditMode="DataGridEditMode.PopupEditForm"
+                            PageSize="@PageRowCount"
+                            HtmlRowDecoration="@OnHtmlRowDecoration"
+                            HtmlDataCellDecoration="@OnHtmlDataCellDecoration"
+                            HorizontalScrollBarMode="ScrollBarMode.Auto"
+                            RowRemoving="@((dataRow) => OnRowRemoving(dataRow))"
+                            RowEditStart="@(dataRow => OnRowEditStarting(dataRow))"
+                            RowInsertStart="@(() => OnRowEditStarting(null))">
+                    <Columns>
+                        <DxDataGridCommandColumn Width="5rem" VisibleIndex="0">
+                            <HeaderCellTemplate>
+                                <div class="text-center">
+                                    <a class="fa fa-plus fa-2x" @onclick="@(() => gridEst.StartRowEdit(null))" href="javascript:void(0);"></a>
+                                </div>
+                            </HeaderCellTemplate>
+                            <CellTemplate>
+                                <div style="display:flex">
+                                    <div class="text-center" style="width:2rem">
+                                        <a class="fa fa-pencil fa-2x" @onclick="@(() => gridEst.StartRowEdit(context))" href="javascript:void(0);"></a>
+                                    </div>
+                                    <div class="text-center" style="width:2rem">
+                                        <a class="fa fa-times fa-2x" style="color:red" @onclick="@(() => OnRowRemoving(context as EstimationModel))" href="javascript:void(0);"></a>
+                                    </div>
+                                </div>
+                            </CellTemplate>
+                        </DxDataGridCommandColumn>
+                        <DxDataGridSpinEditColumn Field="@nameof(EstimationModel.LineNo)"
+                                                  Caption="No."
+                                                  DisplayFormat="N0"
+                                                  Width="3rem" />
+                        <DxDataGridDateEditColumn Field="@nameof(EstimationModel.IssueDate)"
+                                                  Caption="Ngày giờ"
+                                                  DisplayFormat="dd/MM/yyyy HH:mm"
+                                                  Width="9rem" />
+                        <DxDataGridColumn Field="@nameof(EstimationModel.ItemCode)"
+                                          Caption="Mã hạng mục"
+                                          Width="7rem" />
+                        <DxDataGridColumn Field="@nameof(EstimationModel.ItemName)"
+                                          Caption="Tên hạng mục"
+                                          Width="12rem" />
+                        <DxDataGridCheckBoxColumn Field="@nameof(EstimationModel.IsReplace)"
+                                                  Caption="Thay thế"
+                                                  Width="4rem" />
+                        <DxDataGridSpinEditColumn Field="@nameof(EstimationModel.Quantity)"
+                                                  Caption="Số lượng"
+                                                  DisplayFormat="N0"
+                                                  Width="5rem" />
+                        <DxDataGridSpinEditColumn Field="@nameof(EstimationModel.UnitPrice)"
+                                                  Caption="Đơn giá"
+                                                  DisplayFormat="N0"
+                                                  Width="6rem" />
+                        <DxDataGridSpinEditColumn Field="@nameof(EstimationModel.Amount)"
+                                                  Caption="Thành tiền"
+                                                  DisplayFormat="N0"
+                                                  Width="8rem" />
+                        <DxDataGridSpinEditColumn Field="@nameof(EstimationModel.ApproveAmount)"
+                                                  Caption="Duyệt"
+                                                  DisplayFormat="N0"
+                                                  Width="8rem" />
+                        <DxDataGridColumn Field="@nameof(EstimationModel.Notes)"
+                                          Caption="Mức độ bảo mật"
+                                          Width="8rem" />
+                    </Columns>
+                    <!--Total summary-->
+                    <TotalSummary>
+                        <DxDataGridSummaryItem Field=@nameof(EstimationModel.Quantity)
+                                               SummaryType=SummaryItemType.Sum
+                                               DisplayFormat="{0:N0}" />
+                        <DxDataGridSummaryItem Field=@nameof(EstimationModel.Amount)
+                                               SummaryType=SummaryItemType.Sum
+                                               DisplayFormat="{0:N0}" />
+                        <DxDataGridSummaryItem Field=@nameof(EstimationModel.ApproveAmount)
+                                               SummaryType=SummaryItemType.Sum
+                                               DisplayFormat="{0:N0}" />
+                    </TotalSummary>
+                    <EditFormTemplate>
+                        <EditForm Model="@EditContext" Context="EditFormContext" OnValidSubmit="@UpdateRow">
+                            <DataAnnotationsValidator />
+                            <DxFormLayout>
+                                <!--Item code-->
+                                <DxFormLayoutItem Caption="Mã hạng mục" ColSpanMd="12" Context="FormLayoutContext">
+                                    <Template>
+                                        <DxTextBox @bind-Text="@EditContext.ItemCode" />
+                                    </Template>
+                                </DxFormLayoutItem>
+                                <!--Item name-->
+                                <DxFormLayoutItem Caption="Tên hạng mục" ColSpanMd="12" Context="FormLayoutContext">
+                                    <Template>
+                                        <DxTextBox @bind-Text="@EditContext.ItemName" />
+                                        <ValidationMessage For="@(() => EditContext.ItemName)" />
+                                    </Template>
+                                </DxFormLayoutItem>
+                                <!--IsReplace-->
+                                <DxFormLayoutItem Caption="Thay thế" ColSpanMd="12" Context="FormLayoutContext">
+                                    <Template>
+                                        <DxCheckBox @bind-Checked="@EditContext.IsReplace" />
+                                    </Template>
+                                </DxFormLayoutItem>
+                                <!--Quantity-->
+                                <DxFormLayoutItem Caption="Số lượng" ColSpanMd="12" Context="FormLayoutContext">
+                                    <Template>
+                                        <MyNumEdit Value="@EditContext.Quantity"
+                                                   ValueChanged="@((double newValue) => Quantity_Changed(newValue))"
+                                                   Mask="N0" />
+                                        <ValidationMessage For="@(() => EditContext.Quantity)" />
+                                    </Template>
+                                </DxFormLayoutItem>
+                                <!--UnitPrice-->
+                                <DxFormLayoutItem Caption="Đơn giá" ColSpanMd="12" Context="FormLayoutContext">
+                                    <Template>
+                                        <MyNumEdit Value="@EditContext.UnitPrice"
+                                                   ValueChanged="@((double newValue) => UnitPrice_Changed(newValue))"
+                                                   Mask="N0" />
+                                        <ValidationMessage For="@(() => EditContext.UnitPrice)" />
+                                    </Template>
+                                </DxFormLayoutItem>
+                                <!--Amount-->
+                                <DxFormLayoutItem Caption="Thành tiền" ColSpanMd="12" Context="FormLayoutContext">
+                                    <Template>
+                                        <MyNumEdit @bind-Value="@EditContext.Amount"
+                                                   ReadOnly="true"
+                                                   Mask="N0" />
+                                    </Template>
+                                </DxFormLayoutItem>
+                                <!--ApproveAmount-->
+                                <DxFormLayoutItem Caption="Duyệt" ColSpanMd="12" Context="FormLayoutContext">
+                                    <Template>
+                                        <MyNumEdit @bind-Value="@EditContext.ApproveAmount"
+                                                   ReadOnly="@ApproveAmount_ReadOnly"
+                                                   Mask="N0" />
+                                    </Template>
+                                </DxFormLayoutItem>
+                                <!--Notes-->
+                                <DxFormLayoutItem Caption="Ghi chú" ColSpanMd="12" Context="FormLayoutContext">
+                                    <Template>
+                                        <DxTextBox @bind-Text="@EditContext.Notes" />
+                                    </Template>
+                                </DxFormLayoutItem>
+                                <!--OK Cancel-->
+                                <DxFormLayoutItem ColSpanMd="12" Context="FormLayoutContext">
+                                    <Template>
+                                        <div class="text-center">
+                                            <DxButton RenderStyle="@ButtonRenderStyle.Success" style="width:100px; font-size:15px" SubmitFormOnClick="true" Text="OK" />
+                                            <DxButton RenderStyle="@ButtonRenderStyle.Danger" style="width:100px; font-size:15px" @onclick="@OnCancelEditRow" Text="Cancel" />
+                                        </div>
+                                    </Template>
+                                </DxFormLayoutItem>
+                            </DxFormLayout>
+                        </EditForm>
+                    </EditFormTemplate>
+                </DxDataGrid>
+            </div>
+
+
+
+        </div><!--End container-->
+    </CardBody>
+</MyCard>
+
+
+
 <!--OK, Cancel-->
 <div class="container-fluid">
     <div class="row justify-content-center mt-2">
@@ -417,33 +640,32 @@
 @code {
     [CascadingParameter]
     protected ProgramInfo Program { get; set; }
+    [Parameter]
+    public MyPopup MyForm { get; set; }
+    private const int PageRowCount = MyConstant.Grid_PageRowCount;
     //Parameters and events
     [Parameter]
     public string ClaimNo { get; set; } = "";
     [Parameter]
     public EventCallback OnValidSumit { get; set; }
-    [Parameter]
-    public bool Visible { get; set; }
-    [Parameter]
-    public EventCallback<bool> VisibleChanged { get; set; }
-    private async Task OnVisibleChanged(bool newValue)
-    {
-        await VisibleChanged.InvokeAsync(newValue);
-    }
+    //
     private ClaimRequestModel Model = new ClaimRequestModel();
 
     //Master
     private List<OptionListModel> DamageCauseList = new List<OptionListModel>();
     private List<OptionListModel> PriorityList = new List<OptionListModel>();
     private List<OptionListModel> LogisticList = new List<OptionListModel>();
+    private List<RepairerMasterModel> RepairerList = new List<RepairerMasterModel>();
     //Selected combo value
     private OptionListModel SelectedDamageCause = null;
     private OptionListModel SelectedPriority = null;
     private OptionListModel SelectedLogistic = null;
+    private RepairerMasterModel SelectedRepairer = null;
     //Ref
     private MyComboBox<OptionListModel> RefDamageType;
     private MyComboBox<OptionListModel> RefPriority;
     private MyComboBox<OptionListModel> RefLogistic;
+    private MyComboBox<RepairerMasterModel> RefRepairer;
     MyMemoEdit RefDamageCause;
     //Css
     private string PriorityCss = "";
@@ -451,6 +673,13 @@
     private bool InsureInfoCollapse = true;
     private bool PickupInfoCollapse = true;
     private bool CheckInfoCollapse = true;
+    private bool ReapairInfoCollapse = true;
+    //Readonly
+    private bool ApproveAmount_ReadOnly = true;
+    //Confirm
+    private string ConfirmMessage = "";
+    private string ConfirmAction = "";
+    private bool ConfirmVisible = false;
 
     #region Initialization
     protected override async Task OnInitializedAsync()
@@ -469,6 +698,7 @@
     //
     async Task LoadMaster()
     {
+        RepairerList = await masterService.Load_RepairerList();
         DamageCauseList = await masterService.Load_OptionList("005");
         PriorityList = await masterService.Load_OptionList("007");
         LogisticList = await masterService.Load_OptionList("009");
@@ -506,6 +736,17 @@
                 if (!string.IsNullOrWhiteSpace(Model.PickupCompanyID)) SelectedLogistic = LogisticList.Find(x => x.ItemCode == Model.PickupCompanyID);
                 //Priority
                 SelectedPriority = PriorityList.Find(x => x.IntCode == Model.Priority);
+
+                //Estimations
+                if (response.ClaimRequest.Estimations != null && response.ClaimRequest.Estimations.Count > 0)
+                {
+                    foreach (var item in response.ClaimRequest.Estimations)
+                    {
+                        var estRow = new EstimationModel();
+                        ClassHelper.CopyPropertiesDataDateConverted(item, estRow);
+                        Model.Estimations.Add(estRow);
+                    }
+                }
 
                 //CSS
                 PriorityCss = "";
@@ -552,7 +793,7 @@
             return false;
         }
         //RefLogistic
-        if (string.IsNullOrWhiteSpace(Model.PickupCompanyID))
+        if (Model.PickupReqStatus && string.IsNullOrWhiteSpace(Model.PickupCompanyID))
         {
             toastService.ShowWarning("Công ty vận chuyển", "Bắt buột nhập.");
             RefLogistic.Focus();
@@ -609,8 +850,28 @@
             {
                 Model.AcceptStatus = false;
             }
+            //ProcessStatus
+            if (Model.PickupReqStatus || Model.CheckStatus || Model.AcceptStatus || Model.CancelStatus)
+            {
+                Model.ProcessStatus = true;
+            }
             //
             ClassHelper.CopyPropertiesDataDateConverted(Model, request.ClaimRequest);
+
+            //Estimations
+            if (Model.Estimations != null && Model.Estimations.Count > 0)
+            {
+                foreach (var item in Model.Estimations)
+                {
+                    if (item.UpdMode != 3)
+                    {
+                        var estRow = new grpcEstimationModel();
+                        ClassHelper.CopyPropertiesDataDateConverted(item, estRow);
+                        request.ClaimRequest.Estimations.Add(estRow);
+                    }
+                }
+            }
+
             //Call api
             var response = await ClaimServiceClient.SaveClaimRequestAsync(request);
             // Success
@@ -621,16 +882,16 @@
 
             //Reload data
             await OnValidSumit.InvokeAsync();
-            await CloseMain();
+            CloseMain();
         }
         catch (Exception ex)
         {
             toastService.ShowError(ex.Message, MyMessage.Error_SaveFailed);
         }
     }
-    async Task CloseMain()
+    void CloseMain()
     {
-        await OnVisibleChanged(false);
+        MyForm.Close();
     }
     #endregion
 
@@ -722,6 +983,185 @@
     //
 
 
+    #endregion
+
+    #region Grid main
+    DxDataGrid<EstimationModel> gridEst;
+    FormEditContext EditContext = null;
+    //Confirm delete
+    EstimationModel DeletedRow = null;
+    void OnRowRemoving(EstimationModel dataRow)
+    {
+        DeletedRow = dataRow;
+        //Show popup confirm
+        ConfirmMessage = MyMessage.Confirm_DeleteRow;
+        ConfirmAction = "DeleteRow";
+        ConfirmVisible = true;
+        StateHasChanged();
+    }
+
+    //Cancel edit
+    async Task OnCancelEditRow()
+    {
+        await gridEst.CancelRowEdit();
+        EditContext = null;
+    }
+
+    async void DeleteRow()
+    {
+        //Set to delete mode
+        if (DeletedRow.UpdMode == 1)
+        {
+            //Remove new row from data source
+            Model.Estimations.Remove(DeletedRow);
+        }
+        else
+        {
+            //Mark to delete
+            DeletedRow.UpdMode = 3;
+        }
+
+        //Refresh layout
+        await gridEst.Refresh();
+    }
+    //Update row
+    async Task UpdateRow()
+    {
+        //Update for edit field
+        var backupRow = new EstimationModel();
+        ClassHelper.CopyPropertiesData(EditContext.EditingRow, backupRow);
+        //
+        EditContext.EditingRow.LineNo = EditContext.LineNo;
+        EditContext.EditingRow.IssueDate = DateTime.Now;
+        EditContext.EditingRow.ItemCode = EditContext.ItemCode;
+        EditContext.EditingRow.ItemName = EditContext.ItemName;
+        EditContext.EditingRow.IsReplace = EditContext.IsReplace;
+        EditContext.EditingRow.Quantity = EditContext.Quantity;
+        EditContext.EditingRow.UnitPrice = EditContext.UnitPrice;
+        EditContext.EditingRow.Amount = EditContext.Amount;
+        EditContext.EditingRow.ApproveAmount = EditContext.ApproveAmount;
+        EditContext.EditingRow.Notes = EditContext.Notes;
+
+        //Update mode
+        if (EditContext.EditingRow.UpdMode == 0 || EditContext.EditingRow.UpdMode == 3)
+        {
+            EditContext.EditingRow.UpdMode = 2;
+        }
+
+        //Insert to datasource
+        if (EditContext.EditingRow.UpdMode == -1)
+        {
+            EditContext.EditingRow.UpdMode = 1;
+            Model.Estimations.Add(EditContext.EditingRow);
+        }
+
+        //Close popup & refresh data
+        await gridEst.CancelRowEdit();
+        await gridEst.Refresh();
+    }
+    // Edit row model
+    class FormEditContext : EstimationModel
+    {
+        public FormEditContext(EstimationModel editRow)
+        {
+            //Saved data
+            EditingRow = editRow;
+
+            //Editable data only
+            LineNo = EditingRow.LineNo;
+            IssueDate = EditingRow.IssueDate;
+            ItemCode = EditingRow.ItemCode;
+            ItemName = EditingRow.ItemName;
+            IsReplace = EditingRow.IsReplace;
+            Quantity = EditingRow.Quantity;
+            UnitPrice = EditingRow.UnitPrice;
+            Amount = EditingRow.Amount;
+            ApproveAmount = EditingRow.ApproveAmount;
+            Notes = EditingRow.Notes;
+        }
+        public EstimationModel EditingRow { get; set; }
+        public Action StateHasChanged { get; set; }
+    }
+
+    //Get data for edit/insert
+    void OnRowEditStarting(EstimationModel editingRow)
+    {
+        //Init new row
+        if (editingRow == null)
+        {
+            editingRow = new EstimationModel();
+            //
+            editingRow.IssueDate = DateTime.Now;
+            editingRow.LineNo = Get_MaxDetailLineNo();
+            //
+            editingRow.UpdMode = -1;
+        }
+        EditContext = new FormEditContext(editingRow);
+        //
+        StateHasChanged();
+    }
+    // Color of edit data
+    void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<EstimationModel> eventArgs)
+    {
+        MyColor myColor = new MyColor();
+        if (eventArgs.DataItem.UpdMode == 1)
+            eventArgs.Style += myColor.NewRowColor;
+        else if (eventArgs.DataItem.UpdMode == 2)
+            eventArgs.Style += myColor.EditRowColor;
+        else if (eventArgs.DataItem.UpdMode == 3)
+            eventArgs.Style += myColor.DeleteRowColor;
+    }
+    void OnHtmlDataCellDecoration(DataGridHtmlDataCellDecorationEventArgs<EstimationModel> eventArgs)
+    {
+        eventArgs.CssClass += " border-0";
+        //eventArgs.Style += " ;font-weight:bold;text-align: right";
+        //Quantity
+        if (eventArgs.FieldName == nameof(EstimationModel.Quantity))
+        {
+            eventArgs.Style += " ;font-weight:bold; color: blue; text-align: right";
+        }
+        //UnitPrice
+        if (eventArgs.FieldName == nameof(EstimationModel.UnitPrice))
+        {
+            eventArgs.Style += " ;color: green; text-align: right";
+        }
+        //Amount
+        if (eventArgs.FieldName == nameof(EstimationModel.Amount))
+        {
+            eventArgs.Style += " ;color: navy; text-align: right";
+        }
+        //ApproveAmount
+        if (eventArgs.FieldName == nameof(EstimationModel.ApproveAmount))
+        {
+            eventArgs.Style += " ;color: maroon; text-align: right";
+        }
+    }
+    //
+    private int Get_MaxDetailLineNo()
+    {
+        if (Model.Estimations != null && Model.Estimations.Count > 0)
+        {
+            return Model.Estimations.Max(x => x.LineNo) + 1;
+        }
+        return 1;
+    }
+    //
+    void UnitPrice_Changed(double newValue)
+    {
+        EditContext.UnitPrice = newValue;
+        //
+        EditContext.Amount = EditContext.Quantity * EditContext.UnitPrice;
+        //
+        this.StateHasChanged();
+    }
+    void Quantity_Changed(double newValue)
+    {
+        EditContext.Quantity = newValue;
+        //
+        EditContext.Amount = EditContext.Quantity * EditContext.UnitPrice;
+        //
+        this.StateHasChanged();
+    }
     #endregion
 
 

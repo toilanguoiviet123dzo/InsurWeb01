@@ -279,6 +279,8 @@
 @code {
     [CascadingParameter]
     protected ProgramInfo Program { get; set; }
+    [Parameter]
+    public MyPopup MyForm { get; set; }
     //Parameters and events
     [Parameter]
     public string ClaimNo { get; set; } = "";
@@ -563,7 +565,7 @@
             {
                 Model.ReturnAddress = Model.PickupAddress;
             }
-            
+
             ClassHelper.CopyPropertiesDataDateConverted(Model, request.ClaimRequest);
             //Call api
             var response = await ClaimServiceClient.SaveClaimRequestAsync(request);
@@ -575,16 +577,18 @@
 
             //Reload data
             await OnValidSumit.InvokeAsync();
-            await CloseMain();
+            //await CloseMain();
+            CloseMain();
         }
         catch (Exception ex)
         {
             toastService.ShowError(ex.Message, MyMessage.Error_SaveFailed);
         }
     }
-    async Task CloseMain()
+    void CloseMain()
     {
-        await OnVisibleChanged(false);
+        MyForm.Close();
+        //await OnVisibleChanged(false);
     }
     #endregion
 
@@ -594,29 +598,33 @@
         try
         {
             Model.CusPhone = cusPhone;
-            //Request
-            var request = new Claim.Services.String_Request();
-            var Credential = new Claim.Services.UserCredential()
-                {
-                    Username = WebUserCredential.Username,
-                    RoleID = WebUserCredential.RoleID,
-                    AccessToken = WebUserCredential.AccessToken,
-                    ApiKey = WebUserCredential.ApiKey
-                };
-            request.Credential = Credential;
             //
-            request.StringValue = cusPhone;
-            //Call api
-            var response = await ClaimServiceClient.GetCustomerInfoAsync(request);
-            // Success
-            if (response != null || response.ReturnCode == GrpcReturnCode.OK)
+            if (!string.IsNullOrWhiteSpace(cusPhone))
             {
-                Model.CusEmail = response.CusEmail;
-                Model.CusFullname = response.CusFullname;
-                Model.CusCardID = response.CusCardID;
-                Model.PickupAddress = response.PickupAddress;
+                //Request
+                var request = new Claim.Services.String_Request();
+                var Credential = new Claim.Services.UserCredential()
+                    {
+                        Username = WebUserCredential.Username,
+                        RoleID = WebUserCredential.RoleID,
+                        AccessToken = WebUserCredential.AccessToken,
+                        ApiKey = WebUserCredential.ApiKey
+                    };
+                request.Credential = Credential;
                 //
-                this.StateHasChanged();
+                request.StringValue = cusPhone;
+                //Call api
+                var response = await ClaimServiceClient.GetCustomerInfoAsync(request);
+                // Success
+                if (response != null && response.ReturnCode == GrpcReturnCode.OK)
+                {
+                    Model.CusEmail = response.CusEmail;
+                    Model.CusFullname = response.CusFullname;
+                    Model.CusCardID = response.CusCardID;
+                    Model.PickupAddress = response.PickupAddress;
+                    //
+                    this.StateHasChanged();
+                }
             }
         }
         catch (Exception ex)

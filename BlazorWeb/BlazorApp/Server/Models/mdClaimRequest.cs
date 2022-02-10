@@ -66,7 +66,8 @@ namespace BlazorApp.Server.Models
         public string CheckNotes { get; set; } = "";
         public bool CheckStatus { get; set; }
         //Repair
-        public DateTime RepairReqDate { get; set; }
+        public DateTime EstReqDate { get; set; }
+        public DateTime EstDoneDate { get; set; }
         public DateTime RepairDoneDate { get; set; }
         public string RepairCompanyID { get; set; } = "";
         public string RepairCompanyName { get; set; } = "";
@@ -115,8 +116,6 @@ namespace BlazorApp.Server.Models
         public double DeductibleAmount { get; set; }
         public double IndemnityAmount { get; set; }
         public double RemainingAmount { get; set; }
-        //Images
-        public List<ImageModel> Images { get; set; } = new List<ImageModel>();
         //Update History
         public List<UpdateHistoryModel> UpdateHistorys { get; set; } = new List<UpdateHistoryModel>();
         public string TextSearch { get; set; } = "";
@@ -136,16 +135,6 @@ namespace BlazorApp.Server.Models
         public double ApproveAmount { get; set; }
         public string Notes { get; set; } = "";
     }
-
-    public class ImageModel
-    {
-        public DateTime IssueDate { get; set; }
-        public int SecureLevel { get; set; }
-        public string ImageID { get; set; } = "";
-        public string Title { get; set; } = "";
-        public string UploadAccountID { get; set; } = "";
-    }
-
     public class UpdateHistoryModel
     {
         public DateTime ChangedDate { get; set; }

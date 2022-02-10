@@ -1,4 +1,6 @@
 ﻿@using Blazored.Toast.Configuration
+@using System.Threading
+@inject IJSRuntime JsRuntime;
 
 <style>
     .popup-css {
@@ -26,7 +28,8 @@
     }
 </style>
 
-<DxPopup Visible="@Visible"
+<DxPopup @ref="@RefDxPopup"
+         Visible="@Visible"
          VisibleChanged="@((value) => OnVisibleChanged(value))"
          CloseOnOutsideClick="false"
          ShowHeader="true"
@@ -68,12 +71,16 @@
     [Parameter]
     public int UpdMode { get; set; } = 1;
     [Parameter]
+    public string FocusFirstItem { get; set; } = "";
+    [Parameter]
     public EventCallback<bool> VisibleChanged { get; set; }
     //private
     private string HeaderCssClass = "popup-header";
     //
+    private DxPopup RefDxPopup;
     protected override void OnParametersSet()
     {
+        base.OnParametersSet();
         //Width
         if (BrowserInfo.IsMobile)
         {
@@ -88,4 +95,26 @@
     {
         await VisibleChanged.InvokeAsync(value);
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        //Width
+        if (RefDxPopup.Visible && !string.IsNullOrWhiteSpace(FocusFirstItem))
+        {
+            await JsRuntime.InvokeAsync<string>("focusEditor", FocusFirstItem);
+        }
+    }
+
+    //Show
+    public async void Show()
+    {
+        await RefDxPopup.ShowAsync();
+    }
+    //Close
+    public async void Close()
+    {
+        await RefDxPopup.CloseAsync();
+    }
+
 }

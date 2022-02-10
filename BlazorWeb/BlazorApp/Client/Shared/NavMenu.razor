@@ -59,7 +59,7 @@
                             </span> Danh sách core services
                         </NavLink>
                     </li>
-                }
+                } 
 
                 <!--Danh sách tính năng-->
                 @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("FunctionList"))
@@ -153,18 +153,6 @@
                             <span aria-hidden="true" class="icon-padding">
                                 <i class="fas fa-tools" aria-hidden="true"></i>
                             </span> List nơi sửa chữa
-                        </NavLink>
-                    </li>
-                }
-
-                <!--Danh sách nơi giao nhận-->
-                @if (WebUserCredential.IsDevelopmentMode || WebUserCredential.GrantedPages.Contains("LogisticMaster"))
-                {
-                    <li class="nav-item">
-                        <NavLink class="nav-link" href="LogisticMaster" @onclick="@(() => OnProgramChanged(new ProgramInfo("LogisticMaster","List cty giao nhận")))">
-                            <span aria-hidden="true" class="icon-padding">
-                                <i class="fas fa-truck" aria-hidden="true"></i>
-                            </span> List cty giao nhận
                         </NavLink>
                     </li>
                 }

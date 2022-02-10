@@ -63,7 +63,7 @@
 
             <!--Row 2-------------------------------------------------->
             <div class="row">
-                 <!--Tên khách hàng-->
+                <!--Tên khách hàng-->
                 <div class="col-12 col-lg-3">
                     <MyTextEdit @bind-Text="Model.CusFullname"
                                 Literal="Tên khách hàng"
@@ -107,23 +107,23 @@
                                 ReadOnly="true"
                                 Literal="Model" />
                 </div>
-                
+
             </div>
 
             <!--Row 4-------------------------------------------------->
             <div class="row">
-                <!--Địa chỉ nhận thiết bị-->
+                <!--Địa chỉ lấy thiết bị-->
                 <div class="col-12 col-lg-6">
                     <MyTextEdit @bind-Text="Model.PickupAddress"
-                                Literal="Địa chỉ nhận thiết bị"
+                                Literal="Địa chỉ lấy thiết bị"
                                 ReadOnly="true"
                                 CssClass="pickupaddress-focus" />
                 </div>
                 <!--Địa chỉ trả thiết bị-->
                 <div class="col-12 col-lg-6">
-                    <MyTextEdit @bind-Text="Model.ReturnAddress"
+                    <MyTextEdit @bind-Text="DeliveryAddress"
                                 ReadOnly="true"
-                                Literal="Địa chỉ trả thiết bị" />
+                                Literal="Địa chỉ giao thiết bị" />
                 </div>
             </div>
         </div>
@@ -242,21 +242,15 @@
 @code {
     [CascadingParameter]
     protected ProgramInfo Program { get; set; }
+    [Parameter]
+    public MyPopup MyForm { get; set; }
     //Parameters and events
     [Parameter]
     public string ClaimNo { get; set; } = "";
     [Parameter]
     public EventCallback OnValidSumit { get; set; }
-    [Parameter]
-    public bool Visible { get; set; }
-    [Parameter]
-    public EventCallback<bool> VisibleChanged { get; set; }
-    private async Task OnVisibleChanged(bool newValue)
-    {
-        await VisibleChanged.InvokeAsync(newValue);
-    }
+    //
     private ClaimRequestModel Model = new ClaimRequestModel();
-
     //Master
     private List<OptionListModel> PriorityList = new List<OptionListModel>();
     //Selected combo value
@@ -267,6 +261,8 @@
     //Css
     private string PriorityCss = "";
     private bool DamageInfoCollapse = true;
+    //
+    private string DeliveryAddress = "";
 
     #region Initialization
     protected override async Task OnInitializedAsync()
@@ -316,6 +312,9 @@
                 ClassHelper.CopyPropertiesDataDateConverted(response.ClaimRequest, Model);
                 //Priority
                 SelectedPriority = PriorityList.Find(x => x.IntCode == Model.Priority);
+
+                //DeliveryAddress
+                DeliveryAddress = await masterService.Get_BrancheAddress(Model.BrancheID);
 
                 //CSS
                 PriorityCss = "";
@@ -409,21 +408,21 @@
 
             //Reload data
             await OnValidSumit.InvokeAsync();
-            await CloseMain();
+            CloseMain();
         }
         catch (Exception ex)
         {
             toastService.ShowError(ex.Message, MyMessage.Error_SaveFailed);
         }
     }
-    async Task CloseMain()
+    void CloseMain()
     {
-        await OnVisibleChanged(false);
+        MyForm.Close();
     }
     #endregion
 
     #region Items
-    
+
 
     #endregion
 

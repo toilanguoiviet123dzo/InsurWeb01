@@ -128,7 +128,7 @@
                               Width="8rem" />
             <DxDataGridColumn Field="@nameof(ClaimRequestListModel.PickupAddress)"
                               Caption="Địa chỉ lấy thiết bị"
-                              Width="12rem" />
+                              Width="15rem" />
             <DxDataGridColumn Field="@nameof(ClaimRequestListModel.CusFullname)"
                               Caption="Tên khách hàng"
                               Width="10rem" />
@@ -156,14 +156,14 @@
 <MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
 
 <!--Edit compen request-->
-<MyPopup @bind-Visible="@ClaimEditVisible"
+<MyPopup @ref="@ClaimPopup"
          VerticalAlignment="@VerticalAlignment.Top"
          HeaderText="Yêu cầu giao nhận thiết bị"
          Width="1000px"
          ZIndex="1001">
     <BodyContentTemplate>
-        <ClaimPickupEdit @bind-Visible="@ClaimEditVisible"
-                         ClaimNo="@ClaimNo"
+        <ClaimPickupEdit ClaimNo="@ClaimNo"
+                         MyForm="@ClaimPopup"
                          OnValidSumit="@(async() => await DisplayMain())" />
     </BodyContentTemplate>
 </MyPopup>
@@ -183,10 +183,10 @@
     private List<CodeNameModel> StatusList = MyClaimStatus.Get_PickupStatusList();
     private List<CodeNameModel> TimeFlagList = MyDateTimeSelector.Get_TimeRangeList();
     // Popup
+    private MyPopup ClaimPopup;
     private string ConfirmMessage = "";
     private int ConfirmAction = 0;
     private bool ConfirmVisible = false;
-    private bool ClaimEditVisible { get; set; } = false;
 
     //Filter
     private CodeNameModel Filter_Status { get; set; } = new CodeNameModel { CodeInt = 3, Name = "Nhập hàng" };
@@ -244,18 +244,7 @@
                         var dataRow = new ClaimRequestListModel();
                         ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
                         //Status name
-                        int StatusCode = 0;
-                        if (dataRow.AcceptStatus) StatusCode = 1;
-                        if (dataRow.PickupStatus1) StatusCode = 2;
-                        if (dataRow.PickupStatus2) StatusCode = 3;
-                        if (dataRow.CheckStatus) StatusCode = 4;
-                        if (dataRow.EstimationStatus) StatusCode = 5;
-                        if (dataRow.ApproveStatus) StatusCode = 6;
-                        if (dataRow.RepairStatus) StatusCode = 7;
-                        if (dataRow.ReturnStatus1) StatusCode = 8;
-                        if (dataRow.ReturnStatus2) StatusCode = 9;
-                        if (dataRow.CancelStatus) StatusCode = 10;
-                        dataRow.StatusName = MyClaimStatus.Get_PickupStatusName(StatusCode);
+                        dataRow.StatusName = MyClaimStatus.Get_PickupStatusName(dataRow);
                         //
                         DetailData.Add(dataRow);
                     }
@@ -390,8 +379,7 @@
             //ClaimNo
             ClaimNo = editingRow.ClaimNo;
         }
-        ClaimEditVisible = true;
-        StateHasChanged();
+        ClaimPopup.Show();
     }
     //Update row
     async Task UpdateRow()

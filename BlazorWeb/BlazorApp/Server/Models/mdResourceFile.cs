@@ -10,13 +10,18 @@ namespace BlazorApp.Server.Models
     [Collection("ResourceFile")]
     public class mdResourceFile : Entity
     {
-        public string ResourceID { get; set; } = "";
+        public string OwnerID { get; set; } = "";
         public string CategoryID { get; set; } = "";
+        public string ResourceID { get; set; } = "";
+        public string FileType { get; set; } = "";
+        public string Title { get; set; } = "";
         public string FileName { get; set; } = "";
         public string ServerFileName { get; set; } = "";
         public byte[] FileContent { get; set; } = new byte[] { };
         public int ArchiveMode { get; set; }
-        public DateTime ModifiedOn { get; set; }
+        public int SecureLevel { get; set; }
+        public string AccountID { get; set; } = "";
+        public DateTime IssueDate { get; set; }
         public int UpdMode { get; set; }
     }
 }

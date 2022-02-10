@@ -21,6 +21,10 @@
                 RowEditStart="@(dataRow => OnRowEditStarting(dataRow))"
                 RowInsertStart="@(() => OnRowEditStarting(null))">
         <Columns>
+            <DxDataGridSpinEditColumn Field="@nameof(RepairerMasterModel.DspOrder)"
+                                      Caption="STT"
+                                      DisplayFormat="N0"
+                                      Width="3rem" />
             <DxDataGridColumn Field="@nameof(RepairerMasterModel.RepairerID)"
                               Caption="Mã"
                               Width="6rem" />
@@ -36,7 +40,7 @@
             <DxDataGridColumn Field="@nameof(RepairerMasterModel.Address)"
                               Caption="Địa chỉ"
                               Width="17rem" />
-            <DxDataGridColumn Field="@nameof(RepairerMasterModel.EstPersonName)"
+            <DxDataGridColumn Field="@nameof(RepairerMasterModel.PicName)"
                               Caption="Người phụ trách"
                               Width="10rem" />
             <DxDataGridColumn Field="@nameof(RepairerMasterModel.Notes)"
@@ -89,21 +93,18 @@
                     </DxFormLayoutItem>
                     <DxFormLayoutItem Caption="Người phụ trách: " ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
-                            <DxComboBox @bind-Value="@EditContext.EstPersonID"
-                                        Data="@UserList"
-                                        AllowUserInput="true"
-                                        FilteringMode="DataGridFilteringMode.Contains"
-                                        TextFieldName="@nameof(UserAccountModel.Fullname)"
-                                        ValueFieldName="@nameof(UserAccountModel.UserName)"
-                                        SelectedItemChanged="@((UserAccountModel value) => {
-                                                                   EditContext.EstPersonID = value.UserName;
-                                                                   EditContext.EstPersonName = value.Fullname;
-                                                               })" />
+                            <DxTextBox @bind-Text="@EditContext.PicName" />
                         </Template>
                     </DxFormLayoutItem>
                     <DxFormLayoutItem Caption="Ghi chú: " ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
                             <DxTextBox @bind-Text="@EditContext.Notes" />
+                        </Template>
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Thứ tự" ColSpanMd="12" Context="FormLayoutContext">
+                        <Template>
+                            <DxMaskedInput @bind-Value="@EditContext.DspOrder"
+                                           Mask="N0" />
                         </Template>
                     </DxFormLayoutItem>
                     <DxFormLayoutItem Caption="Hữu hiệu" ColSpanMd="12" Context="FormLayoutContext">
@@ -129,9 +130,6 @@
     // Detail data
     readonly ObservableCollection<RepairerMasterModel> DetailData = new ObservableCollection<RepairerMasterModel>();
     // RoleList
-    private List<UserAccountModel> UserList = new List<UserAccountModel>();
-    private List<OptionListModel> ApproveLevelList = new List<OptionListModel>();
-    private List<OptionListModel> DocumentLevelList = new List<OptionListModel>();
     // Popup
     private string ConfirmMessage = "";
     private string ConfirmAction = "";
@@ -141,18 +139,10 @@
     {
         base.OnInitialized();
 
-        //Load master
-        await LoadMaster();
-
         //Display data ..
         await DisplayMain();
     }
     #region Load data
-    async Task LoadMaster()
-    {
-        //...
-        UserList = await masterService.Load_UserList();
-    }
 
     async Task DisplayMain()
     {
@@ -263,7 +253,7 @@
         DeletedRow = dataRow;
 
         //Show popup confirm
-        ConfirmMessage = "Xóa dòng?";
+        ConfirmMessage = MyMessage.Confirm_DeleteRow;
         ConfirmAction = "DeleteRow";
         ConfirmVisible = true;
         StateHasChanged();
@@ -299,8 +289,8 @@
         EditContext.EditingRow.Email = EditContext.Email;
         EditContext.EditingRow.Address = EditContext.Address;
         EditContext.EditingRow.Notes = EditContext.Notes;
-        EditContext.EditingRow.EstPersonID = EditContext.EstPersonID;
-        EditContext.EditingRow.EstPersonName = EditContext.EstPersonName;
+        EditContext.EditingRow.PicName = EditContext.PicName;
+        EditContext.EditingRow.DspOrder = EditContext.DspOrder;
         //
         EditContext.EditingRow.Status = 1;
         EditContext.EditingRow.StatusName = "";
@@ -351,8 +341,8 @@
             Email = EditingRow.Email;
             Address = EditingRow.Address;
             Notes = EditingRow.Notes;
-            EstPersonID = EditingRow.EstPersonID;
-            EstPersonName = EditingRow.EstPersonName;
+            PicName = EditingRow.PicName;
+            DspOrder = EditingRow.DspOrder;
             Status = EditingRow.Status;
             BoolStatus = false;
             if (Status == 1)
@@ -404,18 +394,6 @@
 
     #region Screen items
 
-    // Select RoleList
-    string GetRoleID;
-    string GetRoleName = "";
-    void RoleList_ItemChanged(RoleListModel item)
-    {
-        GetRoleName = "";
-        if (item != null)
-        {
-            GetRoleID = item.RoleID;
-            GetRoleName = item.RoleName ?? "";
-        }
-    }
 
     #endregion
     //

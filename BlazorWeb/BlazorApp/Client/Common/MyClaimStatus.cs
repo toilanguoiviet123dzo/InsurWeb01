@@ -1,4 +1,5 @@
-﻿using Cores.Utilities;
+﻿using BlazorApp.Client.BindingModels;
+using Cores.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,20 +28,23 @@ namespace BlazorApp.Client.Common
             //
             return ret;
         }
-        public static string Get_StatusName(int StatusCode)
+        public static string Get_StatusName(ClaimRequestListModel dataRow)
         {
-            string StatusName = "Chưa lấy hàng";
-            if (StatusCode == 1) StatusName = "Đã thụ lý";
-            if (StatusCode == 2) StatusName = "Đã lấy hàng";
-            if (StatusCode == 3) StatusName = "Đã nhập hàng";
-            if (StatusCode == 4) StatusName = "Đã kiểm tra";
-            if (StatusCode == 5) StatusName = "Đã chấp nhận";
-            if (StatusCode == 6) StatusName = "Đã báo giá";
-            if (StatusCode == 7) StatusName = "Đã duyệt";
-            if (StatusCode == 8) StatusName = "Đã sửa chữa";
-            if (StatusCode == 9) StatusName = "Đã xuất hàng";
-            if (StatusCode == 10) StatusName = "Đã trả hàng";
-            if (StatusCode == 11) StatusName = "Đã từ chối";
+            string StatusName = "Chưa thụ lý";
+            if (dataRow.ProcessStatus) StatusName = "Đã thụ lý";
+            if (dataRow.PickupReqStatus) StatusName = "YC lấy hàng";
+            if (dataRow.PickupStatus1) StatusName = "Đã lấy hàng";
+            if (dataRow.PickupStatus2) StatusName = "Đã nhập hàng";
+            if (dataRow.CheckStatus) StatusName = "Đã kiểm tra";
+            if (dataRow.AcceptStatus) StatusName = "Đã chấp nhận";
+            if (dataRow.EstimationReqStatus) StatusName = "YC báo giá";
+            if (dataRow.EstimationStatus) StatusName = "Đã báo giá";
+            if (dataRow.ApproveReqStatus) StatusName = "YC duyệt";
+            if (dataRow.ApproveStatus) StatusName = "Đã duyệt";
+            if (dataRow.RepairStatus) StatusName = "Đã sửa chữa";
+            if (dataRow.ReturnStatus1) StatusName = "Đã xuất hàng";
+            if (dataRow.ReturnStatus2) StatusName = "Đã trả hàng";
+            if (dataRow.CancelStatus) StatusName = "Đã từ chối";
             //
             return StatusName;
         }
@@ -56,11 +60,11 @@ namespace BlazorApp.Client.Common
             return ret;
         }
 
-        public static string Get_PickupStatusName(int StatusCode)
+        public static string Get_PickupStatusName(ClaimRequestListModel dataRow)
         {
             string StatusName = "Chưa lấy hàng";
-            if (StatusCode == 2) StatusName = "Đã lấy hàng";
-            if (StatusCode == 3) StatusName = "Đã nhập hàng";
+            if (dataRow.PickupStatus1) StatusName = "Đã lấy hàng";
+            if (dataRow.PickupStatus2) StatusName = "Đã nhập hàng";
             //
             return StatusName;
         }

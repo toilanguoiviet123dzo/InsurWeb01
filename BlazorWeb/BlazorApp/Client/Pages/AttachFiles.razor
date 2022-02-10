@@ -4,8 +4,6 @@
 @using Resource.Services
 @using System.Collections.ObjectModel;
 @using System.IO;
-@inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
-@inject grpcClaimService.grpcClaimServiceClient ClaimServiceClient;
 @inject grpcResourceService.grpcResourceServiceClient resourceServiceClient;
 @inject MasterService masterService;
 @inject IJSRuntime JsRuntime;
@@ -33,7 +31,7 @@
                 </HeaderCellTemplate>
                 <CellTemplate>
                     <div style="display:flex">
-                        @if (((AttachFileModel)context).DataOwnerID == WebUserCredential.Username)
+                        @if (((AttachFileModel)context).AccountID == WebUserCredential.Username)
                         {
                             <div class="text-center" style="width:2rem">
                                 <a class="fa fa-pencil" style="font-size:24px" @onclick="@(() => grid.StartRowEdit(context))" href="javascript:void(0);"></a>
@@ -49,17 +47,17 @@
                     </div>
                 </CellTemplate>
             </DxDataGridCommandColumn>
-            <DxDataGridDateEditColumn Field="@nameof(AttachFileModel.IssueDateTime)"
+            <DxDataGridDateEditColumn Field="@nameof(AttachFileModel.IssueDate)"
                                       Caption="Issue time"
                                       DisplayFormat="dd/MM/yyyy HH:mm"
                                       Width="10rem" />
             <DxDataGridColumn Field="@nameof(AttachFileModel.FileName)"
                               Caption="FileName"
                               Width="10rem" />
-            <DxDataGridColumn Field="@nameof(AttachFileModel.Notes)"
+            <DxDataGridColumn Field="@nameof(AttachFileModel.Title)"
                               Caption="Ghi chú"
                               Width="10rem" />
-            <DxDataGridColumn Field="@nameof(AttachFileModel.DocumentLevelName)"
+            <DxDataGridColumn Field="@nameof(AttachFileModel.SecureLevel)"
                               Caption="Mức độ bảo mật"
                               Width="8rem" />
         </Columns>
@@ -70,23 +68,23 @@
                     <!--DocumentLevel-->
                     <DxFormLayoutItem Caption="Mức độ bảo mật: " ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
-                            <DxComboBox @bind-Value="@EditContext.DocumentLevel"
+                            <DxComboBox @bind-Value="@EditContext.SecureLevel"
                                         Data="@DocumentLevelList"
                                         AllowUserInput="true"
                                         FilteringMode="DataGridFilteringMode.Contains"
                                         TextFieldName="@nameof(OptionListModel.ItemName)"
                                         ValueFieldName="@nameof(OptionListModel.IntCode)"
                                         SelectedItemChanged="@((OptionListModel value) => {
-                                                                   EditContext.DocumentLevel = value.IntCode;
-                                                                   EditContext.DocumentLevelName = value.ItemName;
+                                                                   EditContext.SecureLevel = value.IntCode;
+                                                                   EditContext.SecureLevelName = value.ItemName;
                                                                })" />
                         </Template>
                     </DxFormLayoutItem>
                     <!--Notes-->
                     <DxFormLayoutItem Caption="Notes: " ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
-                            <DxTextBox @bind-Text="@EditContext.Notes" />
-                            <ValidationMessage For="@(() => EditContext.Notes)" />
+                            <DxTextBox @bind-Text="@EditContext.Title" />
+                            <ValidationMessage For="@(() => EditContext.Title)" />
                         </Template>
                     </DxFormLayoutItem>
                     <!--Upload file-->
@@ -171,37 +169,37 @@
         try
         {
             //Filter
-            var request = new Claim.Services.String_Request()
+            var request = new Resource.Services.GetResourceFiles_Request()
             {
-                Credential = new Claim.Services.UserCredential()
+                Credential = new Resource.Services.UserCredential()
                 {
                     Username = WebUserCredential.Username,
                     RoleID = WebUserCredential.RoleID,
                     AccessToken = WebUserCredential.AccessToken,
                     ApiKey = WebUserCredential.ApiKey
                 },
-                StringValue = VoucherNo
+                OwnerID = VoucherNo
             };
 
             //Get data from DB
             DetailData.Clear();
-            var response = await ClaimServiceClient.GetAttachFilesAsync(request);
+            var response = await resourceServiceClient.GetResourceFilesAsync(request);
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
-                foreach (var item in response.AttachFiles)
+                foreach (var item in response.Records)
                 {
                     var dataRow = new AttachFileModel();
                     ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
                     //DocumentLevelName
-                    var DocumentLevel = DocumentLevelList.Find(x => x.IntCode == item.DocumentLevel);
+                    var DocumentLevel = DocumentLevelList.Find(x => x.IntCode == item.SecureLevel);
                     if (DocumentLevel != null)
                     {
-                        dataRow.DocumentLevelName = DocumentLevel.ItemName;
+                        dataRow.SecureLevelName = DocumentLevel.ItemName;
                     }
                     //Upd mode
                     dataRow.UpdMode = 0;
                     //Doc security check
-                    if (dataRow.DocumentLevel <= WebUserCredential.DocumentLevel)
+                    if (dataRow.SecureLevel <= WebUserCredential.DocumentLevel)
                     {
                         DetailData.Add(dataRow);
                     }
@@ -281,12 +279,9 @@
                 return;
             }
 
-            //Upload file
-            await Upload_File();
-
             //Request
-            var request = new SaveAttachFiles_Request();
-            var Credential = new Claim.Services.UserCredential()
+            var request = new Resource.Services.SaveResourceFiles_Request();
+            var Credential = new Resource.Services.UserCredential()
             {
                 Username = WebUserCredential.Username,
                 RoleID = WebUserCredential.RoleID,
@@ -300,13 +295,13 @@
                 if (row.UpdMode != 0)
                 {
                     //Convert to DB row
-                    var dbRow = new grpcAttachFileModel();
+                    var dbRow = new grpcResourceFileModel();
                     ClassHelper.CopyPropertiesDataDateConverted(row, dbRow);
-                    request.AttachFiles.Add(dbRow);
+                    request.Records.Add(dbRow);
                 }
             }
             //Call api
-            var response = await ClaimServiceClient.SaveAttachFilesAsync(request);
+            var response = await resourceServiceClient.SaveResourceFilesAsync(request);
             // Success
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
@@ -324,48 +319,7 @@
             toastService.ShowError(ex.Message, "Save failed.");
         }
     }
-
-    async Task Upload_File()
-    {
-        try
-        {
-            foreach (AttachFileModel row in DetailData)
-            {
-                if (row.UpdMode != 0 && row.IsFileChanged)
-                {
-                    var request = new SaveResourceFile_Request();
-                    var Credential = new Resource.Services.UserCredential()
-                    {
-                        Username = WebUserCredential.Username,
-                        RoleID = WebUserCredential.RoleID,
-                        AccessToken = WebUserCredential.AccessToken,
-                        ApiKey = WebUserCredential.ApiKey
-                    };
-                    request.Credential = Credential;
-                    request.ResourceFile = new grpcResourceFileModel();
-                    //
-                    ClassHelper.CopyPropertiesDataDateConverted(row, request.ResourceFile);
-                    request.ResourceFile.UpdMode = row.UpdMode;
-                    //
-                    var response = await resourceServiceClient.SaveResourceFileAsync(request);
-                    // Success
-                    if (response == null || response.ReturnCode != GrpcReturnCode.OK)
-                    {
-                        toastService.ShowError("Upload files", "Upload file failed !!");
-                    }
-                    else
-                    {
-                        //Resource ID
-                        row.ResourceID = response.StringValue;
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            toastService.ShowError(ex.Message, "Upload file failed.");
-        }
-    }
+    
     #endregion
 
     #region Grid main
@@ -413,19 +367,18 @@
         var backupRow = new AttachFileModel();
         ClassHelper.CopyPropertiesData(EditContext.EditingRow, backupRow);
         //
-        EditContext.EditingRow.IssueDateTime = DateTime.Now;
+        EditContext.EditingRow.IssueDate = DateTime.Now;
         EditContext.EditingRow.CategoryID = EditContext.CategoryID;
-        EditContext.EditingRow.CategoryName = EditContext.CategoryName;
         EditContext.EditingRow.FileName = EditContext.FileName;
-        EditContext.EditingRow.Notes = EditContext.Notes;
+        EditContext.EditingRow.Title = EditContext.Title;
         EditContext.EditingRow.FileContent = EditContext.FileContent;
         EditContext.EditingRow.IsFileChanged = EditContext.IsFileChanged;
-        EditContext.EditingRow.DocumentLevel = EditContext.DocumentLevel;
+        EditContext.EditingRow.SecureLevel = EditContext.SecureLevel;
         //DocumentLevelName
-        var DocumentLevel = DocumentLevelList.Find(x => x.IntCode == EditContext.DocumentLevel);
+        var DocumentLevel = DocumentLevelList.Find(x => x.IntCode == EditContext.SecureLevel);
         if (DocumentLevel != null)
         {
-            EditContext.EditingRow.DocumentLevelName = DocumentLevel.ItemName;
+            EditContext.EditingRow.SecureLevelName = DocumentLevel.ItemName;
         }
 
         //Update mode
@@ -449,21 +402,20 @@
     DxDataGrid<AttachFileModel> grid;
     class FormEditContext : AttachFileModel
     {
-        public FormEditContext(AttachFileModel AttachFileModel)
+        public FormEditContext(AttachFileModel row)
         {
             //Saved data
-            EditingRow = AttachFileModel;
+            EditingRow = row;
 
             //Editable data only
-            IssueDateTime = EditingRow.IssueDateTime;
+            IssueDate = EditingRow.IssueDate;
             CategoryID = EditingRow.CategoryID;
-            CategoryName = EditingRow.CategoryName;
             FileName = EditingRow.FileName;
-            Notes = EditingRow.Notes;
+            Title = EditingRow.Title;
             FileContent = EditingRow.FileContent;
             IsFileChanged = EditingRow.IsFileChanged;
-            DocumentLevel = EditingRow.DocumentLevel;
-            DocumentLevelName = EditingRow.DocumentLevelName;
+            SecureLevel = EditingRow.SecureLevel;
+            SecureLevelName = EditingRow.SecureLevelName;
         }
         public AttachFileModel EditingRow { get; set; }
         public Action StateHasChanged { get; set; }
@@ -480,12 +432,12 @@
             //DocumentLevel -> set if 1 option
             if (DocumentLevelList.Count == 1)
             {
-                editingRow.DocumentLevel = DocumentLevelList.FirstOrDefault().IntCode;
+                editingRow.SecureLevel = DocumentLevelList.FirstOrDefault().IntCode;
             }
             //
-            editingRow.DataOwnerID = WebUserCredential.Username;
-            editingRow.VoucherNo = VoucherNo;
-            editingRow.IssueDateTime = DateTime.Now;
+            editingRow.AccountID = WebUserCredential.Username;
+            editingRow.OwnerID = VoucherNo;
+            editingRow.IssueDate = DateTime.Now;
             editingRow.UpdMode = -1;
         }
         EditContext = new FormEditContext(editingRow);
@@ -551,7 +503,7 @@
             // Success
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
-                dataRow.FileContent = ClassHelper.ByteArray_FromByteString(response.ResourceFile.FileContent);
+                dataRow.FileContent = ClassHelper.ByteArray_FromByteString(response.Record.FileContent);
             }
         }
         if (dataRow.FileContent == null || dataRow.FileContent.Length == 0)

@@ -86,21 +86,18 @@ namespace BlazorApp.Server.Services
                                                    .ExecuteFirstAsync();
                         if (deleteClaim != null)
                         {
-                            //Delete resource
-                            if (deleteClaim.Images != null)
+                            TaskHelper.RunBg(async () =>
                             {
-                                foreach (var image in deleteClaim.Images)
+                                try
                                 {
-                                    var resourceFile = new grpcResourceFileModel();
-                                    resourceFile.ResourceID = image.ImageID;
-                                    resourceFile.UpdMode = 3;   //Delete
-                                                                //
-                                    var resourceID = await ResourceService.SaveResourceFile(resourceFile);
-                                }
-                            }
+                                    //Delete resource
+                                    ResourceService.DeleteResourceFilesByOwner(deleteClaim.ClaimNo);
 
-                            //Delete claim
-                            await DB.DeleteAsync<mdClaimRequest>(deleteClaim.ID);
+                                    //Delete claim
+                                    await DB.DeleteAsync<mdClaimRequest>(deleteClaim.ID);
+                                }
+                                catch { }
+                            });
                         }
                         //
                         break;
@@ -216,254 +213,6 @@ namespace BlazorApp.Server.Services
                 response.ReturnCode = GrpcReturnCode.Error_ByServer;
                 response.MsgCode = ex.Message;
                 MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "GetInsureContract", "Exception", response.ReturnCode, ex.Message);
-            }
-            //
-            return await Task.FromResult(response);
-        }
-
-        //-------------------------------------------------------------------------------------------------------/
-        // SaveRepairEstimation
-        //-------------------------------------------------------------------------------------------------------/
-        public override async Task<Claim.Services.Empty_Response> SaveRepairEstimation(SaveRepairEstimation_Request request, ServerCallContext context)
-        {
-            var response = new Claim.Services.Empty_Response();
-            response.ReturnCode = GrpcReturnCode.OK;
-            try
-            {
-                //Delete first
-                await DB.DeleteAsync<mdRepairEstimation>(x => x.ClaimNo == request.RepairEstimation.ClaimNo);
-                if (request.RepairEstimation.UpdMode == 3)
-                {
-                    return await Task.FromResult(response);
-                }
-
-                //Insert
-                var saveRecord = new mdRepairEstimation();
-                //Header
-                ClassHelper.CopyPropertiesData(request.RepairEstimation, saveRecord);
-                //
-                saveRecord.ID = "";
-                saveRecord.ModifiedOn = DateTime.UtcNow;
-
-                //Group items
-                saveRecord.EstGroupItems = new List<EstGroupItemModel>();
-                if (request.RepairEstimation.EstGroupItems != null && request.RepairEstimation.EstGroupItems.Count > 0)
-                {
-                    foreach (var item in request.RepairEstimation.EstGroupItems)
-                    {
-                        var groupItem = new EstGroupItemModel();
-                        ClassHelper.CopyPropertiesData(item, groupItem);
-                        //
-                        //Detail items
-                        groupItem.EstDetailItems = new List<EstDetailItemModel>();
-                        if (item.EstDetailItems != null && item.EstDetailItems.Count > 0)
-                        {
-                            foreach (var subItem in item.EstDetailItems)
-                            {
-                                var detailItem = new EstDetailItemModel();
-                                ClassHelper.CopyPropertiesData(subItem, detailItem);
-                                //
-                                groupItem.EstDetailItems.Add(detailItem);
-                            }
-                        }
-                        //Add group item
-                        saveRecord.EstGroupItems.Add(groupItem);
-                    }
-                }
-                //
-                await saveRecord.SaveAsync();
-            }
-            catch (Exception ex)
-            {
-                response.ReturnCode = GrpcReturnCode.Error_ByServer;
-                response.MsgCode = ex.Message;
-                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "SaveRepairEstimation", "Exception", response.ReturnCode, ex.Message);
-            }
-            return await Task.FromResult(response);
-        }
-
-        //-------------------------------------------------------------------------------------------------------/
-        // GetRepairEstimation
-        //-------------------------------------------------------------------------------------------------------/
-        public override async Task<GetRepairEstimation_Response> GetRepairEstimation(Claim.Services.String_Request request, ServerCallContext context)
-        {
-            var response = new GetRepairEstimation_Response();
-            response.ReturnCode = GrpcReturnCode.OK;
-            response.MsgCode = "";
-            //
-            try
-            {
-                var query = DB.Find<mdRepairEstimation>();
-                query.Match(a => a.ClaimNo == request.StringValue);
-                var findRecord = await query.ExecuteFirstAsync();
-                //
-                if (findRecord != null)
-                {
-                    response.RepairEstimation = new grpcRepairEstimationModel();
-                    //Header
-                    ClassHelper.CopyPropertiesData(findRecord, response.RepairEstimation);
-
-                    //Group items
-                    if (findRecord.EstGroupItems != null && findRecord.EstGroupItems.Count > 0)
-                    {
-                        foreach (var item in findRecord.EstGroupItems)
-                        {
-                            var groupItem = new grpcEstGroupItemModel();
-                            ClassHelper.CopyPropertiesData(item, groupItem);
-                            //
-                            //Detail items
-                            if (item.EstDetailItems != null && item.EstDetailItems.Count > 0)
-                            {
-                                foreach (var subItem in item.EstDetailItems)
-                                {
-                                    var detailItem = new grpcEstDetailItemModel();
-                                    ClassHelper.CopyPropertiesData(subItem, detailItem);
-                                    //
-                                    groupItem.EstDetailItems.Add(detailItem);
-                                }
-                            }
-                            //Add group item
-                            response.RepairEstimation.EstGroupItems.Add(groupItem);
-                        }
-                    }
-                }
-                else
-                {
-                    response.ReturnCode = GrpcReturnCode.Error_201;
-                    return await Task.FromResult(response);
-                }
-            }
-            catch (Exception ex)
-            {
-                response.ReturnCode = GrpcReturnCode.Error_ByServer;
-                response.MsgCode = ex.Message;
-                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "GetRepairEstimation", "Exception", response.ReturnCode, ex.Message);
-            }
-            //
-            return await Task.FromResult(response);
-        }
-
-        //-------------------------------------------------------------------------------------------------------/
-        // SaveAttachFiles
-        //-------------------------------------------------------------------------------------------------------/
-        public override async Task<Claim.Services.Empty_Response> SaveAttachFiles(SaveAttachFiles_Request request, ServerCallContext context)
-        {
-            var response = new Claim.Services.Empty_Response();
-            response.ReturnCode = GrpcReturnCode.OK;
-            try
-            {
-                foreach (var item in request.AttachFiles)
-                {
-                    switch (item.UpdMode)
-                    {
-                        //add new
-                        case 1:
-                            var newRecord = new mdAttachFile();
-                            ClassHelper.CopyPropertiesData(item, newRecord);
-                            newRecord.ID = "";
-                            newRecord.ModifiedOn = DateTime.UtcNow;
-                            //
-                            await newRecord.SaveAsync();
-                            break;
-
-                        //update
-                        case 2:
-                            var oldRecord = await DB.Find<mdAttachFile>().OneAsync(item.ID);
-                            if (oldRecord != null)
-                            {
-                                ClassHelper.CopyPropertiesData(item, oldRecord);
-                                oldRecord.ModifiedOn = DateTime.UtcNow;
-                                //
-                                await oldRecord.SaveAsync();
-                            }
-                            else
-                            {
-                                response.ReturnCode = GrpcReturnCode.Error_201;
-                            }
-                            break;
-
-                        //delete
-                        case 3:
-                            await DB.DeleteAsync<mdAttachFile>(item.ID);
-                            break;
-                        default:
-                            response.ReturnCode = GrpcReturnCode.Error_BadRequest; //UpdMode = blank
-                            break;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                response.ReturnCode = GrpcReturnCode.Error_ByServer;
-                response.MsgCode = ex.Message;
-                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "SaveAttachFiles", "Exception", response.ReturnCode, ex.Message);
-            }
-            return await Task.FromResult(response);
-        }
-
-        //-------------------------------------------------------------------------------------------------------/
-        // GetAttachFiles
-        //-------------------------------------------------------------------------------------------------------/
-        public override async Task<GetAttachFiles_Response> GetAttachFiles(Claim.Services.String_Request request, ServerCallContext context)
-        {
-            var response = new GetAttachFiles_Response();
-            response.ReturnCode = GrpcReturnCode.OK;
-            response.MsgCode = "";
-            //
-            try
-            {
-                var query = DB.Find<mdAttachFile>();
-                if (!string.IsNullOrWhiteSpace(request.StringValue))
-                {
-                    query.Match(a => a.VoucherNo == request.StringValue);
-                }
-                var findRecords = await query.ExecuteAsync();
-                //
-                if (findRecords != null && findRecords.Count > 0)
-                {
-                    findRecords.ForEach(item =>
-                    {
-                        var grpcItem = new grpcAttachFileModel();
-                        ClassHelper.CopyPropertiesData(item, grpcItem);
-                        response.AttachFiles.Add(grpcItem);
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                response.ReturnCode = GrpcReturnCode.Error_ByServer;
-                response.MsgCode = ex.Message;
-                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "GetAttachFiles", "Exception", response.ReturnCode, ex.Message);
-            }
-            //
-            return await Task.FromResult(response);
-        }
-        //-------------------------------------------------------------------------------------------------------/
-        // GetAttachFileCount
-        //-------------------------------------------------------------------------------------------------------/
-        public override async Task<Claim.Services.Int_Response> GetAttachFileCount(Claim.Services.GetAttachFileCount_Request request, ServerCallContext context)
-        {
-            var response = new Claim.Services.Int_Response();
-            response.ReturnCode = GrpcReturnCode.OK;
-            response.MsgCode = "";
-            response.IntValue = 0;
-            //
-            try
-            {
-                var query = DB.Find<mdAttachFile>();
-                query.Match(a => a.VoucherNo == request.VoucherNo && a.DocumentLevel <= request.DocumentLevel);
-                var findRecords = await query.ExecuteAsync();
-                //
-                if (findRecords != null)
-                {
-                    response.IntValue = findRecords.Count;
-                }
-            }
-            catch (Exception ex)
-            {
-                response.ReturnCode = GrpcReturnCode.Error_ByServer;
-                response.MsgCode = ex.Message;
-                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "GetAttachFileCount", "Exception", response.ReturnCode, ex.Message);
             }
             //
             return await Task.FromResult(response);
@@ -771,41 +520,7 @@ namespace BlazorApp.Server.Services
             //
             return await Task.FromResult(response);
         }
-        //-------------------------------------------------------------------------------------------------------/
-        // GetRefEstimationList
-        //-------------------------------------------------------------------------------------------------------/
-        public override async Task<GetRefEstimationList_Response> GetRefEstimationList(Claim.Services.Empty_Request request, ServerCallContext context)
-        {
-            var response = new GetRefEstimationList_Response();
-            response.ReturnCode = GrpcReturnCode.OK;
-            response.MsgCode = "";
-            //
-            try
-            {
-                var query = DB.Find<mdRepairEstimation>();
-                query.Match(a => a.IsTemplate);
-                //
-                var findRecords = await query.ExecuteAsync();
-                //
-                if (findRecords != null && findRecords.Count > 0)
-                {
-                    findRecords.ForEach(item =>
-                    {
-                        var grpcItem = new grpcRefEstimationModel();
-                        ClassHelper.CopyPropertiesData(item, grpcItem);
-                        response.Records.Add(grpcItem);
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                response.ReturnCode = GrpcReturnCode.Error_ByServer;
-                response.MsgCode = ex.Message;
-                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "GetRefEstimationList", "Exception", response.ReturnCode, ex.Message);
-            }
-            //
-            return await Task.FromResult(response);
-        }
+        
 
 
     }//End class

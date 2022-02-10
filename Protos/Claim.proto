@@ -17,16 +17,6 @@ service grpcClaimService {
     //Insure
     rpc GetInsureContract (GetInsureContract_Request) returns (GetInsureContract_Response);
 
-    //RepairEstimation
-    rpc SaveRepairEstimation (SaveRepairEstimation_Request) returns (Empty_Response);
-    rpc GetRepairEstimation (String_Request) returns (GetRepairEstimation_Response);
-    rpc GetRefEstimationList (Empty_Request) returns (GetRefEstimationList_Response);
-
-    //AttachFiles
-    rpc SaveAttachFiles (SaveAttachFiles_Request) returns (Empty_Response);
-    rpc GetAttachFiles (String_Request) returns (GetAttachFiles_Response);
-    rpc GetAttachFileCount (GetAttachFileCount_Request) returns (Int_Response);
-
     //RepairerMaster
     rpc SaveRepairerMaster (SaveRepairerMaster_Request) returns (String_Response);
     rpc GetRepairerMaster (Empty_Request) returns (GetRepairerMaster_Response);
@@ -127,11 +117,15 @@ message grpcBranchMasterModel {
     string ID = 1;
     string BranchID = 2;
     string BranchName = 3;
-    string Discriptions = 5;
-    int32 DspOrder = 6;
-    bool Enabled = 7;
-    google.protobuf.Timestamp ModifiedOn = 8;
-    int32 UpdMode = 9;
+    string PhoneNo = 4;
+    string Email = 5;
+    string Address = 6;
+    string Notes = 7;
+    string PicName = 8;
+    int32 Status = 9;
+    int32 DspOrder = 10;
+    google.protobuf.Timestamp ModifiedOn = 11;
+    int32 UpdMode = 12;
 }
 message GetBranchMaster_Response {
     int32 ReturnCode = 1;
@@ -180,9 +174,9 @@ message grpcRepairerMasterModel {
     string Email = 5;
     string Address = 6;
     string Notes = 7;
-    string EstPersonID = 8;
-    string EstPersonName = 9;
-    int32 Status = 10;
+    string PicName = 8;
+    int32 Status = 9;
+    int32 DspOrder = 10;
     google.protobuf.Timestamp ModifiedOn = 11;
     int32 UpdMode = 12;
 }
@@ -262,7 +256,8 @@ message grpcClaimRequestModel {
     string CheckNotes = 48;
     bool CheckStatus = 49;
     //Repair
-    google.protobuf.Timestamp RepairReqDate = 50;
+    google.protobuf.Timestamp EstReqDate = 50;
+    google.protobuf.Timestamp EstDoneDate = 500;
     google.protobuf.Timestamp RepairDoneDate = 51;
     string RepairCompanyID = 52;
     string RepairCompanyName = 53;
@@ -311,8 +306,6 @@ message grpcClaimRequestModel {
     double DeductibleAmount = 90;
     double IndemnityAmount = 91;
     double RemainingAmount = 92;
-    //Images
-    repeated grpcImageModel Images = 93;
     //Update History
     repeated grpcUpdateHistoryModel UpdateHistorys = 94;
     //CancelStatus
@@ -334,13 +327,6 @@ message grpcEstimationModel {
     double ApproveAmount = 9;
     string Notes = 10;
 }
-message grpcImageModel {
-    google.protobuf.Timestamp IssueDate = 1;
-    int32 SecureLevel = 2;
-    string ImageID = 3;
-    string Title = 4;
-    string UploadAccountID = 5;
-}
 message grpcUpdateHistoryModel {
     google.protobuf.Timestamp ChangedDate = 1;
     string WorkStep = 2;
@@ -348,64 +334,6 @@ message grpcUpdateHistoryModel {
     string ChangedNotes = 4;
 }
 
-message SaveRepairEstimation_Request {
-    UserCredential Credential = 1;
-    //
-    grpcRepairEstimationModel RepairEstimation = 2;
-}
-message GetRepairEstimation_Response {
-    int32 ReturnCode = 1;
-    string MsgCode = 2;
-    //
-    grpcRepairEstimationModel RepairEstimation = 3;
-}
-message grpcRepairEstimationModel {
-    string ID = 1;
-    string ClaimNo = 2;
-    string EstNo = 3;
-    google.protobuf.Timestamp EstDateTime = 4;
-    string EstContent = 5;
-    int32 ApproveLevel = 6;
-    repeated grpcEstGroupItemModel EstGroupItems = 7;
-    bool IsTemplate = 8;
-    //
-    string ReqPersonName = 9;
-    string BranchName = 10;
-    string RepairerName =11;
-    string TemplateName = 12;
-    //
-    google.protobuf.Timestamp ModifiedOn = 13;
-    int32 UpdMode = 14;
-}
-message grpcEstGroupItemModel {
-    int32 LineNo = 1;
-    google.protobuf.Timestamp IssueDateTime = 2;
-    string EstItem = 3;
-    double RepairPrice = 4;
-    double DealRepairPrice = 5;
-    double AprRepairPrice = 6;
-    double EstVAT = 7;
-    double DealVAT = 8;
-    double AprVAT = 9;
-    string RecNo = 10;
-    repeated grpcEstDetailItemModel EstDetailItems = 11;
-}
-message grpcEstDetailItemModel {
-    int32 LineNo = 1;
-    google.protobuf.Timestamp IssueDateTime = 2;
-    string EstItem = 3;
-    double Quantity = 4;
-    double UnitPrice = 5;
-    double Amount = 6;
-    double DealAmount = 7;
-    double AprAmount = 8;
-    double VatRate = 9;
-    double EstVAT = 10;
-    double DealVAT = 11;
-    double AprVAT =12;
-    string Notes = 13;
-    string RecNo = 14;
-}
 message SaveAttachFiles_Request {
     UserCredential Credential = 1;
     //
