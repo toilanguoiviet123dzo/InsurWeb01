@@ -256,7 +256,7 @@
         <div class="container-fluid">
             <!--Row 1-------------------------------------------------->
             <div class="row">
-                <!--Công ty vận chuyển-->
+                <!--Công ty lấy thiết bị-->
                 <div class="col-12 col-lg-3">
                     <MyComboBox @ref="RefLogistic"
                                 @bind-Value="SelectedLogistic"
@@ -267,7 +267,7 @@
                                                    Model.PickupCompanyID = selectedRow.ItemCode;
                                                    Model.PickupCompanyName = selectedRow.ItemName;
                                              })"
-                                Literal="Công ty vận chuyển" />
+                                Literal="Công ty lấy thiết bị" />
                 </div>
                 <!--Ngày yêu cầu lấy-->
                 <div class="col-12 col-lg-3">
@@ -407,7 +407,7 @@
 </MyCard>
 
 <!--Thông báo giá & sửa chữa-->
-<MyCard @bind-IsCollapse="@ReapairInfoCollapse" Title="Thông báo giá & sửa chữa">
+<MyCard @bind-IsCollapse="@RepairInfoCollapse" Title="Thông báo giá & sửa chữa">
     <CardBody>
         <div class="container-fluid">
             <!--Row 1-------------------------------------------------->
@@ -464,7 +464,7 @@
             </div>
 
             <!--Row 3-------------noi dung bao gia------------------------------------->
-            <div class="row">
+            <div class="row mt-1">
                 <DxDataGrid @ref="@gridEst"
                             Data="@Model.Estimations"
                             ColumnResizeMode="DataGridColumnResizeMode.Component"
@@ -621,12 +621,186 @@
                 </DxDataGrid>
             </div>
 
+            <!--Row 4------------------Thong tin sưa chữa-------------------------------->
+            <div class="row mt-2">
+                <!--Ngày sửa xong-->
+                <div class="col-12 col-lg-3">
+                    <MyDateTimeEdit @bind-Date="Model.RepairDoneDate"
+                                    Literal="Ngày sửa xong"
+                                    ReadOnly="true"
+                                    InputCssClass="text-blue" />
+                </div>
+                <!--Số IMEI thiết bị-->
+                <div class="col-12 col-lg-3">
+                    <MyTextEdit @bind-Text="Model.NewDeviceIMEI"
+                                Literal="Số IMEI thiết bị mới"
+                                ReadOnly="true"
+                                InputCssClass="text-purple font-weight-bold" />
+                </div>
+                <!--Model-->
+                <div class="col-12 col-lg-3">
+                    <MyTextEdit @bind-Text="Model.NewDeviceModel"
+                                ReadOnly="true"
+                                Literal="Model thiết bị mới" />
+                </div>
+            </div>
+            <!--Row 5-------------------------------------------------->
+            <div class="row">
+                <!--Nội dung sửa chữa-->
+                <div class="col-12">
+                    <MyMemoEdit @bind-Text="Model.RepairNotes"
+                                Rows="3"
+                                Literal="Nội dung sửa chữa" />
+                </div>
+            </div>
+
 
 
         </div><!--End container-->
     </CardBody>
 </MyCard>
 
+<!--Thông tin duyệt-->
+<MyCard @bind-IsCollapse="@ApproveInfoCollapse" Title="Thông tin duyệt">
+    <CardBody>
+        <div class="container-fluid">
+            <!--Row 1-------------------------------------------------->
+            <div class="row align-items-end mt-1">
+                <!--Ngày yêu cầu duyệt-->
+                <div class="col-12 col-lg-2">
+                    <MyDateTimeEdit @bind-Date="Model.ApproveReqDate"
+                                    Literal="Ngày yêu cầu duyệt"
+                                    ReadOnly="true"
+                                    Width="100%"
+                                    InputCssClass="text-green" />
+                </div>
+                <!--Check: yêu cầu duyệt-->
+                <div class="col-12 col-lg-2">
+                    <DxCheckBox @bind-Checked="@Model.ApproveReqStatus" CssClass="text-green">Yêu cầu duyệt</DxCheckBox>
+                </div>
+                <!--Ngày yêu cầu duyệt-->
+                <div class="col-12 col-lg-2">
+                    <MyDateTimeEdit @bind-Date="Model.ApproveReqDate"
+                                    Literal="Ngày duyệt"
+                                    Width="100%"
+                                    ReadOnly="true"
+                                    InputCssClass="text-blue" />
+                </div>
+                <!--Check: yêu cầu duyệt-->
+                <div class="col-12 col-lg-2">
+                    <DxCheckBox @bind-Checked="@Model.ApproveStatus" CssClass="text-green" Enabled="false">Đã duyệt</DxCheckBox>
+                </div>
+            </div>
+
+            <!--Row 2-------------------------------------------------->
+            <div class="row">
+                <!--Người duyệt-->
+                <div class="col-12 col-lg-3">
+                    <MyComboBox @ref="RefApprover"
+                                @bind-Value="SelectedApprover"
+                                Data="UserList"
+                                TextFieldName="@(nameof(UserAccountModel.Fullname))"
+                                SelectedItemChanged="@((UserAccountModel selectedRow) => {
+                                                   Model.ApproveAccountID = selectedRow.UserName;
+                                                   Model.ApproveAccountName = selectedRow.Fullname;
+                                             })"
+                                Literal="Người duyệt" />
+                </div>
+            </div>
+            <!--Row 3-------------------------------------------------->
+            <div class="row">
+                <!--Ghi chú duyệt-->
+                <div class="col-12">
+                    <MyMemoEdit @bind-Text="Model.ApproveNotes"
+                                Rows="3"
+                                ReadOnly="true"
+                                Literal="Ghi chú duyệt" />
+                </div>
+            </div>
+
+        </div><!--End container-->
+    </CardBody>
+</MyCard>
+
+<!--Thông tin trả hàng-->
+<MyCard @bind-IsCollapse="@ReturnInfoCollapse" Title="Thông tin trả hàng">
+    <CardBody>
+        <div class="container-fluid">
+            <!--Row 1-------------------------------------------------->
+            <div class="row align-items-end mt-1">
+                <!--Ngày yêu cầu trả hàng-->
+                <div class="col-12 col-lg-2">
+                    <MyDateTimeEdit @bind-Date="Model.ReturnReqDate"
+                                    Literal="Ngày YC trả thiết bị"
+                                    ReadOnly="true"
+                                    Width="100%"
+                                    InputCssClass="text-green" />
+                </div>
+                <!--Check: yêu cầu trả hàng-->
+                <div class="col-12 col-lg-2">
+                    <DxCheckBox @bind-Checked="@Model.ReturnReqStatus" CssClass="text-green">YC trả thiết bị</DxCheckBox>
+                </div>
+                <!--Ngày xuất hàng-->
+                <div class="col-12 col-lg-2">
+                    <MyDateTimeEdit @bind-Date="Model.ReturnDoneDate1"
+                                    Literal="Ngày xuất thiết bị"
+                                    Width="100%"
+                                    ReadOnly="true"
+                                    InputCssClass="text-blue" />
+                </div>
+                <!--Check: Đã xuất hàng-->
+                <div class="col-12 col-lg-2">
+                    <DxCheckBox @bind-Checked="@Model.ReturnStatus1" CssClass="text-blue" Enabled="false">Đã xuất thiết bị</DxCheckBox>
+                </div>
+                <!--Ngày trả hàng-->
+                <div class="col-12 col-lg-2">
+                    <MyDateTimeEdit @bind-Date="Model.ReturnDoneDate2"
+                                    Literal="Ngày trả thiết bị"
+                                    Width="100%"
+                                    ReadOnly="true"
+                                    InputCssClass="text-maroon" />
+                </div>
+                <!--Check: Đã trả hàng-->
+                <div class="col-12 col-lg-2">
+                    <DxCheckBox @bind-Checked="@Model.ReturnStatus2" CssClass="text-maroon" Enabled="false">Đã trả thiết bị</DxCheckBox>
+                </div>
+            </div>
+            <!--Row 2-------------------------------------------------->
+            <div class="row">
+                <!--Công ty trả hàng-->
+                <div class="col-12 col-lg-3">
+                    <MyComboBox @ref="RefReturnComp"
+                                @bind-Value="SelectedReturnComp"
+                                Data="LogisticList"
+                                AllowUserInput="true"
+                                TextFieldName="@(nameof(OptionListModel.ItemName))"
+                                SelectedItemChanged="@((OptionListModel selectedRow) => {
+                                                   Model.ReturnCompanyID = selectedRow.ItemCode;
+                                                   Model.ReturnCompanyName = selectedRow.ItemName;
+                                             })"
+                                Literal="Công ty trả thiết bị" />
+                </div>
+                <!--Người trả thiết bị-->
+                <div class="col-12 col-lg-3">
+                    <MyTextEdit @bind-Text="Model.ClaimAccountName"
+                                ReadOnly="true"
+                                Literal="Người trả thiết bị" />
+                </div>
+            </div>
+            <!--Row 3-------------------------------------------------->
+            <div class="row">
+                <!--Ghi chú duyệt-->
+                <div class="col-12">
+                    <MyMemoEdit @bind-Text="Model.ReturnNotes"
+                                Rows="3"
+                                ReadOnly="true"
+                                Literal="Ghi chú trả thiết bị" />
+                </div>
+            </div>
+
+        </div><!--End container-->
+    </CardBody>
+</MyCard>
 
 
 <!--OK, Cancel-->
@@ -656,16 +830,21 @@
     private List<OptionListModel> PriorityList = new List<OptionListModel>();
     private List<OptionListModel> LogisticList = new List<OptionListModel>();
     private List<RepairerMasterModel> RepairerList = new List<RepairerMasterModel>();
+    private List<UserAccountModel> UserList = new List<UserAccountModel>();
     //Selected combo value
     private OptionListModel SelectedDamageCause = null;
     private OptionListModel SelectedPriority = null;
     private OptionListModel SelectedLogistic = null;
+    private OptionListModel SelectedReturnComp = null;
     private RepairerMasterModel SelectedRepairer = null;
+    private UserAccountModel SelectedApprover = null;
     //Ref
     private MyComboBox<OptionListModel> RefDamageType;
     private MyComboBox<OptionListModel> RefPriority;
     private MyComboBox<OptionListModel> RefLogistic;
+    private MyComboBox<OptionListModel> RefReturnComp;
     private MyComboBox<RepairerMasterModel> RefRepairer;
+    private MyComboBox<UserAccountModel> RefApprover;
     MyMemoEdit RefDamageCause;
     //Css
     private string PriorityCss = "";
@@ -673,7 +852,9 @@
     private bool InsureInfoCollapse = true;
     private bool PickupInfoCollapse = true;
     private bool CheckInfoCollapse = true;
-    private bool ReapairInfoCollapse = true;
+    private bool RepairInfoCollapse = true;
+    private bool ApproveInfoCollapse = true;
+    private bool ReturnInfoCollapse = true;
     //Readonly
     private bool ApproveAmount_ReadOnly = true;
     //Confirm
@@ -698,6 +879,7 @@
     //
     async Task LoadMaster()
     {
+        UserList = await masterService.Load_UserList();
         RepairerList = await masterService.Load_RepairerList();
         DamageCauseList = await masterService.Load_OptionList("005");
         PriorityList = await masterService.Load_OptionList("007");
@@ -734,6 +916,10 @@
                 if (!string.IsNullOrWhiteSpace(Model.DamageType)) SelectedDamageCause = DamageCauseList.Find(x => x.ItemCode == Model.DamageType);
                 //SelectedLogistic
                 if (!string.IsNullOrWhiteSpace(Model.PickupCompanyID)) SelectedLogistic = LogisticList.Find(x => x.ItemCode == Model.PickupCompanyID);
+                //SelectedRepairer
+                if (!string.IsNullOrWhiteSpace(Model.RepairCompanyID)) SelectedRepairer = RepairerList.Find(x => x.RepairerID == Model.RepairCompanyID);
+                //SelectedApprover
+                if (!string.IsNullOrWhiteSpace(Model.ApproveAccountID)) SelectedApprover = UserList.Find(x => x.UserName == Model.ApproveAccountID);
                 //Priority
                 SelectedPriority = PriorityList.Find(x => x.IntCode == Model.Priority);
 
@@ -757,16 +943,15 @@
             }
 
             //show pickup
-            if (!Model.PickupStatus2)
-            {
-                PickupInfoCollapse = false;
-            }
-
+            if (!Model.PickupStatus2) PickupInfoCollapse = false;
             //show check
-            if (Model.PickupStatus2)
-            {
-                CheckInfoCollapse = false;
-            }
+            if (Model.PickupStatus2 && !Model.CheckStatus) CheckInfoCollapse = false;
+            //show Repair
+            if (Model.CheckStatus && !Model.RepairStatus) RepairInfoCollapse = false;
+            //show Approve
+            if (Model.EstimationStatus && !Model.ApproveStatus) ApproveInfoCollapse = false;
+            //show Return
+            if (Model.RepairStatus && !Model.ReturnStatus2) ReturnInfoCollapse = false;
 
             //Refresh layout
             StateHasChanged();
@@ -797,6 +982,13 @@
         {
             toastService.ShowWarning("Công ty vận chuyển", "Bắt buột nhập.");
             RefLogistic.Focus();
+            return false;
+        }
+        //ApproverAccount
+        if (Model.ApproveReqStatus && string.IsNullOrWhiteSpace(Model.ApproveAccountID))
+        {
+            toastService.ShowWarning("Người duyệt", "Bắt buột nhập.");
+            RefApprover.Focus();
             return false;
         }
         //

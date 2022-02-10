@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Cores\Cores.csproj" />
+    <ProjectReference Include="..\Client\BlazorApp.Client.csproj" />
     <ProjectReference Include="..\Shared\BlazorApp.Shared.csproj" />
   </ItemGroup>
 

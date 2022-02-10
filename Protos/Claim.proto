@@ -281,13 +281,15 @@ message grpcClaimRequestModel {
     bool ApproveStatus = 69;
     //Return
     google.protobuf.Timestamp ReturnReqDate = 70;
-    google.protobuf.Timestamp ReturnDoneDate = 71;
+    google.protobuf.Timestamp ReturnDoneDate1 = 71;
+    google.protobuf.Timestamp ReturnDoneDate2 = 710;
     string ReturnCompanyID = 72;
     string ReturnCompanyName = 73;
     string ReturnAccountID = 74;
     string ReturnAccountName = 75;
     string ReturnAddress = 76;
     string ReturnNotes = 77;
+    bool ReturnReqStatus = 780;
     bool ReturnStatus1 = 78;
     bool ReturnStatus2 = 79;
     //Payment

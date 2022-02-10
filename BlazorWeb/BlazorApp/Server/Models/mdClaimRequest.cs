@@ -91,13 +91,15 @@ namespace BlazorApp.Server.Models
         public bool ApproveStatus { get; set; }
         //Return
         public DateTime ReturnReqDate { get; set; }
-        public DateTime ReturnDoneDate { get; set; }
+        public DateTime ReturnDoneDate1 { get; set; }
+        public DateTime ReturnDoneDate2 { get; set; }
         public string ReturnCompanyID { get; set; } = "";
         public string ReturnCompanyName { get; set; } = "";
         public string ReturnAccountID { get; set; } = "";
         public string ReturnAccountName { get; set; } = "";
         public string ReturnAddress { get; set; } = "";
         public string ReturnNotes { get; set; } = "";
+        public bool ReturnReqStatus { get; set; }
         public bool ReturnStatus1 { get; set; }
         public bool ReturnStatus2 { get; set; }
         //Payment
