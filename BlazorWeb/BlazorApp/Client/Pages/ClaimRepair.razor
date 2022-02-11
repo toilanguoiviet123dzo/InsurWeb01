@@ -1,4 +1,4 @@
-﻿@page "/ClaimPickup"
+﻿@page "/ClaimRepair"
 @using Admin.Services
 @using Claim.Services
 @using Resource.Services
@@ -105,7 +105,7 @@
                 </HeaderCellTemplate>
                 <CellTemplate>
                     <div style="display:flex;justify-content:center">
-                        @if (((ClaimRequestListModel)context).CheckStatus)
+                        @if (((ClaimRequestListModel)context).ReturnStatus1)
                         {
                             <!--View-->
                             <div class="text-center" style="width:3rem">
@@ -126,9 +126,6 @@
             <DxDataGridColumn Field="@nameof(ClaimRequestListModel.DeviceModel)"
                               Caption="Model thiết bị"
                               Width="8rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.PickupAddress)"
-                              Caption="Địa chỉ lấy thiết bị"
-                              Width="15rem" />
             <DxDataGridColumn Field="@nameof(ClaimRequestListModel.CusFullname)"
                               Caption="Tên khách hàng"
                               Width="10rem" />
@@ -142,12 +139,15 @@
                               Caption="Số tiếp nhận"
                               SortOrder="DataGridColumnSortOrder.Descending"
                               Width="6rem" />
-            <DxDataGridDateEditColumn Field="@nameof(ClaimRequestListModel.PickupReqDate)"
+            <DxDataGridDateEditColumn Field="@nameof(ClaimRequestListModel.EstReqDate)"
                                       Caption="Ngày yêu cầu"
                                       DisplayFormat="dd/MM/yyyy HH:mm"
                                       Width="9rem" />
             <DxDataGridColumn Field="@nameof(ClaimRequestListModel.BrancheName)"
                               Caption="Trung tâm bồi thường"
+                              Width="7rem" />
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.PicAccountName)"
+                              Caption="Nhân viên bồi thường"
                               Width="7rem" />
         </Columns>
     </DxDataGrid>
@@ -159,10 +159,10 @@
 <MyPopup @ref="@ClaimPopup"
          VerticalAlignment="@VerticalAlignment.Top"
          HeaderText="Yêu cầu lấy thiết bị"
-         Width="1000px"
+         Width="1200px"
          ZIndex="1001">
     <BodyContentTemplate>
-        <ClaimPickupEdit ClaimNo="@ClaimNo"
+        <ClaimRepairEdit ClaimNo="@ClaimNo"
                          MyForm="@ClaimPopup"
                          OnValidSumit="@(async() => await DisplayMain())" />
     </BodyContentTemplate>
@@ -180,7 +180,7 @@
     readonly ObservableCollection<ClaimRequestListModel> DetailData = new ObservableCollection<ClaimRequestListModel>();
 
     // Master
-    private List<CodeNameModel> StatusList = MyClaimStatus.Get_PickupStatusList();
+    private List<CodeNameModel> StatusList = MyClaimStatus.Get_RepairStatusList();
     private List<CodeNameModel> TimeFlagList = MyDateTimeSelector.Get_TimeRangeList();
     // Popup
     private MyPopup ClaimPopup;
@@ -189,7 +189,7 @@
     private bool ConfirmVisible = false;
 
     //Filter
-    private CodeNameModel Filter_Status { get; set; } = new CodeNameModel { CodeInt = 3, Name = "Nhập hàng" };
+    private CodeNameModel Filter_Status { get; set; } = new CodeNameModel { CodeInt = 8, Name = "Sửa chữa" };
     private CodeNameModel Filter_TimeFlag { get; set; }
     private DateTime Filter_StartDate { get; set; } = DateTime.Today.MinDate().ToLocalTime();
     private DateTime Filter_EndDate { get; set; } = DateTime.Today.MaxDate().ToLocalTime();
@@ -212,7 +212,7 @@
         try
         {
             //Filter
-            var request = new Claim.Services.GetPickupList_Request();
+            var request = new Claim.Services.GetRepairList_Request();
             request.Credential = new Claim.Services.UserCredential()
                 {
                     Username = WebUserCredential.Username,
@@ -221,7 +221,7 @@
                     ApiKey = WebUserCredential.ApiKey
                 };
             //PickupCompanyID
-            request.PickupCompanyID = WebUserCredential.LogisticCompanyID;
+            request.RepairCompanyID = WebUserCredential.LogisticCompanyID;
             //Status
             if (Filter_Status != null && Filter_Status.CodeInt != 0) request.Status = Filter_Status.CodeInt;
             //Status check
@@ -230,7 +230,7 @@
             request.StartDate = Filter_StartDate.ToTimestampFromLocalTime();
             request.EndDate = Filter_EndDate.ToTimestampFromLocalTime();
             //
-            var response = await ClaimServiceClient.GetPickupListAsync(request);
+            var response = await ClaimServiceClient.GetRepairListAsync(request);
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
                 if (response.ClaimRequests != null)
@@ -244,7 +244,7 @@
                         var dataRow = new ClaimRequestListModel();
                         ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
                         //Status name
-                        dataRow.StatusName = MyClaimStatus.Get_PickupStatusName(dataRow);
+                        dataRow.StatusName = MyClaimStatus.Get_RepairStatusName(dataRow);
                         //
                         DetailData.Add(dataRow);
                     }
@@ -296,8 +296,8 @@
         {
             eventArgs.Style += " ;font-weight:bold; color: blue";
         }
-        //PickupReqDate
-        if (eventArgs.FieldName == nameof(ClaimRequestListModel.PickupReqDate))
+        //EstReqDate
+        if (eventArgs.FieldName == nameof(ClaimRequestListModel.EstReqDate))
         {
             eventArgs.Style += " ;color: green";
         }

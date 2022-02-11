@@ -35,7 +35,7 @@ namespace BlazorApp.Server.Services
         //-------------------------------------------------------------------------------------------------------/
         // SaveClaimRequest
         //-------------------------------------------------------------------------------------------------------/
-        public override async Task<Claim.Services.String_Response> SaveClaimRequest(SaveClaimRequest_Request request, ServerCallContext context)
+        public override async Task<Claim.Services.String_Response> SaveClaimRequest(SaveClaim_Request request, ServerCallContext context)
         {
             var response = new Claim.Services.String_Response();
             response.ReturnCode = GrpcReturnCode.OK;
@@ -111,6 +111,243 @@ namespace BlazorApp.Server.Services
                 response.ReturnCode = GrpcReturnCode.Error_ByServer;
                 response.MsgCode = ex.Message;
                 MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "SaveClaimRequest", "Exception", response.ReturnCode, ex.Message);
+            }
+            return await Task.FromResult(response);
+        }
+        //-------------------------------------------------------------------------------------------------------/
+        // SaveClaimProcess
+        //-------------------------------------------------------------------------------------------------------/
+        public override async Task<Claim.Services.String_Response> SaveClaimProcess(SaveClaim_Request request, ServerCallContext context)
+        {
+            var response = new Claim.Services.String_Response();
+            response.ReturnCode = GrpcReturnCode.OK;
+            try
+            {
+                switch (request.ClaimRequest.UpdMode)
+                {
+                    //update
+                    case 2:
+                        var oldRecord = await DB.Find<mdClaimRequest>().OneAsync(request.ClaimRequest.ID);
+                        if (oldRecord != null)
+                        {
+                            ClassHelper.CopyPropertiesData(request.ClaimRequest, oldRecord);
+                            oldRecord.ModifiedOn = DateTime.UtcNow;
+                            oldRecord.TextSearch = oldRecord.CusFullname.RemoveVietnameseSign();
+                            //
+                            await oldRecord.SaveAsync();
+                        }
+                        else
+                        {
+                            response.ReturnCode = GrpcReturnCode.Error_201;
+                        }
+                        break;
+                    //
+                    default:
+                        response.ReturnCode = GrpcReturnCode.Error_BadRequest; //UpdMode = blank
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ReturnCode = GrpcReturnCode.Error_ByServer;
+                response.MsgCode = ex.Message;
+                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "SaveClaimProcess", "Exception", response.ReturnCode, ex.Message);
+            }
+            return await Task.FromResult(response);
+        }
+        //-------------------------------------------------------------------------------------------------------/
+        // SaveClaimLogistic
+        //-------------------------------------------------------------------------------------------------------/
+        public override async Task<Claim.Services.String_Response> SaveClaimLogistic(SaveClaim_Request request, ServerCallContext context)
+        {
+            var response = new Claim.Services.String_Response();
+            response.ReturnCode = GrpcReturnCode.OK;
+            try
+            {
+                switch (request.ClaimRequest.UpdMode)
+                {
+                    //update
+                    case 2:
+                        var oldRecord = await DB.Find<mdClaimRequest>().OneAsync(request.ClaimRequest.ID);
+                        if (oldRecord != null)
+                        {
+                            ClassHelper.CopyPropertiesData(request.ClaimRequest, oldRecord);
+                            //Pickup
+                            oldRecord.PickupDoneDate1 = request.ClaimRequest.PickupDoneDate1.ToDateTime();
+                            oldRecord.PickupDoneDate2 = request.ClaimRequest.PickupDoneDate2.ToDateTime();
+                            oldRecord.PickupCompanyID = request.ClaimRequest.PickupCompanyID;
+                            oldRecord.PickupCompanyName = request.ClaimRequest.PickupCompanyName;
+                            oldRecord.PickupAccountID = request.ClaimRequest.PickupAccountID;
+                            oldRecord.PickupAccountName = request.ClaimRequest.PickupAccountName;
+                            oldRecord.PickupNotes = request.ClaimRequest.PickupNotes;
+                            oldRecord.PickupStatus1 = request.ClaimRequest.PickupStatus1;
+                            oldRecord.PickupStatus2 = request.ClaimRequest.PickupStatus2;
+                            oldRecord.PickupAddress = request.ClaimRequest.PickupAddress;
+                            //Return
+                            oldRecord.ReturnDoneDate1 = request.ClaimRequest.ReturnDoneDate1.ToDateTime();
+                            oldRecord.ReturnDoneDate2 = request.ClaimRequest.ReturnDoneDate2.ToDateTime();
+                            oldRecord.ReturnCompanyID = request.ClaimRequest.ReturnCompanyID;
+                            oldRecord.ReturnCompanyName = request.ClaimRequest.ReturnCompanyName;
+                            oldRecord.ReturnAccountID = request.ClaimRequest.ReturnAccountID;
+                            oldRecord.ReturnAccountName = request.ClaimRequest.ReturnAccountName;
+                            oldRecord.ReturnNotes = request.ClaimRequest.ReturnNotes;
+                            oldRecord.ReturnAddress = request.ClaimRequest.ReturnAddress;
+                            oldRecord.ReturnStatus1 = request.ClaimRequest.ReturnStatus1;
+                            oldRecord.ReturnStatus2 = request.ClaimRequest.ReturnStatus2;
+                            //
+                            await oldRecord.SaveAsync();
+                        }
+                        else
+                        {
+                            response.ReturnCode = GrpcReturnCode.Error_201;
+                        }
+                        break;
+                    //
+                    default:
+                        response.ReturnCode = GrpcReturnCode.Error_BadRequest; //UpdMode = blank
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ReturnCode = GrpcReturnCode.Error_ByServer;
+                response.MsgCode = ex.Message;
+                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "SaveClaimLogistic", "Exception", response.ReturnCode, ex.Message);
+            }
+            return await Task.FromResult(response);
+        }
+        //-------------------------------------------------------------------------------------------------------/
+        // SaveClaimRepair
+        //-------------------------------------------------------------------------------------------------------/
+        public override async Task<Claim.Services.String_Response> SaveClaimRepair(SaveClaim_Request request, ServerCallContext context)
+        {
+            var response = new Claim.Services.String_Response();
+            response.ReturnCode = GrpcReturnCode.OK;
+            try
+            {
+                switch (request.ClaimRequest.UpdMode)
+                {
+                    //update
+                    case 2:
+                        var oldRecord = await DB.Find<mdClaimRequest>().OneAsync(request.ClaimRequest.ID);
+                        if (oldRecord != null)
+                        {
+                            ClassHelper.CopyPropertiesData(request.ClaimRequest, oldRecord);
+                            //Estimation
+                            oldRecord.EstDoneDate = request.ClaimRequest.EstDoneDate.ToDateTime();
+                            oldRecord.RepairDoneDate = request.ClaimRequest.RepairDoneDate.ToDateTime();
+                            oldRecord.RepairCompanyID = request.ClaimRequest.RepairCompanyID;
+                            oldRecord.RepairCompanyName = request.ClaimRequest.RepairCompanyName;
+                            oldRecord.RepairAccountID = request.ClaimRequest.RepairAccountID;
+                            oldRecord.RepairAccountName = request.ClaimRequest.RepairAccountName;
+                            oldRecord.RepairNotes = request.ClaimRequest.RepairNotes;
+
+                            //Estimation details
+                            if (request.ClaimRequest.Estimations != null && request.ClaimRequest.Estimations.Count > 0)
+                            {
+                                foreach (var item in request.ClaimRequest.Estimations)
+                                {
+                                    var estItem = new EstimationModel();
+                                    ClassHelper.CopyPropertiesData(item, estItem);
+                                    //New
+                                    if (oldRecord.Estimations == null) oldRecord.Estimations = new List<EstimationModel>();
+                                    oldRecord.Estimations.Add(estItem);
+                                }
+                            }
+
+                            //Repair
+                            oldRecord.NewDeviceIMEI = request.ClaimRequest.NewDeviceIMEI;
+                            oldRecord.NewDeviceModel = request.ClaimRequest.NewDeviceModel;
+                            oldRecord.EstimationReqStatus = request.ClaimRequest.EstimationReqStatus;
+                            oldRecord.EstimationStatus = request.ClaimRequest.EstimationStatus;
+                            oldRecord.RepairStatus = request.ClaimRequest.RepairStatus;
+
+                            //Summary amount
+                            oldRecord.ClaimAmount = request.ClaimRequest.ClaimAmount;
+                            //
+                            await oldRecord.SaveAsync();
+                        }
+                        else
+                        {
+                            response.ReturnCode = GrpcReturnCode.Error_201;
+                        }
+                        break;
+                    //
+                    default:
+                        response.ReturnCode = GrpcReturnCode.Error_BadRequest; //UpdMode = blank
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ReturnCode = GrpcReturnCode.Error_ByServer;
+                response.MsgCode = ex.Message;
+                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "SaveClaimLogistic", "Exception", response.ReturnCode, ex.Message);
+            }
+            return await Task.FromResult(response);
+        }
+        //-------------------------------------------------------------------------------------------------------/
+        // SaveClaimApprove
+        //-------------------------------------------------------------------------------------------------------/
+        public override async Task<Claim.Services.String_Response> SaveClaimApprove(SaveClaim_Request request, ServerCallContext context)
+        {
+            var response = new Claim.Services.String_Response();
+            response.ReturnCode = GrpcReturnCode.OK;
+            try
+            {
+                switch (request.ClaimRequest.UpdMode)
+                {
+                    //update
+                    case 2:
+                        var oldRecord = await DB.Find<mdClaimRequest>().OneAsync(request.ClaimRequest.ID);
+                        if (oldRecord != null)
+                        {
+                            ClassHelper.CopyPropertiesData(request.ClaimRequest, oldRecord);
+                            //Pickup
+                            oldRecord.ApproveDoneDate = request.ClaimRequest.ApproveDoneDate.ToDateTime();
+                            oldRecord.ApproveAccountID = request.ClaimRequest.ApproveAccountID;
+                            oldRecord.ApproveAccountName = request.ClaimRequest.ApproveAccountName;
+                            oldRecord.ApproveNotes = request.ClaimRequest.ApproveNotes;
+                            oldRecord.ApproveReqStatus = request.ClaimRequest.ApproveReqStatus;
+                            oldRecord.ApproveStatus = request.ClaimRequest.ApproveStatus;
+                            //Summary amount
+                            oldRecord.ClaimAmount = request.ClaimRequest.ClaimAmount;
+                            oldRecord.ApproveAmount = request.ClaimRequest.ApproveAmount;
+                            oldRecord.DeductibleAmount = request.ClaimRequest.DeductibleAmount;
+                            oldRecord.IndemnityAmount = request.ClaimRequest.IndemnityAmount;
+                            oldRecord.RemainingAmount = request.ClaimRequest.RemainingAmount;
+
+                            //Estimation details
+                            if (request.ClaimRequest.Estimations != null && request.ClaimRequest.Estimations.Count > 0)
+                            {
+                                foreach (var item in request.ClaimRequest.Estimations)
+                                {
+                                    var estItem = new EstimationModel();
+                                    ClassHelper.CopyPropertiesData(item, estItem);
+                                    //New
+                                    if (oldRecord.Estimations == null) oldRecord.Estimations = new List<EstimationModel>();
+                                    oldRecord.Estimations.Add(estItem);
+                                }
+                            }
+                            //
+                            await oldRecord.SaveAsync();
+                        }
+                        else
+                        {
+                            response.ReturnCode = GrpcReturnCode.Error_201;
+                        }
+                        break;
+                    //
+                    default:
+                        response.ReturnCode = GrpcReturnCode.Error_BadRequest; //UpdMode = blank
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ReturnCode = GrpcReturnCode.Error_ByServer;
+                response.MsgCode = ex.Message;
+                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "SaveClaimLogistic", "Exception", response.ReturnCode, ex.Message);
             }
             return await Task.FromResult(response);
         }
@@ -349,6 +586,120 @@ namespace BlazorApp.Server.Services
         }
 
         //-------------------------------------------------------------------------------------------------------/
+        // GetRepairList
+        //-------------------------------------------------------------------------------------------------------/
+        public override async Task<GetClaimRequestList_Response> GetRepairList(Claim.Services.GetRepairList_Request request, ServerCallContext context)
+        {
+            var response = new GetClaimRequestList_Response();
+            response.ReturnCode = GrpcReturnCode.OK;
+            response.MsgCode = "";
+            //
+            try
+            {
+                var query = DB.Find<mdClaimRequest>();
+
+                //RepairCompanyID
+                if (!string.IsNullOrWhiteSpace(request.RepairCompanyID)) query.Match(a => a.PickupCompanyID == request.RepairCompanyID);
+
+                //PickupReqStatus = true
+                query.Match(a => a.EstimationReqStatus == true);
+
+                //Status
+                bool status = request.StatusCheck ? true : false;
+                if (request.Status == 2) query.Match(a => a.PickupStatus1 == status);
+                if (request.Status == 3) query.Match(a => a.PickupStatus2 == status);
+                //Time range
+                //StartDate
+                if (request.StartDate.ToDateTime().ToString("yyyyMMdd") != DateTime.Today.MinShortDateString())
+                {
+                    query.Match(a => a.ClaimDate >= request.StartDate.ToDateTime());
+                }
+                //EndDate
+                if (request.EndDate.ToDateTime().ToString("yyyyMMdd") != DateTime.Today.MaxShortDateString())
+                {
+                    query.Match(a => a.ClaimDate <= request.EndDate.ToDateTime());
+                }
+                var findRecords = await query.ExecuteAsync();
+                //
+                if (findRecords != null && findRecords.Count > 0)
+                {
+                    findRecords.ForEach(item =>
+                    {
+                        var grpcItem = new grpcClaimRequestModel();
+                        ClassHelper.CopyPropertiesData(item, grpcItem);
+                        //
+                        response.ClaimRequests.Add(grpcItem);
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ReturnCode = GrpcReturnCode.Error_ByServer;
+                response.MsgCode = ex.Message;
+                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "GetRepairList", "Exception", response.ReturnCode, ex.Message);
+            }
+            //
+            return await Task.FromResult(response);
+        }
+
+        //-------------------------------------------------------------------------------------------------------/
+        // GetReturnList
+        //-------------------------------------------------------------------------------------------------------/
+        public override async Task<GetClaimRequestList_Response> GetReturnList(Claim.Services.GetReturnList_Request request, ServerCallContext context)
+        {
+            var response = new GetClaimRequestList_Response();
+            response.ReturnCode = GrpcReturnCode.OK;
+            response.MsgCode = "";
+            //
+            try
+            {
+                var query = DB.Find<mdClaimRequest>();
+
+                //PickupCompanyID
+                if (!string.IsNullOrWhiteSpace(request.ReturnCompanyID)) query.Match(a => a.PickupCompanyID == request.ReturnCompanyID);
+
+                //PickupReqStatus = true
+                query.Match(a => a.ReturnReqStatus == true);
+
+                //Status
+                bool status = request.StatusCheck ? true : false;
+                if (request.Status == 9) query.Match(a => a.ReturnStatus1 == status);
+                if (request.Status == 10) query.Match(a => a.ReturnStatus2 == status);
+                //Time range
+                //StartDate
+                if (request.StartDate.ToDateTime().ToString("yyyyMMdd") != DateTime.Today.MinShortDateString())
+                {
+                    query.Match(a => a.ClaimDate >= request.StartDate.ToDateTime());
+                }
+                //EndDate
+                if (request.EndDate.ToDateTime().ToString("yyyyMMdd") != DateTime.Today.MaxShortDateString())
+                {
+                    query.Match(a => a.ClaimDate <= request.EndDate.ToDateTime());
+                }
+                var findRecords = await query.ExecuteAsync();
+                //
+                if (findRecords != null && findRecords.Count > 0)
+                {
+                    findRecords.ForEach(item =>
+                    {
+                        var grpcItem = new grpcClaimRequestModel();
+                        ClassHelper.CopyPropertiesData(item, grpcItem);
+                        //
+                        response.ClaimRequests.Add(grpcItem);
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ReturnCode = GrpcReturnCode.Error_ByServer;
+                response.MsgCode = ex.Message;
+                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "GetReturnList", "Exception", response.ReturnCode, ex.Message);
+            }
+            //
+            return await Task.FromResult(response);
+        }
+
+        //-------------------------------------------------------------------------------------------------------/
         // SaveRepairerMaster
         //-------------------------------------------------------------------------------------------------------/
         public override async Task<Claim.Services.String_Response> SaveRepairerMaster(SaveRepairerMaster_Request request, ServerCallContext context)
@@ -520,7 +871,7 @@ namespace BlazorApp.Server.Services
             //
             return await Task.FromResult(response);
         }
-        
+
 
 
     }//End class

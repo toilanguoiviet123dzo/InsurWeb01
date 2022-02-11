@@ -5,13 +5,21 @@ package grpcClaimService;
 
 //Services
 service grpcClaimService {    
-    //ClaimRequest
-    rpc SaveClaimRequest (SaveClaimRequest_Request) returns (String_Response);
+    //Save claim
+    rpc SaveClaimRequest (SaveClaim_Request) returns (String_Response);
+    rpc SaveClaimProcess (SaveClaim_Request) returns (String_Response);
+    rpc SaveClaimLogistic (SaveClaim_Request) returns (String_Response);
+    rpc SaveClaimRepair (SaveClaim_Request) returns (String_Response);
+    rpc SaveClaimApprove (SaveClaim_Request) returns (String_Response);
+    rpc SaveClaimPayment (SaveClaim_Request) returns (String_Response);
+    //Get claim
     rpc GetClaimRequest (String_Request) returns (GetClaimRequest_Response);
     rpc GetClaimRequestList (GetClaimRequestList_Request) returns (GetClaimRequestList_Response);
     rpc CancelClaimRequest (String_Request) returns (Empty_Response);
     rpc GetCustomerInfo (String_Request) returns (GetCustomerInfo_Response);
     rpc GetPickupList (GetPickupList_Request) returns (GetClaimRequestList_Response);
+    rpc GetRepairList (GetRepairList_Request) returns (GetClaimRequestList_Response);
+    rpc GetReturnList (GetReturnList_Request) returns (GetClaimRequestList_Response);
 
 
     //Insure
@@ -48,21 +56,21 @@ message String_Request
 {
     UserCredential Credential = 1;
     //
-     string StringValue = 2;
+    string StringValue = 2;
 }
 message String_Response
 {
     int32 ReturnCode = 1;
     string MsgCode = 2;
     //
-     string StringValue = 3;
+    string StringValue = 3;
 }
 message Int_Response
 {
     int32 ReturnCode = 1;
     string MsgCode = 2;
     //
-     int32 IntValue = 3;
+    int32 IntValue = 3;
 }
 
 //
@@ -188,7 +196,7 @@ message GetAttachFileCount_Request {
     int32 DocumentLevel = 3;
 }
 
-message SaveClaimRequest_Request {
+message SaveClaim_Request {
     UserCredential Credential = 1;
     //
     bool IsApproval = 2;
@@ -382,6 +390,24 @@ message GetPickupList_Request {
     UserCredential Credential = 1;
     //
     string PickupCompanyID = 2;
+    int32 Status = 3;
+    bool StatusCheck = 4;
+    google.protobuf.Timestamp StartDate = 5;
+    google.protobuf.Timestamp EndDate = 6;
+}
+message GetRepairList_Request {
+    UserCredential Credential = 1;
+    //
+    string RepairCompanyID = 2;
+    int32 Status = 3;
+    bool StatusCheck = 4;
+    google.protobuf.Timestamp StartDate = 5;
+    google.protobuf.Timestamp EndDate = 6;
+}
+message GetReturnList_Request {
+    UserCredential Credential = 1;
+    //
+    string ReturnCompanyID = 2;
     int32 Status = 3;
     bool StatusCheck = 4;
     google.protobuf.Timestamp StartDate = 5;

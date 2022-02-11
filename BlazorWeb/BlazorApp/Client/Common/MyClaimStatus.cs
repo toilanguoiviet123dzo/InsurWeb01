@@ -70,6 +70,48 @@ namespace BlazorApp.Client.Common
         }
         #endregion
 
+        #region Repair
+        public static List<CodeNameModel> Get_RepairStatusList(int fromStatus = 1, int toStatus = 10)
+        {
+            var ret = new List<CodeNameModel>();
+            ret.Add(new CodeNameModel { CodeInt = 6, Name = "Báo giá" });
+            ret.Add(new CodeNameModel { CodeInt = 8, Name = "Sửa chữa" });
+            //
+            return ret;
+        }
+
+        public static string Get_RepairStatusName(ClaimRequestListModel dataRow)
+        {
+            string StatusName = "Chưa báo giá";
+            if (dataRow.EstimationStatus) StatusName = "Đã báo giá";
+            if (dataRow.RepairStatus) StatusName = "Đã sửa chữa";
+            //
+            return StatusName;
+        }
+        #endregion
+
+        #region Return
+        public static List<CodeNameModel> Get_ReturnStatusList(int fromStatus = 1, int toStatus = 10)
+        {
+            var ret = new List<CodeNameModel>();
+            ret.Add(new CodeNameModel { CodeInt = 9, Name = "Xuất hàng" });
+            ret.Add(new CodeNameModel { CodeInt = 10, Name = "Trả hàng" });
+            //
+            return ret;
+        }
+
+        public static string Get_ReturnStatusName(ClaimRequestListModel dataRow)
+        {
+            string StatusName = "Chưa xuất hàng";
+            if (dataRow.ReturnStatus1) StatusName = "Đã xuất hàng";
+            if (dataRow.ReturnStatus2) StatusName = "Đã trả hàng";
+            //
+            return StatusName;
+        }
+        #endregion
+
+
+
 
 
     }// end class

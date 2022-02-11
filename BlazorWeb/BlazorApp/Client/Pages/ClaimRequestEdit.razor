@@ -549,7 +549,7 @@
             if (!validateRes) return;
 
             //Request
-            var request = new SaveClaimRequest_Request();
+            var request = new SaveClaim_Request();
             var Credential = new Claim.Services.UserCredential()
                 {
                     Username = WebUserCredential.Username,
@@ -577,7 +577,6 @@
 
             //Reload data
             await OnValidSumit.InvokeAsync();
-            //await CloseMain();
             CloseMain();
         }
         catch (Exception ex)
@@ -588,7 +587,6 @@
     void CloseMain()
     {
         MyForm.Close();
-        //await OnVisibleChanged(false);
     }
     #endregion
 

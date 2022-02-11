@@ -335,7 +335,7 @@
         //Delete row
         if (ConfirmAction == MyConstant.ConfirmAction_DeleteRow)
         {
-            DeleteRow();
+            //DeleteRow();
         }
         //Close confirm delete popup
         ConfirmVisible = false;
@@ -381,58 +381,6 @@
     async Task OnCancelButtonClick()
     {
         await grid.CancelRowEdit();
-    }
-
-    //Confirm delete
-    ClaimRequestListModel DeletedRow = null;
-    void OnRowRemoving(ClaimRequestListModel dataRow)
-    {
-        //Validate skip if approved
-        if (dataRow.AcceptStatus)
-        {
-            toastService.ShowWarning("", MyMessage.Error_DeleteReadOnlyData);
-            return;
-        }
-        //
-        DeletedRow = dataRow;
-        //Show popup confirm
-        ConfirmMessage = MyMessage.Confirm_DeleteRow;
-        ConfirmAction = MyConstant.ConfirmAction_DeleteRow;
-        ConfirmVisible = true;
-        StateHasChanged();
-    }
-    //
-    async void DeleteRow()
-    {
-        try
-        {
-            //call api
-            var request = new Claim.Services.SaveClaimRequest_Request();
-            request.Credential = new Claim.Services.UserCredential()
-                {
-                    Username = WebUserCredential.Username,
-                    RoleID = WebUserCredential.RoleID,
-                    AccessToken = WebUserCredential.AccessToken,
-                    ApiKey = WebUserCredential.ApiKey
-                };
-            request.ClaimRequest = new grpcClaimRequestModel();
-            request.ClaimRequest.ClaimNo = DeletedRow.ClaimNo;
-            request.ClaimRequest.UpdMode = 3;
-            //
-            var response = await ClaimServiceClient.SaveClaimRequestAsync(request);
-            if (response != null && response.ReturnCode == GrpcReturnCode.OK)
-            {
-                DetailData.Remove(DeletedRow);
-                //
-                toastService.ShowSuccess("", MyMessage.Info_DeleteSucess);
-                //Refresh layout
-                await grid.Refresh();
-            }
-        }
-        catch (Exception ex)
-        {
-            toastService.ShowError(ex.Message, MyMessage.Error_DeleteFailed);
-        }
     }
 
     //Get data for edit/insert

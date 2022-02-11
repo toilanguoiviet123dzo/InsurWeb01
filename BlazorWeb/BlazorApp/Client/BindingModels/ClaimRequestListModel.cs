@@ -14,11 +14,14 @@ namespace BlazorApp.Client.BindingModels
         public string DeviceModel { get; set; } = "";
         public string DeviceIMEI { get; set; } = "";
         public string PickupAddress { get; set; } = "";
+        public string ReturnAddress { get; set; } = "";
         public string ClaimAccountName { get; set; } = "";
         public string BrancheName { get; set; } = "";
         public string PicAccountName { get; set; } = "";
         public DateTime CheckDoneDate { get; set; }
         public DateTime PickupReqDate { get; set; }
+        public DateTime EstReqDate { get; set; }
+        public DateTime ReturnReqDate { get; set; }
 
         //Status
         public bool ProcessStatus { get; set; }

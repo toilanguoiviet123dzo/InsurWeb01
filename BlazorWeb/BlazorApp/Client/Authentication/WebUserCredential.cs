@@ -14,8 +14,9 @@ namespace Cores.GrpcClient.Authentication
         public static string PhoneNo = "0375554350";
         public static string RoleID = "";
         public static string BrancheID = "HCM";
-        public static string PickupCompanyID = "DHL";
+        public static string LogisticCompanyID = "DHL";
         public static string RepairCompanyID = "123";
+        public static string ApproveAcountID = "phu";
         public static string AccessToken = "";
         public static string ApiKey = "apiKey5963";
         public static int ApproveLevel = 0;

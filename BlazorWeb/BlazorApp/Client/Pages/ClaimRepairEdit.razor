@@ -151,32 +151,13 @@
                                     ReadOnly="true"
                                     InputCssClass="text-maroon" />
                 </div>
-                <!--Kênh thông báo-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.NotificationChannelName"
-                                ReadOnly="true"
-                                Literal="Kênh thông báo" />
-                </div>
-                <!--Loại hư hỏng-->
-                <div class="col-12 col-lg-3">
-                    <MyComboBox @ref="RefDamageType"
-                                @bind-Value="SelectedDamageCause"
-                                Data="DamageCauseList"
-                                AllowUserInput="true"
-                                TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                SelectedItemChanged="@((OptionListModel selectedRow) => {
-                                                   Model.DamageType = selectedRow.ItemCode;
-                                             })"
-                                Literal="Loại hư hỏng" />
-                </div>
             </div>
 
             <!--Row 2-------------------------------------------------->
             <div class="row">
                 <!--Nguyên nhân hư hỏng-->
                 <div class="col-12 col-lg-7">
-                    <MyMemoEdit @ref="RefDamageCause"
-                                @bind-Text="Model.DamageCause"
+                    <MyMemoEdit @bind-Text="Model.DamageCause"
                                 Rows="5"
                                 ReadOnly="true"
                                 Literal="Nguyên nhân hư hỏng" />
@@ -193,169 +174,12 @@
     </CardBody>
 </MyCard>
 
-<!--Thông tin hợp đồng-->
-<MyCard @bind-IsCollapse="@InsureInfoCollapse" Title="Thông tin hợp đồng">
-    <CardBody>
-        <div class="container-fluid">
-            <!--Row 1-------------------------------------------------->
-            <div class="row">
-                <!--Công ty bảo hiểm-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.InsurCompanyName"
-                                ReadOnly="true"
-                                Literal="Công ty bảo hiểm" />
-                </div>
-                <!--Số hợp đồng-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit Text="@Model.InsurContractNo"
-                                TextChanged="@((string x) => OnInsurContractNo_Changed(x))"
-                                Literal="Số hợp đồng"
-                                ReadOnly="true"
-                                InputCssClass="text-blue font-weight-bold" />
-                </div>
-                <!--Từ ngày-->
-                <div class="col-6 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.InsurStartDate"
-                                    Literal="Từ ngày"
-                                    ReadOnly="true"
-                                    InputCssClass="text-green" />
-                </div>
-                <!--Đến ngày-->
-                <div class="col-6 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.InsurEndDate"
-                                    Literal="Đến ngày"
-                                    ReadOnly="true"
-                                    InputCssClass="text-maroon" />
-                </div>
-            </div>
-            <!--Row 2-------------------------------------------------->
-            <div class="row">
-                <!--Chi nhánh bồi thường-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.BrancheName"
-                                ReadOnly="true"
-                                Literal="Chi nhánh bồi thường" />
-                </div>
-                <!--Số tiền bảo hiểm-->
-                <div class="col-12 col-lg-2">
-                    <MyNumEdit @bind-Value="Model.InsurAmount"
-                               Mask="N0"
-                               ReadOnly="true"
-                               InputCssClass="text-blue font-weight-bold"
-                               Literal="Số tiền bảo hiểm" />
-                </div>
-            </div>
-
-        </div><!--End container-->
-    </CardBody>
-</MyCard>
-
-<!--Thông tin nhận thiết bị-->
-<MyCard @bind-IsCollapse="@PickupInfoCollapse" Title="Thông tin nhận thiết bị">
-    <CardBody>
-        <div class="container-fluid">
-            <!--Row 1-------------------------------------------------->
-            <div class="row">
-                <!--Công ty lấy thiết bị-->
-                <div class="col-12 col-lg-3">
-                    <MyComboBox @ref="RefLogistic"
-                                @bind-Value="SelectedLogistic"
-                                Data="LogisticList"
-                                AllowUserInput="true"
-                                TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                SelectedItemChanged="@((OptionListModel selectedRow) => {
-                                                   Model.PickupCompanyID = selectedRow.ItemCode;
-                                                   Model.PickupCompanyName = selectedRow.ItemName;
-                                             })"
-                                Literal="Công ty lấy thiết bị" />
-                </div>
-                <!--Ngày yêu cầu lấy-->
-                <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.PickupReqDate"
-                                    Literal="Ngày yêu cầu lấy"
-                                    ReadOnly="true"
-                                    InputCssClass="text-green" />
-                </div>
-                <!--Ngày lấy thiết bị-->
-                <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.PickupDoneDate1"
-                                    Literal="Ngày lấy thiết bị"
-                                    ReadOnly="true"
-                                    InputCssClass="text-blue" />
-                </div>
-                <!--Ngày nhập thiết bị-->
-                <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.PickupDoneDate1"
-                                    Literal="Ngày nhập thiết bị"
-                                    ReadOnly="true"
-                                    InputCssClass="text-maroon" />
-                </div>
-            </div>
-
-            <!--Row 2-------------------------------------------------->
-            <div class="row mt-2">
-                <!--Check: yêu cầu lấy thiết bị-->
-                <div class="col-12 col-lg-3">
-                    <DxCheckBox @bind-Checked="@Model.PickupReqStatus"
-                                CssClass="text-green"
-                                Enabled="@(!Model.PickupStatus1)">
-                        Yêu cầu lấy thiết bị
-                    </DxCheckBox>
-                </div>
-                <!--Check: đã lấy thiết bị-->
-                <div class="col-12 col-lg-3">
-                    <DxCheckBox @bind-Checked="@Model.PickupStatus1"
-                                CssClass="text-blue"
-                                Enabled="false">
-                        Đã lấy thiết bị
-                    </DxCheckBox>
-                </div>
-
-                <!--Check: đã nhập thiết bị-->
-                <div class="col-12 col-lg-3">
-                    <DxCheckBox @bind-Checked="@Model.PickupStatus2"
-                                CssClass="text-maroon"
-                                Enabled="false">
-                        Đã nhập thiết bị
-                    </DxCheckBox>
-                </div>
-            </div>
-
-            <!--Row 3-------------------------------------------------->
-            <div class="row mt-1">
-                <!--Ghi nhận thiết bị-->
-                <div class="col-12">
-                    <MyMemoEdit @bind-Text="Model.PickupNotes"
-                                Rows="3"
-                                ReadOnly="true"
-                                Literal="Ghi chú nhận thiết bị" />
-                </div>
-            </div>
-
-        </div><!--End container-->
-    </CardBody>
-</MyCard>
-
 <!--Thông tin kiểm tra-->
 <MyCard @bind-IsCollapse="@CheckInfoCollapse" Title="Thông tin kiểm tra">
     <CardBody>
         <div class="container-fluid">
             <!--Row 1-------------------------------------------------->
             <div class="row">
-                <!--Ngày yêu cầu lấy-->
-                <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.PickupReqDate"
-                                    Literal="Ngày yêu cầu lấy"
-                                    ReadOnly="true"
-                                    InputCssClass="text-green" />
-                </div>
-                <!--Ngày lấy thiết bị-->
-                <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.PickupDoneDate1"
-                                    Literal="Ngày lấy thiết bị"
-                                    ReadOnly="true"
-                                    InputCssClass="text-blue" />
-                </div>
                 <!--Người kiểm tra-->
                 <div class="col-12 col-lg-3">
                     <MyTextEdit @bind-Text="Model.PicAccountName"
@@ -373,35 +197,6 @@
                                 Literal="Ghi chú kiểm tra" />
                 </div>
             </div>
-
-            <!--Row 3-------------------------------------------------->
-            <div class="row mt-2">
-                <!--Check: kiểm tra-->
-                <div class="col-12 col-lg-3">
-                    <DxCheckBox @bind-Checked="@Model.CheckStatus" CssClass="text-green" Enabled="@Model.PickupStatus2">Đã kiểm tra</DxCheckBox>
-                </div>
-                <!--Check: chấp nhận bồi thường-->
-                <div class="col-12 col-lg-3">
-                    <DxCheckBox Checked="@Model.AcceptStatus"
-                                CssClass="text-blue"
-                                CheckedChanged="@((bool value) => {
-                                    Model.AcceptStatus = value;
-                                    if (value) Model.CancelStatus = false;
-                                })"
-                                Enabled="@Model.CheckStatus">Chấp nhận bồi thường</DxCheckBox>
-                </div>
-                <!--Check: Từ chối yêu cầu-->
-                <div class="col-12 col-lg-3">
-                    <DxCheckBox Checked="@Model.CancelStatus"
-                                CheckedChanged="@((bool value) => {
-                                    Model.CancelStatus = value;
-                                    if (value) Model.AcceptStatus = false;
-                                })"
-                                CssClass="text-red">Từ chối yêu cầu</DxCheckBox>
-                </div>
-
-            </div>
-
         </div><!--End container-->
     </CardBody>
 </MyCard>
@@ -412,18 +207,6 @@
         <div class="container-fluid">
             <!--Row 1-------------------------------------------------->
             <div class="row">
-                <!--Nơi sửa chữa-->
-                <div class="col-12 col-lg-3">
-                    <MyComboBox @ref="RefRepairer"
-                                @bind-Value="SelectedRepairer"
-                                Data="RepairerList"
-                                TextFieldName="@(nameof(RepairerMasterModel.RepairerName))"
-                                SelectedItemChanged="@((RepairerMasterModel selectedRow) => {
-                                                   Model.RepairCompanyID = selectedRow.RepairerID;
-                                                   Model.RepairCompanyName = selectedRow.RepairerName;
-                                             })"
-                                Literal="Nơi sửa chữa" />
-                </div>
                 <!--Ngày yêu cầu báo giá-->
                 <div class="col-12 col-lg-3">
                     <MyDateTimeEdit @bind-Date="Model.EstReqDate"
@@ -451,15 +234,15 @@
             <div class="row mt-2">
                 <!--Check: yêu cầu báo giá-->
                 <div class="col-12 col-lg-3">
-                    <DxCheckBox @bind-Checked="@Model.EstimationReqStatus" CssClass="text-green" Enabled="@Model.CheckStatus">Yêu cầu báo giá</DxCheckBox>
+                    <DxCheckBox @bind-Checked="@Model.EstimationReqStatus" CssClass="text-green" Enabled="false">Yêu cầu báo giá</DxCheckBox>
                 </div>
                 <!--Check: Đã báo giá-->
                 <div class="col-12 col-lg-3">
-                    <DxCheckBox @bind-Checked="@Model.EstimationStatus" Enabled="false" CssClass="text-green">Đã báo giá</DxCheckBox>
+                    <DxCheckBox @bind-Checked="@Model.EstimationStatus" CssClass="text-green" Enabled="@(Model.Estimations.Count > 0)">Đã báo giá</DxCheckBox>
                 </div>
                 <!--Check: Đã sửa xong-->
                 <div class="col-12 col-lg-3">
-                    <DxCheckBox @bind-Checked="@Model.RepairStatus" Enabled="false" CssClass="text-green">Đã sửa xong</DxCheckBox>
+                    <DxCheckBox @bind-Checked="@Model.RepairStatus" Enabled="@Model.EstimationStatus" CssClass="text-green">Đã sửa xong</DxCheckBox>
                 </div>
             </div>
 
@@ -479,19 +262,25 @@
                     <Columns>
                         <DxDataGridCommandColumn Width="5rem" VisibleIndex="0">
                             <HeaderCellTemplate>
-                                <div class="text-center">
-                                    <a class="fa fa-plus fa-2x" @onclick="@(() => gridEst.StartRowEdit(null))" href="javascript:void(0);"></a>
-                                </div>
+                                @if (!@Model.ApproveStatus)
+                                {
+                                    <div class="text-center">
+                                        <a class="fa fa-plus fa-2x" @onclick="@(() => gridEst.StartRowEdit(null))" href="javascript:void(0);"></a>
+                                    </div>
+                                }
                             </HeaderCellTemplate>
                             <CellTemplate>
-                                <div style="display:flex">
-                                    <div class="text-center" style="width:2rem">
-                                        <a class="fa fa-pencil fa-2x" @onclick="@(() => gridEst.StartRowEdit(context))" href="javascript:void(0);"></a>
+                                @if (!@Model.ApproveStatus)
+                                {
+                                    <div style="display:flex">
+                                        <div class="text-center" style="width:2rem">
+                                            <a class="fa fa-pencil fa-2x" @onclick="@(() => gridEst.StartRowEdit(context))" href="javascript:void(0);"></a>
+                                        </div>
+                                        <div class="text-center" style="width:2rem">
+                                            <a class="fa fa-times fa-2x" style="color:red" @onclick="@(() => OnRowRemoving(context as EstimationModel))" href="javascript:void(0);"></a>
+                                        </div>
                                     </div>
-                                    <div class="text-center" style="width:2rem">
-                                        <a class="fa fa-times fa-2x" style="color:red" @onclick="@(() => OnRowRemoving(context as EstimationModel))" href="javascript:void(0);"></a>
-                                    </div>
-                                </div>
+                                }
                             </CellTemplate>
                         </DxDataGridCommandColumn>
                         <DxDataGridSpinEditColumn Field="@nameof(EstimationModel.LineNo)"
@@ -621,8 +410,8 @@
                 </DxDataGrid>
             </div>
 
-            <!--Row 4-------------------------------------------------->
-            <div class="row">
+            <!--Row 4------------------Thong tin sưa chữa-------------------------------->
+            <div class="row mt-2">
                 <!--Tiền bồi thường-->
                 <div class="col-12 col-lg-2">
                     <MyNumEdit @bind-Value="Model.ClaimAmount"
@@ -637,57 +426,27 @@
                                InputCssClass="text-maroon font-weight-bold"
                                Literal="Tiền duyệt" />
                 </div>
-                <!--Tiền chiết khấu-->
-                <div class="col-12 col-lg-2">
-                    <MyNumEdit Value="Model.DeductibleAmount"
-                               ValueChanged="@((double newValue) => Update_Summary(newValue))"
-                               InputCssClass="text-red font-weight-bold"
-                               Literal="Tiền chiết khấu" />
-                </div>
-                <!--Tiền đền bù-->
-                <div class="col-12 col-lg-2">
-                    <MyNumEdit @bind-Value="Model.IndemnityAmount"
-                               ReadOnly="true"
-                               InputCssClass="text-green font-weight-bold"
-                               Literal="Tiền đền bù" />
-                </div>
-                <!--Tiền còn lại-->
-                <div class="col-12 col-lg-2">
-                    <MyNumEdit @bind-Value="Model.RemainingAmount"
-                               ReadOnly="true"
-                               InputCssClass="text-purple font-weight-bold"
-                               Literal="Tiền còn lại" />
-                </div>
-            </div>
-
-            <!--Row 5------------------Thong tin sưa chữa-------------------------------->
-            <div class="row mt-2">
                 <!--Số IMEI thiết bị-->
                 <div class="col-12 col-lg-3">
                     <MyTextEdit @bind-Text="Model.NewDeviceIMEI"
                                 Literal="Số IMEI thiết bị mới"
-                                ReadOnly="true"
                                 InputCssClass="text-purple font-weight-bold" />
                 </div>
                 <!--Model-->
                 <div class="col-12 col-lg-3">
                     <MyTextEdit @bind-Text="Model.NewDeviceModel"
-                                ReadOnly="true"
                                 Literal="Model thiết bị mới" />
                 </div>
             </div>
-            <!--Row 6-------------------------------------------------->
+            <!--Row 5-------------------------------------------------->
             <div class="row">
                 <!--Nội dung sửa chữa-->
                 <div class="col-12">
                     <MyMemoEdit @bind-Text="Model.RepairNotes"
                                 Rows="3"
-                                ReadOnly="true"
                                 Literal="Nội dung sửa chữa" />
                 </div>
             </div>
-
-
 
         </div><!--End container-->
     </CardBody>
@@ -709,7 +468,7 @@
                 </div>
                 <!--Check: yêu cầu duyệt-->
                 <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.ApproveReqStatus" CssClass="text-green" Enabled="@Model.EstimationStatus">Yêu cầu duyệt</DxCheckBox>
+                    <DxCheckBox @bind-Checked="@Model.ApproveReqStatus" CssClass="text-green" Enabled="true">Yêu cầu duyệt</DxCheckBox>
                 </div>
                 <!--Ngày yêu cầu duyệt-->
                 <div class="col-12 col-lg-2">
@@ -729,14 +488,8 @@
             <div class="row">
                 <!--Người duyệt-->
                 <div class="col-12 col-lg-3">
-                    <MyComboBox @ref="RefApprover"
-                                @bind-Value="SelectedApprover"
-                                Data="UserList"
-                                TextFieldName="@(nameof(UserAccountModel.Fullname))"
-                                SelectedItemChanged="@((UserAccountModel selectedRow) => {
-                                                   Model.ApproveAccountID = selectedRow.UserName;
-                                                   Model.ApproveAccountName = selectedRow.Fullname;
-                                             })"
+                    <MyTextEdit @bind-Text="Model.ApproveAccountName"
+                                ReadOnly="true"
                                 Literal="Người duyệt" />
                 </div>
             </div>
@@ -771,7 +524,7 @@
                 </div>
                 <!--Check: yêu cầu trả hàng-->
                 <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.ReturnReqStatus" CssClass="text-green" Enabled="@Model.RepairStatus">YC trả thiết bị</DxCheckBox>
+                    <DxCheckBox @bind-Checked="@Model.ReturnReqStatus" CssClass="text-green" Enabled="false">YC trả thiết bị</DxCheckBox>
                 </div>
                 <!--Ngày xuất hàng-->
                 <div class="col-12 col-lg-2">
@@ -800,17 +553,10 @@
             </div>
             <!--Row 2-------------------------------------------------->
             <div class="row">
-                <!--Công ty trả hàng-->
+                <!--Công ty trả thiết bị-->
                 <div class="col-12 col-lg-3">
-                    <MyComboBox @ref="RefReturnComp"
-                                @bind-Value="SelectedReturnComp"
-                                Data="LogisticList"
-                                AllowUserInput="true"
-                                TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                SelectedItemChanged="@((OptionListModel selectedRow) => {
-                                                   Model.ReturnCompanyID = selectedRow.ItemCode;
-                                                   Model.ReturnCompanyName = selectedRow.ItemName;
-                                             })"
+                    <MyTextEdit @bind-Text="Model.ReturnCompanyName"
+                                ReadOnly="true"
                                 Literal="Công ty trả thiết bị" />
                 </div>
                 <!--Người trả thiết bị-->
@@ -851,7 +597,7 @@
                 </div>
                 <!--Check: yêu cầu chi trả-->
                 <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.PayReqStatus" CssClass="text-green" Enabled="@Model.RepairStatus">YC chi trả</DxCheckBox>
+                    <DxCheckBox @bind-Checked="@Model.PayReqStatus" CssClass="text-green" Enabled="false">YC chi trả</DxCheckBox>
                 </div>
                 <!--Ngày chi trả-->
                 <div class="col-12 col-lg-2">
@@ -887,7 +633,6 @@
     </CardBody>
 </MyCard>
 
-
 <!--OK, Cancel-->
 <div class="container-fluid">
     <div class="row justify-content-center mt-2">
@@ -911,33 +656,16 @@
     private ClaimRequestModel Model = new ClaimRequestModel();
 
     //Master
-    private List<OptionListModel> DamageCauseList = new List<OptionListModel>();
     private List<OptionListModel> PriorityList = new List<OptionListModel>();
-    private List<OptionListModel> LogisticList = new List<OptionListModel>();
-    private List<RepairerMasterModel> RepairerList = new List<RepairerMasterModel>();
-    private List<UserAccountModel> UserList = new List<UserAccountModel>();
     //Selected combo value
-    private OptionListModel SelectedDamageCause = null;
     private OptionListModel SelectedPriority = null;
-    private OptionListModel SelectedLogistic = null;
-    private OptionListModel SelectedReturnComp = null;
-    private RepairerMasterModel SelectedRepairer = null;
-    private UserAccountModel SelectedApprover = null;
     //Ref
-    private MyComboBox<OptionListModel> RefDamageType;
     private MyComboBox<OptionListModel> RefPriority;
-    private MyComboBox<OptionListModel> RefLogistic;
-    private MyComboBox<OptionListModel> RefReturnComp;
-    private MyComboBox<RepairerMasterModel> RefRepairer;
-    private MyComboBox<UserAccountModel> RefApprover;
-    MyMemoEdit RefDamageCause;
     //Css
     private string PriorityCss = "";
-    private bool DamageInfoCollapse = true;
-    private bool InsureInfoCollapse = true;
-    private bool PickupInfoCollapse = true;
+    private bool DamageInfoCollapse = false;
     private bool CheckInfoCollapse = true;
-    private bool RepairInfoCollapse = true;
+    private bool RepairInfoCollapse = false;
     private bool ApproveInfoCollapse = true;
     private bool ReturnInfoCollapse = true;
     private bool PayInfoCollapse = true;
@@ -965,11 +693,7 @@
     //
     async Task LoadMaster()
     {
-        UserList = await masterService.Load_UserList();
-        RepairerList = await masterService.Load_RepairerList();
-        DamageCauseList = await masterService.Load_OptionList("005");
         PriorityList = await masterService.Load_OptionList("007");
-        LogisticList = await masterService.Load_OptionList("009");
     }
     //
     #endregion
@@ -998,21 +722,6 @@
             {
                 //Show success
                 ClassHelper.CopyPropertiesDataDateConverted(response.ClaimRequest, Model);
-                //DamageCause
-                if (!string.IsNullOrWhiteSpace(Model.DamageType)) SelectedDamageCause = DamageCauseList.Find(x => x.ItemCode == Model.DamageType);
-                //SelectedLogistic
-                if (!string.IsNullOrWhiteSpace(Model.PickupCompanyID)) SelectedLogistic = LogisticList.Find(x => x.ItemCode == Model.PickupCompanyID);
-                //SelectedRepairer
-                if (!string.IsNullOrWhiteSpace(Model.RepairCompanyID)) SelectedRepairer = RepairerList.Find(x => x.RepairerID == Model.RepairCompanyID);
-                //SelectedApprover
-                //Default: Approver
-                if (string.IsNullOrWhiteSpace(Model.ApproveAccountID)) Model.ApproveAccountID = WebUserCredential.ApproveAcountID;
-                if (!string.IsNullOrWhiteSpace(Model.ApproveAccountID))
-                {
-                    SelectedApprover = UserList.Find(x => x.UserName == Model.ApproveAccountID);
-                    if (SelectedApprover != null) Model.ApproveAccountName = SelectedApprover.Fullname;
-                }
-
                 //Priority
                 SelectedPriority = PriorityList.Find(x => x.IntCode == Model.Priority);
 
@@ -1035,16 +744,10 @@
                 Model.UpdMode = 2;
             }
 
-            //show pickup
-            if (!Model.PickupStatus2) PickupInfoCollapse = false;
-            //show check
-            if (Model.PickupStatus2 && !Model.CheckStatus) CheckInfoCollapse = false;
             //show Repair
-            if (Model.CheckStatus && !Model.RepairStatus) RepairInfoCollapse = false;
+            if (!Model.RepairStatus) RepairInfoCollapse = false;
             //show Approve
             if (Model.EstimationStatus && !Model.ApproveStatus) ApproveInfoCollapse = false;
-            //show Return
-            if (Model.RepairStatus && !Model.ReturnStatus2) ReturnInfoCollapse = false;
             //show Payment
             if (Model.RepairStatus && !Model.PayStatus) PayInfoCollapse = false;
 
@@ -1063,34 +766,6 @@
         if (Model.PayStatus & Model.ReturnStatus2)
         {
             toastService.ShowWarning("", MyMessage.Error_DataReadOnly);
-            return false;
-        }
-        //Loại hư hỏng
-        if (string.IsNullOrWhiteSpace(Model.DamageType))
-        {
-            toastService.ShowWarning("Loại hư hỏng", "Bắt buột nhập.");
-            RefDamageType.Focus();
-            return false;
-        }
-        //RefLogistic
-        if (Model.PickupReqStatus && string.IsNullOrWhiteSpace(Model.PickupCompanyID))
-        {
-            toastService.ShowWarning("Công ty lấy thiết bị", "Bắt buột nhập.");
-            RefLogistic.Focus();
-            return false;
-        }
-        //RepairCompanyID
-        if (Model.EstimationReqStatus && string.IsNullOrWhiteSpace(Model.RepairCompanyID))
-        {
-            toastService.ShowWarning("Nơi sửa chữa", "Bắt buột nhập.");
-            RefRepairer.Focus();
-            return false;
-        }
-        //ApproverAccount
-        if (Model.ApproveReqStatus && string.IsNullOrWhiteSpace(Model.ApproveAccountID))
-        {
-            toastService.ShowWarning("Người duyệt", "Bắt buột nhập.");
-            RefApprover.Focus();
             return false;
         }
         //
@@ -1117,39 +792,24 @@
             request.Credential = Credential;
             //
             request.ClaimRequest = new grpcClaimRequestModel();
-            //Clear AcceptStatus
-            if (!Model.CheckStatus || Model.CancelStatus)
+            //Clear RepairStatus
+            if (!Model.EstimationStatus) Model.RepairStatus = false;
+            //EstDoneDate
+            if (Model.EstimationStatus && Model.EstDoneDate == DateTime.Today.MinDate())
             {
-                Model.AcceptStatus = false;
+                Model.EstDoneDate = DateTime.Now;
             }
-            //PickupReqDate
-            if (Model.PickupReqStatus && Model.PickupReqDate == DateTime.Today.MinDate())
+            //RepairDoneDate
+            if (Model.RepairStatus && Model.RepairDoneDate == DateTime.Today.MinDate())
             {
-                Model.PickupReqDate = DateTime.Now;
+                Model.RepairDoneDate = DateTime.Now;
             }
-            //Clear PickupReqDate
-            if (!Model.PickupReqStatus)
+            //RepairAccountID
+            if (string.IsNullOrWhiteSpace(Model.RepairAccountID))
             {
-                Model.PickupReqDate = DateTime.Today.MinDate();
+                Model.RepairAccountID = WebUserCredential.Username;
+                Model.RepairAccountName = WebUserCredential.Fullname;
             }
-            //PicAccountID
-            if (string.IsNullOrWhiteSpace(Model.PicAccountID))
-            {
-                Model.PicAccountID = WebUserCredential.Username;
-                Model.PicAccountName = WebUserCredential.Fullname;
-                Model.PicPhone = WebUserCredential.PhoneNo;
-            }
-            //CancelStatus -> Reset: AcceptStatus
-            if (Model.CancelStatus)
-            {
-                Model.AcceptStatus = false;
-            }
-            //ProcessStatus
-            if (Model.PickupReqStatus || Model.CheckStatus || Model.AcceptStatus || Model.CancelStatus)
-            {
-                Model.ProcessStatus = true;
-            }
-
             //
             ClassHelper.CopyPropertiesDataDateConverted(Model, request.ClaimRequest);
 
@@ -1168,7 +828,7 @@
             }
 
             //Call api
-            var response = await ClaimServiceClient.SaveClaimProcessAsync(request);
+            var response = await ClaimServiceClient.SaveClaimRepairAsync(request);
             // Success
             if (response == null || response.ReturnCode != GrpcReturnCode.OK)
             {
@@ -1304,20 +964,15 @@
 
     async void DeleteRow()
     {
-        //Set to delete mode
-        if (DeletedRow.UpdMode == 1)
-        {
-            //Remove new row from data source
-            Model.Estimations.Remove(DeletedRow);
-        }
-        else
-        {
-            //Mark to delete
-            DeletedRow.UpdMode = 3;
-        }
+        //Remove new row from data source
+        Model.Estimations.Remove(DeletedRow);
+
+        // Update ClaimAmount
+        Update_ClaimAmount();
 
         //Refresh layout
         await gridEst.Refresh();
+        this.StateHasChanged();
     }
     //Update row
     async Task UpdateRow()
@@ -1349,10 +1004,13 @@
             EditContext.EditingRow.UpdMode = 1;
             Model.Estimations.Add(EditContext.EditingRow);
         }
+        // Update ClaimAmount
+        Update_ClaimAmount();
 
         //Close popup & refresh data
         await gridEst.CancelRowEdit();
         await gridEst.Refresh();
+        this.StateHasChanged();
     }
     // Edit row model
     class FormEditContext : EstimationModel
@@ -1457,16 +1115,9 @@
         //
         this.StateHasChanged();
     }
-    //Update_Summary
-    void Update_Summary(double newValue)
-    {
-        Model.DeductibleAmount = newValue;
-        //IndemnityAmount
-        Model.IndemnityAmount = Model.ApproveAmount - Model.DeductibleAmount;
-        //RemainingAmount
-        Model.RemainingAmount = Model.InsurAmount - Model.IndemnityAmount;
-        //
-        this.StateHasChanged();
+    void Update_ClaimAmount() {
+        //Update ClaimAmount
+        Model.ClaimAmount = Model.Estimations.Sum<EstimationModel>(x => x.Amount);
     }
     #endregion
 
