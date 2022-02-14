@@ -168,30 +168,73 @@
     </CardBody>
 </MyCard>
 
-<!--Thông tin lấy thiết bị-->
-<MyCard Title="Thông tin lấy thiết bị">
+<!--Thông báo giá & sửa chữa-->
+<MyCard @bind-IsCollapse="@RepairInfoCollapse" Title="Thông báo giá & sửa chữa">
     <CardBody>
         <div class="container-fluid">
             <!--Row 1-------------------------------------------------->
             <div class="row">
-                <!--Ngày yêu cầu lấy-->
+                <!--Nơi sửa chữa-->
                 <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.PickupReqDate"
-                                    Literal="Ngày yêu cầu lấy"
+                    <MyTextEdit @bind-Text="Model.RepairCompanyName"
+                                ReadOnly="true"
+                                Literal="Nơi sửa chữa" />
+                </div>
+                <!--Số IMEI thiết bị-->
+                <div class="col-12 col-lg-3">
+                    <MyTextEdit @bind-Text="Model.NewDeviceIMEI"
+                                Literal="Số IMEI thiết bị mới"
+                                ReadOnly="true"
+                                InputCssClass="text-purple font-weight-bold" />
+                </div>
+                <!--Model-->
+                <div class="col-12 col-lg-3">
+                    <MyTextEdit @bind-Text="Model.NewDeviceModel"
+                                ReadOnly="true"
+                                Literal="Model thiết bị mới" />
+                </div>
+
+            </div>
+
+            <!--Row 6-------------------------------------------------->
+            <div class="row">
+                <!--Nội dung sửa chữa-->
+                <div class="col-12">
+                    <MyMemoEdit @bind-Text="Model.RepairNotes"
+                                Rows="3"
+                                ReadOnly="true"
+                                Literal="Nội dung sửa chữa" />
+                </div>
+            </div>
+
+        </div><!--End container-->
+    </CardBody>
+</MyCard>
+
+<!--Thông tin trả thiết bị-->
+<MyCard Title="Thông tin trả thiết bị">
+    <CardBody>
+        <div class="container-fluid">
+            <!--Row 1-------------------------------------------------->
+            <div class="row">
+                <!--Ngày yêu cầu trả-->
+                <div class="col-12 col-lg-3">
+                    <MyDateTimeEdit @bind-Date="Model.ReturnReqDate"
+                                    Literal="Ngày yêu cầu trả"
                                     ReadOnly="true"
                                     InputCssClass="text-green" />
                 </div>
-                <!--Ngày lấy thiết bị-->
+                <!--Ngày xuất thiết bị-->
                 <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.PickupDoneDate1"
-                                    Literal="Ngày lấy thiết bị"
+                    <MyDateTimeEdit @bind-Date="Model.ReturnDoneDate1"
+                                    Literal="Ngày xuất thiết bị"
                                     ReadOnly="true"
                                     InputCssClass="text-blue" />
                 </div>
-                <!--Ngày nhập thiết bị-->
+                <!--Ngày trả thiết bị-->
                 <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.PickupDoneDate1"
-                                    Literal="Ngày nhập thiết bị"
+                    <MyDateTimeEdit @bind-Date="Model.ReturnDoneDate1"
+                                    Literal="Ngày trả thiết bị"
                                     ReadOnly="true"
                                     InputCssClass="text-maroon" />
                 </div>
@@ -199,19 +242,19 @@
 
             <!--Row 2-------------------------------------------------->
             <div class="row mt-2">
-                <!--Check: đã lấy thiết bị-->
+                <!--Check: đã trả thiết bị-->
                 <div class="col-12 col-lg-3">
-                    <DxCheckBox @bind-Checked="@Model.PickupStatus1"
+                    <DxCheckBox @bind-Checked="@Model.ReturnStatus1"
                                 CssClass="text-blue">
                         Đã lấy thiết bị
                     </DxCheckBox>
                 </div>
 
-                <!--Check: đã nhập thiết bị-->
+                <!--Check: đã trả thiết bị-->
                 <div class="col-12 col-lg-3">
-                    <DxCheckBox @bind-Checked="@Model.PickupStatus2"
+                    <DxCheckBox @bind-Checked="@Model.ReturnStatus2"
                                 CssClass="text-maroon"
-                                Enabled="@Model.PickupStatus1">
+                                Enabled="@Model.ReturnStatus1">
                         Đã nhập thiết bị
                     </DxCheckBox>
                 </div>
@@ -221,9 +264,9 @@
             <div class="row mt-1">
                 <!--Ghi chú nhận thiết bị-->
                 <div class="col-12">
-                    <MyMemoEdit @bind-Text="Model.PickupNotes"
+                    <MyMemoEdit @bind-Text="Model.ReturnNotes"
                                 Rows="3"
-                                Literal="Ghi chú lấy thiết bị" />
+                                Literal="Ghi chú trả thiết bị" />
                 </div>
             </div>
 
@@ -261,6 +304,7 @@
     //Css
     private string PriorityCss = "";
     private bool DamageInfoCollapse = true;
+    private bool RepairInfoCollapse = true;
     //
     private string DeliveryAddress = "";
 
@@ -335,7 +379,7 @@
     bool ValidateForm()
     {
         //Skip
-        if (Model.CheckStatus)
+        if (Model.CloseStatus)
         {
             toastService.ShowWarning("", MyMessage.Error_DataReadOnly);
             return false;
@@ -365,36 +409,24 @@
             //
             request.ClaimRequest = new grpcClaimRequestModel();
 
-            //Clear PickupStatus2
-            if (!Model.PickupStatus1)
+            //Clear ReturnStatus2
+            if (!Model.ReturnStatus1)
             {
-                Model.PickupStatus2 = false;
+                Model.ReturnStatus2 = false;
             }
-            //PickupDoneDate1
-            if (Model.PickupStatus1 && Model.PickupDoneDate1 == DateTime.Today.MinDate())
+            //ReturnDoneDate1
+            if (Model.ReturnStatus1 && Model.ReturnDoneDate1 == DateTime.Today.MinDate()) Model.ReturnDoneDate1 = DateTime.Now;
+            if (!Model.ReturnStatus1) Model.ReturnDoneDate1 = DateTime.Today.MinDate();
+
+            //ReturnDoneDate2
+            if (Model.ReturnStatus2 && Model.ReturnDoneDate2 == DateTime.Today.MinDate()) Model.ReturnDoneDate2 = DateTime.Now;
+            if (!Model.ReturnStatus2) Model.ReturnDoneDate2 = DateTime.Today.MinDate();
+
+            //ReturnAccountID
+            if (string.IsNullOrWhiteSpace(Model.ReturnAccountID))
             {
-                Model.PickupDoneDate1 = DateTime.Now;
-            }
-            //Clear PickupDoneDate1
-            if (!Model.PickupStatus1)
-            {
-                Model.PickupDoneDate1 = DateTime.Today.MinDate();
-            }
-            //PickupDoneDate2
-            if (Model.PickupStatus2 && Model.PickupDoneDate2 == DateTime.Today.MinDate())
-            {
-                Model.PickupDoneDate2 = DateTime.Now;
-            }
-            //Clear PickupDoneDate1
-            if (!Model.PickupStatus2)
-            {
-                Model.PickupDoneDate2 = DateTime.Today.MinDate();
-            }
-            //PickupAccountID
-            if (string.IsNullOrWhiteSpace(Model.PickupAccountID))
-            {
-                Model.PickupAccountID = WebUserCredential.Username;
-                Model.PickupAccountName = WebUserCredential.Fullname;
+                Model.ReturnAccountID = WebUserCredential.Username;
+                Model.ReturnAccountName = WebUserCredential.Fullname;
             }
             //
             ClassHelper.CopyPropertiesDataDateConverted(Model, request.ClaimRequest);

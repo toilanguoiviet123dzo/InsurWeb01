@@ -236,13 +236,21 @@
                                 ReadOnly="true"
                                 Literal="Chi nhánh bồi thường" />
                 </div>
-                <!--Số tiền bảo hiểm-->
+                <!--Giá trị hợp đồng-->
+                <div class="col-12 col-lg-3">
+                    <MyNumEdit @bind-Value="Model.ContractAmount"
+                               Mask="N0"
+                               ReadOnly="true"
+                               InputCssClass="text-blue font-weight-bold"
+                               Literal="Giá trị hợp đồng" />
+                </div>
+                <!--Số tiền bảo hiểm còn lại-->
                 <div class="col-12 col-lg-2">
                     <MyNumEdit @bind-Value="Model.InsurAmount"
                                Mask="N0"
                                ReadOnly="true"
-                               InputCssClass="text-blue font-weight-bold"
-                               Literal="Số tiền bảo hiểm" />
+                               InputCssClass="text-maroon font-weight-bold"
+                               Literal="Tiền bảo hiểm còn lại" />
                 </div>
             </div>
 
@@ -250,8 +258,8 @@
     </CardBody>
 </MyCard>
 
-<!--Thông tin nhận thiết bị-->
-<MyCard @bind-IsCollapse="@PickupInfoCollapse" Title="Thông tin nhận thiết bị">
+<!--Thông tin lấy thiết bị-->
+<MyCard @bind-IsCollapse="@PickupInfoCollapse" Title="Thông tin lấy thiết bị">
     <CardBody>
         <div class="container-fluid">
             <!--Row 1-------------------------------------------------->
@@ -267,6 +275,7 @@
                                                    Model.PickupCompanyID = selectedRow.ItemCode;
                                                    Model.PickupCompanyName = selectedRow.ItemName;
                                              })"
+                                ReadOnly="@Model.PickupStatus1"
                                 Literal="Công ty lấy thiết bị" />
                 </div>
                 <!--Ngày yêu cầu lấy-->
@@ -370,6 +379,7 @@
                 <div class="col-12">
                     <MyMemoEdit @bind-Text="Model.CheckNotes"
                                 Rows="5"
+                                ReadOnly="@Model.RepairStatus"
                                 Literal="Ghi chú kiểm tra" />
                 </div>
             </div>
@@ -378,7 +388,7 @@
             <div class="row mt-2">
                 <!--Check: kiểm tra-->
                 <div class="col-12 col-lg-3">
-                    <DxCheckBox @bind-Checked="@Model.CheckStatus" CssClass="text-green" Enabled="@Model.PickupStatus2">Đã kiểm tra</DxCheckBox>
+                    <DxCheckBox @bind-Checked="@Model.CheckStatus" CssClass="text-green" Enabled="@(Model.PickupStatus2 && !Model.EstimationReqStatus)">Đã kiểm tra</DxCheckBox>
                 </div>
                 <!--Check: chấp nhận bồi thường-->
                 <div class="col-12 col-lg-3">
@@ -388,7 +398,7 @@
                                     Model.AcceptStatus = value;
                                     if (value) Model.CancelStatus = false;
                                 })"
-                                Enabled="@Model.CheckStatus">Chấp nhận bồi thường</DxCheckBox>
+                                Enabled="@(Model.CheckStatus && !Model.EstimationReqStatus)">Chấp nhận bồi thường</DxCheckBox>
                 </div>
                 <!--Check: Từ chối yêu cầu-->
                 <div class="col-12 col-lg-3">
@@ -397,6 +407,7 @@
                                     Model.CancelStatus = value;
                                     if (value) Model.AcceptStatus = false;
                                 })"
+                                ReadOnly="@Model.EstimationReqStatus"
                                 CssClass="text-red">Từ chối yêu cầu</DxCheckBox>
                 </div>
 
@@ -422,44 +433,35 @@
                                                    Model.RepairCompanyID = selectedRow.RepairerID;
                                                    Model.RepairCompanyName = selectedRow.RepairerName;
                                              })"
+                                ReadOnly="@Model.EstimationStatus"
                                 Literal="Nơi sửa chữa" />
                 </div>
                 <!--Ngày yêu cầu báo giá-->
-                <div class="col-12 col-lg-3">
+                <div class="col-12 col-lg-2">
                     <MyDateTimeEdit @bind-Date="Model.EstReqDate"
                                     Literal="Ngày yêu cầu báo giá"
                                     ReadOnly="true"
                                     InputCssClass="text-green" />
                 </div>
                 <!--Ngày báo giá xong-->
-                <div class="col-12 col-lg-3">
+                <div class="col-12 col-lg-2">
                     <MyDateTimeEdit @bind-Date="Model.EstDoneDate"
                                     Literal="Ngày báo giá xong"
                                     ReadOnly="true"
                                     InputCssClass="text-blue" />
                 </div>
-                <!--Ngày sửa chữa xong-->
-                <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.RepairDoneDate"
-                                    Literal="Ngày sửa chữa xong"
-                                    ReadOnly="true"
-                                    InputCssClass="text-maroon" />
-                </div>
+                
             </div>
 
             <!--Row 2-------------------------------------------------->
             <div class="row mt-2">
                 <!--Check: yêu cầu báo giá-->
                 <div class="col-12 col-lg-3">
-                    <DxCheckBox @bind-Checked="@Model.EstimationReqStatus" CssClass="text-green" Enabled="@Model.CheckStatus">Yêu cầu báo giá</DxCheckBox>
+                    <DxCheckBox @bind-Checked="@Model.EstimationReqStatus" CssClass="text-green" Enabled="@(Model.CheckStatus && !Model.EstimationStatus)">Yêu cầu báo giá</DxCheckBox>
                 </div>
                 <!--Check: Đã báo giá-->
                 <div class="col-12 col-lg-3">
                     <DxCheckBox @bind-Checked="@Model.EstimationStatus" Enabled="false" CssClass="text-green">Đã báo giá</DxCheckBox>
-                </div>
-                <!--Check: Đã sửa xong-->
-                <div class="col-12 col-lg-3">
-                    <DxCheckBox @bind-Checked="@Model.RepairStatus" Enabled="false" CssClass="text-green">Đã sửa xong</DxCheckBox>
                 </div>
             </div>
 
@@ -477,23 +479,6 @@
                             RowEditStart="@(dataRow => OnRowEditStarting(dataRow))"
                             RowInsertStart="@(() => OnRowEditStarting(null))">
                     <Columns>
-                        <DxDataGridCommandColumn Width="5rem" VisibleIndex="0">
-                            <HeaderCellTemplate>
-                                <div class="text-center">
-                                    <a class="fa fa-plus fa-2x" @onclick="@(() => gridEst.StartRowEdit(null))" href="javascript:void(0);"></a>
-                                </div>
-                            </HeaderCellTemplate>
-                            <CellTemplate>
-                                <div style="display:flex">
-                                    <div class="text-center" style="width:2rem">
-                                        <a class="fa fa-pencil fa-2x" @onclick="@(() => gridEst.StartRowEdit(context))" href="javascript:void(0);"></a>
-                                    </div>
-                                    <div class="text-center" style="width:2rem">
-                                        <a class="fa fa-times fa-2x" style="color:red" @onclick="@(() => OnRowRemoving(context as EstimationModel))" href="javascript:void(0);"></a>
-                                    </div>
-                                </div>
-                            </CellTemplate>
-                        </DxDataGridCommandColumn>
                         <DxDataGridSpinEditColumn Field="@nameof(EstimationModel.LineNo)"
                                                   Caption="No."
                                                   DisplayFormat="N0"
@@ -528,7 +513,7 @@
                                                   DisplayFormat="N0"
                                                   Width="8rem" />
                         <DxDataGridColumn Field="@nameof(EstimationModel.Notes)"
-                                          Caption="Mức độ bảo mật"
+                                          Caption="Ghi chú"
                                           Width="8rem" />
                     </Columns>
                     <!--Total summary-->
@@ -641,6 +626,7 @@
                 <div class="col-12 col-lg-2">
                     <MyNumEdit Value="Model.DeductibleAmount"
                                ValueChanged="@((double newValue) => Update_Summary(newValue))"
+                               ReadOnly="@Model.ApproveStatus"
                                InputCssClass="text-red font-weight-bold"
                                Literal="Tiền chiết khấu" />
                 </div>
@@ -661,7 +647,19 @@
             </div>
 
             <!--Row 5------------------Thong tin sưa chữa-------------------------------->
-            <div class="row mt-2">
+            <div class="row mt-2 align-items-end">
+                <!--Ngày sửa chữa xong-->
+                <div class="col-12 col-lg-2">
+                    <MyDateTimeEdit @bind-Date="Model.RepairDoneDate"
+                                    Literal="Ngày sửa chữa xong"
+                                    Width="100%"
+                                    ReadOnly="true"
+                                    InputCssClass="text-maroon" />
+                </div>
+                <!--Check: Đã sửa xong-->
+                <div class="col-12 col-lg-2">
+                    <DxCheckBox @bind-Checked="@Model.RepairStatus" Enabled="false" CssClass="text-green">Đã sửa xong</DxCheckBox>
+                </div>
                 <!--Số IMEI thiết bị-->
                 <div class="col-12 col-lg-3">
                     <MyTextEdit @bind-Text="Model.NewDeviceIMEI"
@@ -709,9 +707,9 @@
                 </div>
                 <!--Check: yêu cầu duyệt-->
                 <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.ApproveReqStatus" CssClass="text-green" Enabled="@Model.EstimationStatus">Yêu cầu duyệt</DxCheckBox>
+                    <DxCheckBox @bind-Checked="@Model.ApproveReqStatus" CssClass="text-green" Enabled="@(Model.EstimationStatus &&!Model.ApproveStatus)">Yêu cầu duyệt</DxCheckBox>
                 </div>
-                <!--Ngày yêu cầu duyệt-->
+                <!--Ngày duyệt-->
                 <div class="col-12 col-lg-2">
                     <MyDateTimeEdit @bind-Date="Model.ApproveReqDate"
                                     Literal="Ngày duyệt"
@@ -719,7 +717,7 @@
                                     ReadOnly="true"
                                     InputCssClass="text-blue" />
                 </div>
-                <!--Check: yêu cầu duyệt-->
+                <!--Check: đã duyệt-->
                 <div class="col-12 col-lg-2">
                     <DxCheckBox @bind-Checked="@Model.ApproveStatus" CssClass="text-green" Enabled="false">Đã duyệt</DxCheckBox>
                 </div>
@@ -737,6 +735,7 @@
                                                    Model.ApproveAccountID = selectedRow.UserName;
                                                    Model.ApproveAccountName = selectedRow.Fullname;
                                              })"
+                                ReadOnly="@Model.ApproveStatus"
                                 Literal="Người duyệt" />
                 </div>
             </div>
@@ -755,8 +754,8 @@
     </CardBody>
 </MyCard>
 
-<!--Thông tin trả hàng-->
-<MyCard @bind-IsCollapse="@ReturnInfoCollapse" Title="Thông tin trả hàng">
+<!--Thông tin trả thiết bị-->
+<MyCard @bind-IsCollapse="@ReturnInfoCollapse" Title="Thông tin trả thiết bị">
     <CardBody>
         <div class="container-fluid">
             <!--Row 1-------------------------------------------------->
@@ -771,7 +770,7 @@
                 </div>
                 <!--Check: yêu cầu trả hàng-->
                 <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.ReturnReqStatus" CssClass="text-green" Enabled="@Model.RepairStatus">YC trả thiết bị</DxCheckBox>
+                    <DxCheckBox @bind-Checked="@Model.ReturnReqStatus" CssClass="text-green" Enabled="@(Model.RepairStatus && !Model.ReturnStatus1)">YC trả thiết bị</DxCheckBox>
                 </div>
                 <!--Ngày xuất hàng-->
                 <div class="col-12 col-lg-2">
@@ -811,6 +810,7 @@
                                                    Model.ReturnCompanyID = selectedRow.ItemCode;
                                                    Model.ReturnCompanyName = selectedRow.ItemName;
                                              })"
+                                ReadOnly="@Model.ReturnStatus1"
                                 Literal="Công ty trả thiết bị" />
                 </div>
                 <!--Người trả thiết bị-->
@@ -851,7 +851,7 @@
                 </div>
                 <!--Check: yêu cầu chi trả-->
                 <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.PayReqStatus" CssClass="text-green" Enabled="@Model.RepairStatus">YC chi trả</DxCheckBox>
+                    <DxCheckBox @bind-Checked="@Model.PayReqStatus" CssClass="text-green" Enabled="@(Model.RepairStatus && !Model.PayStatus)">YC chi trả</DxCheckBox>
                 </div>
                 <!--Ngày chi trả-->
                 <div class="col-12 col-lg-2">
@@ -886,7 +886,6 @@
         </div><!--End container-->
     </CardBody>
 </MyCard>
-
 
 <!--OK, Cancel-->
 <div class="container-fluid">
@@ -1049,6 +1048,7 @@
             if (Model.RepairStatus && !Model.PayStatus) PayInfoCollapse = false;
 
             //Refresh layout
+            if (gridEst != null) await gridEst.Refresh();
             StateHasChanged();
         }
         catch (Exception ex)
@@ -1072,7 +1072,7 @@
             RefDamageType.Focus();
             return false;
         }
-        //RefLogistic
+        //PickupCompanyID
         if (Model.PickupReqStatus && string.IsNullOrWhiteSpace(Model.PickupCompanyID))
         {
             toastService.ShowWarning("Công ty lấy thiết bị", "Bắt buột nhập.");
@@ -1084,6 +1084,13 @@
         {
             toastService.ShowWarning("Nơi sửa chữa", "Bắt buột nhập.");
             RefRepairer.Focus();
+            return false;
+        }
+        //RepairCompanyID
+        if (Model.ReturnReqStatus && string.IsNullOrWhiteSpace(Model.ReturnCompanyID))
+        {
+            toastService.ShowWarning("Công ty trả thiết bị", "Bắt buột nhập.");
+            RefReturnComp.Focus();
             return false;
         }
         //ApproverAccount
@@ -1123,15 +1130,25 @@
                 Model.AcceptStatus = false;
             }
             //PickupReqDate
-            if (Model.PickupReqStatus && Model.PickupReqDate == DateTime.Today.MinDate())
-            {
-                Model.PickupReqDate = DateTime.Now;
-            }
-            //Clear PickupReqDate
-            if (!Model.PickupReqStatus)
-            {
-                Model.PickupReqDate = DateTime.Today.MinDate();
-            }
+            if (Model.PickupReqStatus && Model.PickupReqDate == DateTime.Today.MinDate()) Model.PickupReqDate = DateTime.Now;
+            if (!Model.PickupReqStatus) Model.PickupReqDate = DateTime.Today.MinDate();
+
+            //EstReqDate
+            if (Model.EstimationReqStatus && Model.EstReqDate == DateTime.Today.MinDate()) Model.EstReqDate = DateTime.Now;
+            if (!Model.EstimationReqStatus) Model.EstReqDate = DateTime.Today.MinDate();
+
+            //ApproveReqDate
+            if (Model.ApproveReqStatus && Model.ApproveReqDate == DateTime.Today.MinDate()) Model.ApproveReqDate = DateTime.Now;
+            if (!Model.ApproveReqStatus) Model.ApproveReqDate = DateTime.Today.MinDate();
+
+            //ReturnReqDate
+            if (Model.ReturnReqStatus && Model.ReturnReqDate == DateTime.Today.MinDate()) Model.ReturnReqDate = DateTime.Now;
+            if (!Model.ReturnReqStatus) Model.ReturnReqDate = DateTime.Today.MinDate();
+
+            //PayReqDate
+            if (Model.PayReqStatus && Model.PayReqDate == DateTime.Today.MinDate()) Model.PayReqDate = DateTime.Now;
+            if (!Model.PayReqStatus) Model.PayReqDate = DateTime.Today.MinDate();
+
             //PicAccountID
             if (string.IsNullOrWhiteSpace(Model.PicAccountID))
             {
@@ -1149,7 +1166,6 @@
             {
                 Model.ProcessStatus = true;
             }
-
             //
             ClassHelper.CopyPropertiesDataDateConverted(Model, request.ClaimRequest);
 

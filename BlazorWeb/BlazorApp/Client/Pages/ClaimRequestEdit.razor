@@ -153,6 +153,7 @@
                                 TextFieldName="@(nameof(OptionListModel.ItemName))"
                                 SelectedItemChanged="@((OptionListModel selectedRow) => {
                                                    Model.DamageType = selectedRow.ItemCode;
+                                                   Model.DamageTypeName = selectedRow.ItemName;
                                              })"
                                 Literal="Loại hư hỏng" />
                 </div>
@@ -220,13 +221,13 @@
                                     ReadOnly="true"
                                     InputCssClass="text-maroon" />
                 </div>
-                <!--Số tiền bảo hiểm-->
+                <!--Giá trị hợp đồng-->
                 <div class="col-12 col-lg-2">
-                    <MyNumEdit @bind-Value="Model.InsurAmount"
+                    <MyNumEdit @bind-Value="Model.ContractAmount"
                                Mask="N0"
                                ReadOnly="true"
                                InputCssClass="text-blue font-weight-bold"
-                               Literal="Số tiền bảo hiểm" />
+                               Literal="Giá trị hợp đồng" />
                 </div>
             </div>
 
@@ -261,6 +262,14 @@
                                              })"
                                 InputCssClass="@PriorityCss"
                                 Literal="Mức độ ưu tiên" />
+                </div>
+                <!--Số tiền bảo hiểm còn lại-->
+                <div class="col-12 col-lg-2">
+                    <MyNumEdit @bind-Value="Model.InsurAmount"
+                               Mask="N0"
+                               ReadOnly="true"
+                               InputCssClass="text-maroon font-weight-bold"
+                               Literal="Tiền bảo hiểm còn lại" />
                 </div>
             </div>
 
@@ -435,7 +444,7 @@
                 if (!string.IsNullOrWhiteSpace(Model.TPAProductID)) SelectedProduct = ProductList.Find(x => x.ItemCode == Model.TPAProductID);
                 //Notification channel
                 if (!string.IsNullOrWhiteSpace(Model.NotificationChannelID)) SelectedChannel = ChannelList.Find(x => x.ItemCode == Model.NotificationChannelID);
-                //DamageCause
+                //DamageType
                 if (!string.IsNullOrWhiteSpace(Model.DamageType)) SelectedDamageCause = DamageCauseList.Find(x => x.ItemCode == Model.DamageType);
                 //SelectedBranch
                 if (!string.IsNullOrWhiteSpace(Model.InsurCompanyID)) SelectedInsure = InsureList.Find(x => x.ItemCode == Model.InsurCompanyID);
@@ -443,6 +452,18 @@
                 if (!string.IsNullOrWhiteSpace(Model.BrancheID)) SelectedBranch = BranchList.Find(x => x.BranchID == Model.BrancheID);
                 //Priority
                 SelectedPriority = PriorityList.Find(x => x.IntCode == Model.Priority);
+
+                //Estimations
+                if (response.ClaimRequest.Estimations != null && response.ClaimRequest.Estimations.Count > 0)
+                {
+                    foreach (var item in response.ClaimRequest.Estimations)
+                    {
+                        var estRow = new EstimationModel();
+                        ClassHelper.CopyPropertiesDataDateConverted(item, estRow);
+                        Model.Estimations.Add(estRow);
+                    }
+                }
+
 
                 //CSS
                 PriorityCss = "";
@@ -669,6 +690,7 @@
             {
                 Model.InsurStartDate = response.InsurStartDate.ToLocalDateFromTimestamp();
                 Model.InsurEndDate = response.InsurEndDate.ToLocalDateFromTimestamp();
+                Model.ContractAmount = response.ContractAmount;
                 Model.InsurAmount = response.InsurAmount;
                 //
                 this.StateHasChanged();

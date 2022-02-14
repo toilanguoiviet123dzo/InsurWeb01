@@ -29,6 +29,7 @@ namespace BlazorApp.Client.BindingModels
         public DateTime NotificationDate { get; set; }
         public string DamageCause { get; set; } = "";
         public string DamageType { get; set; }
+        public string DamageTypeName { get; set; }
         public string NotificationChannelID { get; set; } = "";
         public string NotificationChannelName { get; set; } = "";
         public int Priority { get; set; }
@@ -38,6 +39,7 @@ namespace BlazorApp.Client.BindingModels
         public DateTime InsurEndDate { get; set; }
         public string InsurCompanyID { get; set; } = "";
         public string InsurCompanyName { get; set; } = "";
+        public double ContractAmount { get; set; }
         public double InsurAmount { get; set; }
         public string AcceptNotes { get; set; } = "";
         public bool ProcessStatus { get; set; }

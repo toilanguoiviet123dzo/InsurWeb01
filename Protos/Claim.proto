@@ -20,6 +20,7 @@ service grpcClaimService {
     rpc GetPickupList (GetPickupList_Request) returns (GetClaimRequestList_Response);
     rpc GetRepairList (GetRepairList_Request) returns (GetClaimRequestList_Response);
     rpc GetReturnList (GetReturnList_Request) returns (GetClaimRequestList_Response);
+    rpc GetApproveList (GetClaimRequestList_Request) returns (GetClaimRequestList_Response);
 
 
     //Insure
@@ -98,7 +99,8 @@ message GetInsureContract_Response {
     //
     google.protobuf.Timestamp InsurStartDate = 3;
     google.protobuf.Timestamp InsurEndDate = 4;
-    double InsurAmount = 5;
+    double ContractAmount = 5;
+    double InsurAmount = 6;
 }
 
 
@@ -230,6 +232,7 @@ message grpcClaimRequestModel {
     google.protobuf.Timestamp NotificationDate = 17;
     string DamageCause = 18;
     string DamageType = 19;
+    string DamageTypeName = 190;
     string NotificationChannelID = 20;
     string NotificationChannelName = 21;
     int32 Priority = 22;
@@ -239,7 +242,8 @@ message grpcClaimRequestModel {
     google.protobuf.Timestamp InsurEndDate = 25;
     string InsurCompanyID = 26;
     string InsurCompanyName = 27;
-    double InsurAmount = 28;
+    double ContractAmount = 28;
+    double InsurAmount = 280;
     string AcceptNotes = 29;
     bool AcceptStatus = 30;
     //Pickup
