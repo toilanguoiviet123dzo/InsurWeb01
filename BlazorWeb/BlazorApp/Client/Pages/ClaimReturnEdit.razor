@@ -112,18 +112,18 @@
 
             <!--Row 4-------------------------------------------------->
             <div class="row">
-                <!--Địa chỉ lấy thiết bị-->
+                <!--Địa chỉ trả thiết bị-->
                 <div class="col-12 col-lg-6">
                     <MyTextEdit @bind-Text="Model.PickupAddress"
-                                Literal="Địa chỉ lấy thiết bị"
+                                Literal="Địa chỉ trả thiết bị"
                                 ReadOnly="true"
                                 CssClass="pickupaddress-focus" />
                 </div>
-                <!--Địa chỉ trả thiết bị-->
+                <!--Địa chỉ xuất thiết bị-->
                 <div class="col-12 col-lg-6">
-                    <MyTextEdit @bind-Text="DeliveryAddress"
+                    <MyTextEdit @bind-Text="TakeAddress"
                                 ReadOnly="true"
-                                Literal="Địa chỉ giao thiết bị" />
+                                Literal="Địa chỉ xuất thiết bị" />
                 </div>
             </div>
         </div>
@@ -306,7 +306,7 @@
     private bool DamageInfoCollapse = true;
     private bool RepairInfoCollapse = true;
     //
-    private string DeliveryAddress = "";
+    private string TakeAddress = "";
 
     #region Initialization
     protected override async Task OnInitializedAsync()
@@ -358,7 +358,7 @@
                 SelectedPriority = PriorityList.Find(x => x.IntCode == Model.Priority);
 
                 //DeliveryAddress
-                DeliveryAddress = await masterService.Get_BrancheAddress(Model.BrancheID);
+                TakeAddress = await masterService.Get_RepairAddress(Model.RepairCompanyID);
 
                 //CSS
                 PriorityCss = "";

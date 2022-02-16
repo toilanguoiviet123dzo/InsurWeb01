@@ -444,8 +444,15 @@
             </div>
             <!--Row 6-------------------------------------------------->
             <div class="row">
+                <!--Nội dung yêu cầu sửa chữa-->
+                <div class="col-12 col-lg-6">
+                    <MyMemoEdit @bind-Text="Model.RepairReqNotes"
+                                Rows="3"
+                                ReadOnly="true"
+                                Literal="Nội dung yêu cầu sửa chữa" />
+                </div>
                 <!--Nội dung sửa chữa-->
-                <div class="col-12">
+                <div class="col-12 col-lg-6">
                     <MyMemoEdit @bind-Text="Model.RepairNotes"
                                 Rows="3"
                                 ReadOnly="@Model.ReturnStatus1"

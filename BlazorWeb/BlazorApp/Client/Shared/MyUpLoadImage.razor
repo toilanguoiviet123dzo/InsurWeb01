@@ -1,0 +1,117 @@
+﻿@using Resource.Services
+@using System.Collections.ObjectModel;
+@using System.IO;
+@inject grpcResourceService.grpcResourceServiceClient resourceServiceClient;
+@inject MasterService masterService;
+@inject IJSRuntime JsRuntime;
+@inject IToastService toastService
+
+<div class="container-fluid">
+    <div class="row">
+        <InputFile OnChange="@(async(e) => await LoadFile(e))"
+                   @attributes="Attributes" />
+    </div>
+    <div class="row image-container">
+        <img id="imageToCrop" src="@ImageSource" alt="Image" />
+    </div>
+    <div class="row justify-content-center mt-2">
+        <MyButtonSave OnClick="UploadFile" />
+        <MyButtonCancel OnClick="CloseMain" />
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public MyPopup MyForm { get; set; }
+    [Parameter]
+    public string Literal { get; set; } = "";
+    [Parameter]
+    public EventCallback<bool> OnSubmit { get; set; }
+
+    //Attributes
+    private Dictionary<string, object> Attributes { get; set; }
+    //
+    private string ImageSource = "";
+    //
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        //Attributes
+        Attributes = new Dictionary<string, object>()
+                                            {
+                                                { "accept", "image/*" },
+                                                { "capture", "camera" }
+                                            };
+    }
+    private UpLoadFileModel UpLoadedFile = new UpLoadFileModel();
+    private IBrowserFile selectedFile;
+    async Task LoadFile(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            selectedFile = e.File;
+
+            //Update edit context
+            Stream stream = selectedFile.OpenReadStream(10000000);
+            MemoryStream ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            stream.Close();
+            //
+            UpLoadedFile.FileName = selectedFile.Name;
+            UpLoadedFile.FileContent = ms.ToArray();
+            UpLoadedFile.IsFileChanged = true;
+            //
+            ImageSource = "data:image/png;base64," + Convert.ToBase64String(UpLoadedFile.FileContent);
+            //
+            this.StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message, "Load ảnh bị lỗi");
+        }
+    }
+
+    async void UploadFile()
+    {
+        try
+        {
+            var request = new SaveResourceFile_Request();
+            var Credential = new Resource.Services.UserCredential()
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                };
+            request.Credential = Credential;
+            request.ResourceFile = new grpcResourceFileModel();
+            //
+            ClassHelper.CopyPropertiesDataDateConverted(row, request.ResourceFile);
+            request.ResourceFile.UpdMode = row.UpdMode;
+            //
+            var response = await resourceServiceClient.SaveResourceFileAsync(request);
+            // Success
+            if (response == null || response.ReturnCode != GrpcReturnCode.OK)
+            {
+                toastService.ShowError("Upload files", "Upload file failed !!");
+            }
+            else
+            {
+                //Resource ID
+                row.ResourceID = response.StringValue;
+            }
+            //OnSubmit
+            await OnSubmit.InvokeAsync(true);
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message, "Save failed.");
+        }
+    }
+
+    void CloseMain()
+    {
+        MyForm.Close();
+    }
+
+}

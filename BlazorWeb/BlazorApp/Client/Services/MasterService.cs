@@ -161,6 +161,20 @@ namespace BlazorApp.Client.Services
             //
             return RepairerLists;
         }
+        public async Task<string> Get_RepairAddress(string repairerID)
+        {
+            if (string.IsNullOrWhiteSpace(repairerID)) return "";
+            if (BranchLists.Count == 0)
+            {
+                await Load_RepairerList();
+            }
+
+            //Get address
+            var repairer = RepairerLists.Find(x => x.RepairerID == repairerID);
+            if (repairer != null) return repairer.Address;
+            //
+            return "";
+        }
 
         //BranchLists
         private List<BranchMasterModel> BranchLists = new List<BranchMasterModel>();

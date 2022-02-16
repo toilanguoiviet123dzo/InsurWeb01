@@ -200,7 +200,7 @@
 <!--Edit compen request-->
 <MyPopup @ref="@ClaimPopup"
          VerticalAlignment="@VerticalAlignment.Top"
-         HeaderText="Yêu cầu bồi thường"
+         HeaderText="Duyệt yêu cầu bồi thường"
          Width="1200px"
          ZIndex="1001">
     <BodyContentTemplate>
@@ -224,7 +224,7 @@
     // Master
     private List<BranchMasterModel> BranchList = new List<BranchMasterModel>();
     private List<OptionListModel> InsureList = new List<OptionListModel>();
-    private List<CodeNameModel> StatusList = MyClaimStatus.Get_StatusList();
+    private List<CodeNameModel> StatusList = MyClaimStatus.Get_ApproveStatusList();
     private List<CodeNameModel> TimeFlagList = MyDateTimeSelector.Get_TimeRangeList();
     // Popup
     private MyPopup ClaimPopup;
@@ -309,7 +309,7 @@
                         var dataRow = new ClaimRequestListModel();
                         ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
                         //Status name
-                        dataRow.StatusName = MyClaimStatus.Get_StatusName(dataRow);
+                        dataRow.StatusName = MyClaimStatus.Get_ApproveStatusName(dataRow);
                         //
                         DetailData.Add(dataRow);
                     }

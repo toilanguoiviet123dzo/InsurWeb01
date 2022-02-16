@@ -24,7 +24,8 @@ namespace BlazorApp.Client.Common
             ret.Add(new CodeNameModel { CodeInt = 8, Name = "Sửa chữa" });
             ret.Add(new CodeNameModel { CodeInt = 9, Name = "Xuất hàng" });
             ret.Add(new CodeNameModel { CodeInt = 10, Name = "Trả hàng" });
-            ret.Add(new CodeNameModel { CodeInt = 11, Name = "Từ chối" });
+            ret.Add(new CodeNameModel { CodeInt = 11, Name = "Chi trả" });
+            ret.Add(new CodeNameModel { CodeInt = 12, Name = "Từ chối" });
             //
             return ret;
         }
@@ -44,7 +45,9 @@ namespace BlazorApp.Client.Common
             if (dataRow.RepairStatus) StatusName = "Đã sửa chữa";
             if (dataRow.ReturnStatus1) StatusName = "Đã xuất hàng";
             if (dataRow.ReturnStatus2) StatusName = "Đã trả hàng";
+            if (dataRow.PayStatus) StatusName = "Đã chi trả";
             if (dataRow.CancelStatus) StatusName = "Đã từ chối";
+            if (dataRow.CloseStatus) StatusName = "Đã đóng";
             //
             return StatusName;
         }
@@ -65,6 +68,7 @@ namespace BlazorApp.Client.Common
             string StatusName = "Chưa lấy hàng";
             if (dataRow.PickupStatus1) StatusName = "Đã lấy hàng";
             if (dataRow.PickupStatus2) StatusName = "Đã nhập hàng";
+            if (dataRow.CloseStatus) StatusName = "Đã đóng";
             //
             return StatusName;
         }
@@ -85,6 +89,51 @@ namespace BlazorApp.Client.Common
             string StatusName = "Chưa báo giá";
             if (dataRow.EstimationStatus) StatusName = "Đã báo giá";
             if (dataRow.RepairStatus) StatusName = "Đã sửa chữa";
+            if (dataRow.CloseStatus) StatusName = "Đã đóng";
+            //
+            return StatusName;
+        }
+        #endregion
+
+        #region Approve
+        public static List<CodeNameModel> Get_ApproveStatusList(int fromStatus = 1, int toStatus = 10)
+        {
+            var ret = new List<CodeNameModel>();
+            ret.Add(new CodeNameModel { CodeInt = 7, Name = "Duyệt" });
+            ret.Add(new CodeNameModel { CodeInt = 8, Name = "Sửa chữa" });
+            ret.Add(new CodeNameModel { CodeInt = 11, Name = "Chi trả" });
+            //
+            return ret;
+        }
+
+        public static string Get_ApproveStatusName(ClaimRequestListModel dataRow)
+        {
+            string StatusName = "Chưa duyệt";
+            if (dataRow.ApproveStatus) StatusName = "Đã duyệt";
+            if (dataRow.RepairStatus) StatusName = "Đã sửa chữa";
+            if (dataRow.PayStatus) StatusName = "Đã chi trả";
+            if (dataRow.CloseStatus) StatusName = "Đã đóng";
+            //
+            return StatusName;
+        }
+        #endregion
+
+        #region Payment
+        public static List<CodeNameModel> Get_PaymentStatusList(int fromStatus = 1, int toStatus = 10)
+        {
+            var ret = new List<CodeNameModel>();
+            ret.Add(new CodeNameModel { CodeInt = 8, Name = "Sửa chữa" });
+            ret.Add(new CodeNameModel { CodeInt = 11, Name = "Chi trả" });
+            //
+            return ret;
+        }
+
+        public static string Get_PaymentStatusName(ClaimRequestListModel dataRow)
+        {
+            string StatusName = "Chưa chi trả";
+            if (dataRow.RepairStatus) StatusName = "Đã sửa chữa";
+            if (dataRow.PayStatus) StatusName = "Đã chi trả";
+            if (dataRow.CloseStatus) StatusName = "Đã đóng";
             //
             return StatusName;
         }
@@ -105,6 +154,7 @@ namespace BlazorApp.Client.Common
             string StatusName = "Chưa xuất hàng";
             if (dataRow.ReturnStatus1) StatusName = "Đã xuất hàng";
             if (dataRow.ReturnStatus2) StatusName = "Đã trả hàng";
+            if (dataRow.CloseStatus) StatusName = "Đã đóng";
             //
             return StatusName;
         }

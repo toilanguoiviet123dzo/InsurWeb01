@@ -214,14 +214,14 @@
                                 InputCssClass="text-blue font-weight-bold" />
                 </div>
                 <!--Từ ngày-->
-                <div class="col-6 col-lg-3">
+                <div class="col-6 col-lg-2">
                     <MyDateTimeEdit @bind-Date="Model.InsurStartDate"
                                     Literal="Từ ngày"
                                     ReadOnly="true"
                                     InputCssClass="text-green" />
                 </div>
                 <!--Đến ngày-->
-                <div class="col-6 col-lg-3">
+                <div class="col-6 col-lg-2">
                     <MyDateTimeEdit @bind-Date="Model.InsurEndDate"
                                     Literal="Đến ngày"
                                     ReadOnly="true"
@@ -626,7 +626,7 @@
                 <div class="col-12 col-lg-2">
                     <MyNumEdit Value="Model.DeductibleAmount"
                                ValueChanged="@((double newValue) => Update_Summary(newValue))"
-                               ReadOnly="@Model.ApproveStatus"
+                               ReadOnly="@Model.PayStatus"
                                InputCssClass="text-red font-weight-bold"
                                Literal="Tiền chiết khấu" />
                 </div>
@@ -676,17 +676,21 @@
             </div>
             <!--Row 6-------------------------------------------------->
             <div class="row">
+                <!--Nội dung yêu cầu sửa chữa-->
+                <div class="col-12 col-lg-6">
+                    <MyMemoEdit @bind-Text="Model.RepairReqNotes"
+                                Rows="3"
+                                ReadOnly="@Model.RepairStatus"
+                                Literal="Nội dung yêu cầu sửa chữa" />
+                </div>
                 <!--Nội dung sửa chữa-->
-                <div class="col-12">
+                <div class="col-12 col-lg-6">
                     <MyMemoEdit @bind-Text="Model.RepairNotes"
                                 Rows="3"
                                 ReadOnly="true"
                                 Literal="Nội dung sửa chữa" />
                 </div>
             </div>
-
-
-
         </div><!--End container-->
     </CardBody>
 </MyCard>
@@ -874,8 +878,15 @@
             </div>
             <!--Row 2-------------------------------------------------->
             <div class="row">
+                <!--Ghi chú yêu cầu chi trả-->
+                <div class="col-12 col-lg-6">
+                    <MyMemoEdit @bind-Text="Model.PayReqNotes"
+                                Rows="3"
+                                ReadOnly="@Model.PayStatus"
+                                Literal="Ghi chú yêu cầu chi trả" />
+                </div>
                 <!--Ghi chú chi trả-->
-                <div class="col-12">
+                <div class="col-12 col-lg-6">
                     <MyMemoEdit @bind-Text="Model.PayNotes"
                                 Rows="3"
                                 ReadOnly="true"

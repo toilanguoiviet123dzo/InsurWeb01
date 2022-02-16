@@ -512,7 +512,8 @@ namespace BlazorApp.Server.Services
                 if (request.Status == 8) query.Match(a => a.RepairStatus == status);
                 if (request.Status == 9) query.Match(a => a.ReturnStatus1 == status);
                 if (request.Status == 10) query.Match(a => a.ReturnStatus2 == status);
-                if (request.Status == 11) query.Match(a => a.CancelStatus == status);
+                if (request.Status == 11) query.Match(a => a.PayStatus == status);
+                if (request.Status == 12) query.Match(a => a.CancelStatus == status);
                 //Time range
                 //StartDate
                 if (request.StartDate.ToDateTime().ToString("yyyyMMdd") != DateTime.Today.MinShortDateString())
@@ -582,17 +583,9 @@ namespace BlazorApp.Server.Services
 
                 //Status
                 bool status = request.StatusCheck ? true : false;
-                if (request.Status == 1) query.Match(a => a.ProcessStatus == status);
-                if (request.Status == 2) query.Match(a => a.PickupStatus1 == status);
-                if (request.Status == 3) query.Match(a => a.PickupStatus2 == status);
-                if (request.Status == 4) query.Match(a => a.CheckStatus == status);
-                if (request.Status == 5) query.Match(a => a.AcceptStatus == status);
-                if (request.Status == 6) query.Match(a => a.EstimationStatus == status);
                 if (request.Status == 7) query.Match(a => a.ApproveStatus == status);
                 if (request.Status == 8) query.Match(a => a.RepairStatus == status);
-                if (request.Status == 9) query.Match(a => a.ReturnStatus1 == status);
-                if (request.Status == 10) query.Match(a => a.ReturnStatus2 == status);
-                if (request.Status == 11) query.Match(a => a.CancelStatus == status);
+                if (request.Status == 11) query.Match(a => a.PayStatus == status);
                 //Time range
                 //StartDate
                 if (request.StartDate.ToDateTime().ToString("yyyyMMdd") != DateTime.Today.MinShortDateString())
@@ -622,6 +615,77 @@ namespace BlazorApp.Server.Services
                 response.ReturnCode = GrpcReturnCode.Error_ByServer;
                 response.MsgCode = ex.Message;
                 MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "GetApproveList", "Exception", response.ReturnCode, ex.Message);
+            }
+            //
+            return await Task.FromResult(response);
+        }
+        //-------------------------------------------------------------------------------------------------------/
+        // GetPaymentList
+        //-------------------------------------------------------------------------------------------------------/
+        public override async Task<GetClaimRequestList_Response> GetPaymentList(Claim.Services.GetClaimRequestList_Request request, ServerCallContext context)
+        {
+            var response = new GetClaimRequestList_Response();
+            response.ReturnCode = GrpcReturnCode.OK;
+            response.MsgCode = "";
+            //
+            try
+            {
+                var query = DB.Find<mdClaimRequest>();
+
+                // CusPhone
+                if (!string.IsNullOrWhiteSpace(request.CusPhone)) query.Match(a => a.CusPhone.Contains(request.CusPhone));
+                //DeviceIMEI
+                if (!string.IsNullOrWhiteSpace(request.DeviceIMEI)) query.Match(a => a.DeviceIMEI.Contains(request.DeviceIMEI));
+                //CusFullname
+                if (!string.IsNullOrWhiteSpace(request.CusFullname)) query.Match(a => a.CusFullname.RemoveVietnameseSign().Contains(request.CusFullname));
+                //BrancheID
+                if (!string.IsNullOrWhiteSpace(request.BrancheID)) query.Match(a => a.BrancheID == request.BrancheID);
+                //InsurCompanyID
+                if (!string.IsNullOrWhiteSpace(request.InsurCompanyID)) query.Match(a => a.InsurCompanyID == request.InsurCompanyID);
+                //PickupCompanyID
+                if (!string.IsNullOrWhiteSpace(request.PickupCompanyID)) query.Match(a => a.PickupCompanyID == request.PickupCompanyID);
+                //RepairCompanyID
+                if (!string.IsNullOrWhiteSpace(request.RepairCompanyID)) query.Match(a => a.RepairCompanyID == request.RepairCompanyID);
+
+                //Not cancel
+                query.Match(a => a.CancelStatus == false);
+
+                //Da yeu cau
+                query.Match(a => a.PayReqStatus == true);
+
+                //Status
+                bool status = request.StatusCheck ? true : false;
+                if (request.Status == 10) query.Match(a => a.RepairStatus == status);
+                if (request.Status == 11) query.Match(a => a.PayStatus == status);
+                //Time range
+                //StartDate
+                if (request.StartDate.ToDateTime().ToString("yyyyMMdd") != DateTime.Today.MinShortDateString())
+                {
+                    query.Match(a => a.ClaimDate >= request.StartDate.ToDateTime());
+                }
+                //EndDate
+                if (request.EndDate.ToDateTime().ToString("yyyyMMdd") != DateTime.Today.MaxShortDateString())
+                {
+                    query.Match(a => a.ClaimDate <= request.EndDate.ToDateTime());
+                }
+                var findRecords = await query.ExecuteAsync();
+                //
+                if (findRecords != null && findRecords.Count > 0)
+                {
+                    findRecords.ForEach(item =>
+                    {
+                        var grpcItem = new grpcClaimRequestModel();
+                        ClassHelper.CopyPropertiesData(item, grpcItem);
+                        //
+                        response.ClaimRequests.Add(grpcItem);
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ReturnCode = GrpcReturnCode.Error_ByServer;
+                response.MsgCode = ex.Message;
+                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "GetPaymentList", "Exception", response.ReturnCode, ex.Message);
             }
             //
             return await Task.FromResult(response);

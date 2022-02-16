@@ -221,14 +221,6 @@
                                     ReadOnly="true"
                                     InputCssClass="text-maroon" />
                 </div>
-                <!--Giá trị hợp đồng-->
-                <div class="col-12 col-lg-2">
-                    <MyNumEdit @bind-Value="Model.ContractAmount"
-                               Mask="N0"
-                               ReadOnly="true"
-                               InputCssClass="text-blue font-weight-bold"
-                               Literal="Giá trị hợp đồng" />
-                </div>
             </div>
 
             <!--Row 2-------------------------------------------------->
@@ -262,6 +254,14 @@
                                              })"
                                 InputCssClass="@PriorityCss"
                                 Literal="Mức độ ưu tiên" />
+                </div>
+                <!--Giá trị hợp đồng-->
+                <div class="col-12 col-lg-2">
+                    <MyNumEdit @bind-Value="Model.ContractAmount"
+                               Mask="N0"
+                               ReadOnly="true"
+                               InputCssClass="text-blue font-weight-bold"
+                               Literal="Giá trị hợp đồng" />
                 </div>
                 <!--Số tiền bảo hiểm còn lại-->
                 <div class="col-12 col-lg-2">

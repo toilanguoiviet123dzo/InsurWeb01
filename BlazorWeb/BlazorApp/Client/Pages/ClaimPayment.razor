@@ -1,4 +1,4 @@
-﻿@page "/ClaimPickup"
+﻿@page "/ClaimPayment"
 @using Admin.Services
 @using Claim.Services
 @using Resource.Services
@@ -17,7 +17,38 @@
     <CardBody>
         <div class="container-fluid">
             <!--Row 1-------------------------------------------------->
+            <div class="row">
+                <!--Phone-->
+                <div class="col-12 col-lg-2">
+                    <MyTextEdit @bind-Text="Filter_CusPhone"
+                                Literal="Phone"
+                                InputCssClass="text-blue font-weight-bold" />
+                </div>
+                <!--Số IMEI thiết bị-->
+                <div class="col-12 col-lg-2">
+                    <MyTextEdit @bind-Text="Filter_DeviceIMEI"
+                                Literal="Số IMEI thiết bị"
+                                InputCssClass="text-purple font-weight-bold" />
+                </div>
+                <!--Tên khách hàng-->
+                <div class="col-12 col-lg-2">
+                    <MyTextEdit @bind-Text="Filter_CusFullname"
+                                Literal="Tên khách hàng" />
+                </div>
+            </div>
+
+            <!--Row 2-------------------------------------------------->
             <div class="row align-items-end">
+                <!--Công ty bảo hiểm-->
+                <div class="col-12 col-lg-2">
+                    <MyMuteLabel Literal="Công ty bảo hiểm" />
+                    <DxComboBox @bind-Value="Filter_Insure"
+                                Data="InsureList"
+                                AllowUserInput="true"
+                                ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                                FilteringMode="DataGridFilteringMode.Contains"
+                                TextFieldName="@(nameof(OptionListModel.ItemName))" />
+                </div>
                 <!--Thời gian-->
                 <div class="col-12 col-lg-4">
                     <div class="row">
@@ -105,7 +136,7 @@
                 </HeaderCellTemplate>
                 <CellTemplate>
                     <div style="display:flex;justify-content:center">
-                        @if (((ClaimRequestListModel)context).CheckStatus)
+                        @if (((ClaimRequestListModel)context).CloseStatus)
                         {
                             <!--View-->
                             <div class="text-center" style="width:3rem">
@@ -123,31 +154,42 @@
                 </CellTemplate>
             </DxDataGridCommandColumn>
             <!--columns-->
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.DeviceModel)"
-                              Caption="Model thiết bị"
-                              Width="8rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.PickupAddress)"
-                              Caption="Địa chỉ lấy thiết bị"
-                              Width="15rem" />
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.ClaimNo)"
+                              Caption="Số tiếp nhận"
+                              SortOrder="DataGridColumnSortOrder.Descending"
+                              Width="6rem" />
+            <DxDataGridDateEditColumn Field="@nameof(ClaimRequestListModel.ClaimDate)"
+                                      Caption="Ngày tiếp nhận"
+                                      DisplayFormat="dd/MM/yyyy HH:mm"
+                                      Width="9rem" />
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.StatusName)"
+                              Caption="Trạng thái"
+                              Width="6rem" />
             <DxDataGridColumn Field="@nameof(ClaimRequestListModel.CusFullname)"
                               Caption="Tên khách hàng"
                               Width="10rem" />
             <DxDataGridColumn Field="@nameof(ClaimRequestListModel.CusPhone)"
                               Caption="Điện thoại"
                               Width="6rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.StatusName)"
-                              Caption="Trạng thái"
-                              Width="7rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.ClaimNo)"
-                              Caption="Số tiếp nhận"
-                              SortOrder="DataGridColumnSortOrder.Descending"
-                              Width="6rem" />
-            <DxDataGridDateEditColumn Field="@nameof(ClaimRequestListModel.PickupReqDate)"
-                                      Caption="Ngày yêu cầu"
-                                      DisplayFormat="dd/MM/yyyy HH:mm"
-                                      Width="9rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.BrancheName)"
-                              Caption="Trung tâm bồi thường"
+            <DxDataGridDateEditColumn Field="@nameof(ClaimRequestListModel.IncidentDate)"
+                                      Caption="Ngày sự cố"
+                                      DisplayFormat="dd/MM/yyyy"
+                                      Width="6rem" />
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.DeviceModel)"
+                              Caption="Model thiết bị"
+                              Width="8rem" />
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.DeviceIMEI)"
+                              Caption="Số IMEI thiết bị"
+                              Width="8rem" />
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.PickupAddress)"
+                              Caption="Địa chỉ lấy thiết bị"
+                              Width="15rem" />
+            <DxDataGridDateEditColumn Field="@nameof(ClaimRequestListModel.PayReqDate)"
+                                      Caption="Ngày YC chi trả"
+                                      DisplayFormat="dd/MM/yyyy"
+                                      Width="6rem" />
+            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.PicAccountName)"
+                              Caption="Phụ trách xử lý"
                               Width="7rem" />
         </Columns>
     </DxDataGrid>
@@ -158,13 +200,13 @@
 <!--Edit compen request-->
 <MyPopup @ref="@ClaimPopup"
          VerticalAlignment="@VerticalAlignment.Top"
-         HeaderText="Cập nhật lấy thiết bị"
-         Width="1000px"
+         HeaderText="Cập nhật chi trả bồi thường"
+         Width="1200px"
          ZIndex="1001">
     <BodyContentTemplate>
-        <ClaimPickupEdit ClaimNo="@ClaimNo"
-                         MyForm="@ClaimPopup"
-                         OnValidSumit="@(async() => await DisplayMain())" />
+        <ClaimPaymentEdit MyForm="@ClaimPopup"
+                          ClaimNo="@ClaimNo"
+                          OnValidSumit="@(async() => await DisplayMain())" />
     </BodyContentTemplate>
 </MyPopup>
 
@@ -180,7 +222,9 @@
     readonly ObservableCollection<ClaimRequestListModel> DetailData = new ObservableCollection<ClaimRequestListModel>();
 
     // Master
-    private List<CodeNameModel> StatusList = MyClaimStatus.Get_PickupStatusList();
+    private List<BranchMasterModel> BranchList = new List<BranchMasterModel>();
+    private List<OptionListModel> InsureList = new List<OptionListModel>();
+    private List<CodeNameModel> StatusList = MyClaimStatus.Get_PaymentStatusList();
     private List<CodeNameModel> TimeFlagList = MyDateTimeSelector.Get_TimeRangeList();
     // Popup
     private MyPopup ClaimPopup;
@@ -189,10 +233,14 @@
     private bool ConfirmVisible = false;
 
     //Filter
-    private CodeNameModel Filter_Status { get; set; } = new CodeNameModel { CodeInt = 3, Name = "Nhập hàng" };
+    private string Filter_CusPhone = "";
+    private string Filter_DeviceIMEI = "";
+    private string Filter_CusFullname = "";
+    private CodeNameModel Filter_Status { get; set; } = new CodeNameModel { CodeInt = 11, Name = "Chi trả" };
     private CodeNameModel Filter_TimeFlag { get; set; }
     private DateTime Filter_StartDate { get; set; } = DateTime.Today.MinDate().ToLocalTime();
     private DateTime Filter_EndDate { get; set; } = DateTime.Today.MaxDate().ToLocalTime();
+    private OptionListModel Filter_Insure = null;
     //
     private string ClaimNo = "";
     private bool StatusCheck = false;
@@ -202,17 +250,25 @@
     {
         base.OnInitialized();
 
+        //Load master
+        await LoadMaster();
+
         //Display data ..
         await DisplayMain();
     }
     #region Load data
+    async Task LoadMaster()
+    {
+        InsureList = await masterService.Load_OptionList("008");
+        BranchList = await masterService.Load_BranchList();
+    }
     //
     async Task DisplayMain()
     {
         try
         {
             //Filter
-            var request = new Claim.Services.GetPickupList_Request();
+            var request = new Claim.Services.GetClaimRequestList_Request();
             request.Credential = new Claim.Services.UserCredential()
                 {
                     Username = WebUserCredential.Username,
@@ -220,8 +276,17 @@
                     AccessToken = WebUserCredential.AccessToken,
                     ApiKey = WebUserCredential.ApiKey
                 };
-            //PickupCompanyID
-            request.PickupCompanyID = WebUserCredential.LogisticCompanyID;
+
+            //CusPhone
+            if (!string.IsNullOrWhiteSpace(Filter_CusPhone)) request.CusPhone = Filter_CusPhone;
+            //DeviceIMEI
+            if (!string.IsNullOrWhiteSpace(Filter_DeviceIMEI)) request.DeviceIMEI = Filter_DeviceIMEI;
+            //CusFullname
+            if (!string.IsNullOrWhiteSpace(Filter_CusFullname)) request.CusFullname = Filter_CusFullname;
+            //BrancheID
+            request.BrancheID = WebUserCredential.BrancheID;
+            //InsurCompanyID
+            if (Filter_Insure != null && !string.IsNullOrWhiteSpace(Filter_Insure.ItemCode)) request.InsurCompanyID = Filter_Insure.ItemCode;
             //Status
             if (Filter_Status != null && Filter_Status.CodeInt != 0) request.Status = Filter_Status.CodeInt;
             //Status check
@@ -230,7 +295,7 @@
             request.StartDate = Filter_StartDate.ToTimestampFromLocalTime();
             request.EndDate = Filter_EndDate.ToTimestampFromLocalTime();
             //
-            var response = await ClaimServiceClient.GetPickupListAsync(request);
+            var response = await ClaimServiceClient.GetApproveListAsync(request);
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
                 if (response.ClaimRequests != null)
@@ -244,7 +309,7 @@
                         var dataRow = new ClaimRequestListModel();
                         ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
                         //Status name
-                        dataRow.StatusName = MyClaimStatus.Get_PickupStatusName(dataRow);
+                        dataRow.StatusName = MyClaimStatus.Get_PaymentStatusName(dataRow);
                         //
                         DetailData.Add(dataRow);
                     }
@@ -284,8 +349,8 @@
     void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<ClaimRequestListModel> eventArgs)
     {
         MyColor myColor = new MyColor();
-        //CloseStatus
-        if (eventArgs.DataItem.CloseStatus) eventArgs.Style += myColor.DoneRowColor;
+        //RepairStatus
+        if (eventArgs.DataItem.RepairStatus) eventArgs.Style += myColor.DoneRowColor;
     }
     void OnHtmlDataCellDecoration(DataGridHtmlDataCellDecorationEventArgs<ClaimRequestListModel> eventArgs)
     {
@@ -296,8 +361,8 @@
         {
             eventArgs.Style += " ;font-weight:bold; color: blue";
         }
-        //PickupReqDate
-        if (eventArgs.FieldName == nameof(ClaimRequestListModel.PickupReqDate))
+        //ClaimDate
+        if (eventArgs.FieldName == nameof(ClaimRequestListModel.ClaimDate))
         {
             eventArgs.Style += " ;color: green";
         }
@@ -305,6 +370,11 @@
         if (eventArgs.FieldName == nameof(ClaimRequestListModel.StatusName))
         {
             eventArgs.Style += " ;color: blue";
+        }
+        //DeviceIMEI
+        if (eventArgs.FieldName == nameof(ClaimRequestListModel.DeviceIMEI))
+        {
+            eventArgs.Style += " ;font-weight:bold";
         }
     }
 

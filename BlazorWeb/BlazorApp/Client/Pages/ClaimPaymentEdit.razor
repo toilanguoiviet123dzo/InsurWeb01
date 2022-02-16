@@ -650,7 +650,67 @@
                 <div class="col-12">
                     <MyMemoEdit @bind-Text="Model.ApproveNotes"
                                 Rows="3"
+                                ReadOnly="true"
                                 Literal="Ghi chú duyệt" />
+                </div>
+            </div>
+
+        </div><!--End container-->
+    </CardBody>
+</MyCard>
+
+<!--Thông tin chi trả-->
+<MyCard @bind-IsCollapse="@PayInfoCollapse" Title="Thông tin chi trả">
+    <CardBody>
+        <div class="container-fluid">
+            <!--Row 1-------------------------------------------------->
+            <div class="row align-items-end mt-1">
+                <!--Ngày yêu cầu chi trả-->
+                <div class="col-12 col-lg-2">
+                    <MyDateTimeEdit @bind-Date="Model.PayReqDate"
+                                    Literal="Ngày yêu cầu chi trả"
+                                    ReadOnly="true"
+                                    Width="100%"
+                                    InputCssClass="text-green" />
+                </div>
+                <!--Check: yêu cầu chi trả-->
+                <div class="col-12 col-lg-2">
+                    <DxCheckBox @bind-Checked="@Model.PayReqStatus" CssClass="text-green" Enabled="false">YC chi trả</DxCheckBox>
+                </div>
+                <!--Ngày chi trả-->
+                <div class="col-12 col-lg-2">
+                    <MyDateTimeEdit @bind-Date="Model.PayDoneDate"
+                                    Literal="Ngày chi trả"
+                                    Width="100%"
+                                    ReadOnly="true"
+                                    InputCssClass="text-maroon" />
+                </div>
+                <!--Check: Đã chi trả-->
+                <div class="col-12 col-lg-2">
+                    <DxCheckBox @bind-Checked="@Model.PayStatus" CssClass="text-maroon" Enabled="@Model.CloseStatus">Đã chi trả</DxCheckBox>
+                </div>
+                <!--Người chi trả-->
+                <div class="col-12 col-lg-3">
+                    <MyTextEdit @bind-Text="Model.PayAccountName"
+                                ReadOnly="true"
+                                Literal="Người chi trả" />
+                </div>
+            </div>
+            <!--Row 2-------------------------------------------------->
+            <div class="row">
+                <!--Ghi chú yêu cầu chi trả-->
+                <div class="col-12 col-lg-6">
+                    <MyMemoEdit @bind-Text="Model.PayReqNotes"
+                                Rows="3"
+                                ReadOnly="true"
+                                Literal="Ghi chú yêu cầu chi trả" />
+                </div>
+                <!--Ghi chú chi trả-->
+                <div class="col-12 col-lg-6">
+                    <MyMemoEdit @bind-Text="Model.PayNotes"
+                                Rows="3"
+                                ReadOnly="@Model.CloseStatus"
+                                Literal="Ghi chú chi trả" />
                 </div>
             </div>
 
@@ -692,8 +752,9 @@
     private bool DamageInfoCollapse = true;
     private bool InsureInfoCollapse = true;
     private bool CheckInfoCollapse = true;
-    private bool RepairInfoCollapse = false;
-    private bool ApproveInfoCollapse = false;
+    private bool RepairInfoCollapse = true;
+    private bool ApproveInfoCollapse = true;
+    private bool PayInfoCollapse = false;
     //Readonly
     private bool ApproveAmount_ReadOnly = true;
     //Confirm
@@ -882,6 +943,7 @@
     #endregion
 
     #region Items
+
 
     #endregion
 

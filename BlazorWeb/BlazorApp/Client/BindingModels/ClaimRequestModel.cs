@@ -76,6 +76,7 @@ namespace BlazorApp.Client.BindingModels
         public string RepairAccountName { get; set; } = "";
         public string NewDeviceIMEI { get; set; } = "";
         public string NewDeviceModel { get; set; } = "";
+        public string RepairReqNotes { get; set; } = "";
         public string RepairNotes { get; set; } = "";
         public bool RepairStatus { get; set; }
         //Estimations
@@ -108,6 +109,7 @@ namespace BlazorApp.Client.BindingModels
         public DateTime PayDoneDate { get; set; }
         public string PayAccountID { get; set; } = "";
         public string PayAccountName { get; set; } = "";
+        public string PayReqNotes { get; set; } = "";
         public string PayNotes { get; set; } = "";
         public bool PayReqStatus { get; set; }
         public bool PayStatus { get; set; }

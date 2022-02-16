@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BlazorApp.Client.BindingModels
 {
-    public class AttachFileModel
+    public class UpLoadFileModel
     {
         public string ID { get; set; } = "";
         public string OwnerID { get; set; } = "";

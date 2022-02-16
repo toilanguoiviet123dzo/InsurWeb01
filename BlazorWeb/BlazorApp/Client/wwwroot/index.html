@@ -16,10 +16,11 @@
     <!--<link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />-->
 
     <link href="css/styles.css?v=221402" rel="stylesheet" />
-    <link href="css/gulpfile.js" rel="stylesheet" />
+    <!--<link href="css/gulpfile.js" rel="stylesheet" />-->
     <link href="css/package.json" rel="stylesheet" />
     <link href="css/script.js" rel="stylesheet" />
     <link href="css/open-iconic/font/css/open-iconic-bootstrap.min.css" rel="stylesheet" />
+    <link href="css/js-crop-min.css" rel="stylesheet"/>
     <!--fontawesome-->
     <link href="css/fontawesome/css/all.css" rel="stylesheet" />
 
@@ -62,24 +63,6 @@
     </style>
 </head>
 <body>
-    <script>
-        /*for focus items*/
-        function focusEditor(className) {
-            document.getElementsByClassName(className)[0].querySelector("input").focus();
-        }
-        /* Warning F5 */
-        $(window).bind('beforeunload', function (e) {
-            return "Load lại trang có thể bị mất dữ liệu. Bạn có muốn tiếp tục..."
-            e.preventDefault();
-        });
-        /* getDimensions*/
-        window.getDimensions = function () {
-            return {
-                width: window.innerWidth,
-                height: window.innerHeight
-            };
-        };
-    </script>
 
     <div id="app">
         <script type="text/javascript">
@@ -97,9 +80,10 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
     </div>-->
-    <script src="js/DownloadHelper.js"></script>
+    <script src="js/Common.js"></script>
     <script src="js/pushNotifications.js"></script>
     <script src="js/localStorage.js"></script>
+    <script src="js/js-crop-min.js"></script>
     <script src="_framework/blazor.webassembly.js" autostart="false"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
     <script src="_content/Blazored.Typeahead/blazored-typeahead.js"></script>

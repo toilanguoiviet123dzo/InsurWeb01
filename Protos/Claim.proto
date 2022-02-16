@@ -21,7 +21,7 @@ service grpcClaimService {
     rpc GetRepairList (GetRepairList_Request) returns (GetClaimRequestList_Response);
     rpc GetReturnList (GetReturnList_Request) returns (GetClaimRequestList_Response);
     rpc GetApproveList (GetClaimRequestList_Request) returns (GetClaimRequestList_Response);
-
+    rpc GetPaymentList (GetClaimRequestList_Request) returns (GetClaimRequestList_Response);
 
     //Insure
     rpc GetInsureContract (GetInsureContract_Request) returns (GetInsureContract_Response);
@@ -277,6 +277,7 @@ message grpcClaimRequestModel {
     string RepairAccountName = 55;
     string NewDeviceIMEI = 56;
     string NewDeviceModel = 57;
+    string RepairReqNotes = 580;
     string RepairNotes = 58;
     bool RepairStatus = 59;
     //Estimations
@@ -309,6 +310,7 @@ message grpcClaimRequestModel {
     google.protobuf.Timestamp PayDoneDate = 81;
     string PayAccountID = 82;
     string PayAccountName = 83;
+    string PayReqNotes = 840;
     string PayNotes = 84;
     bool PayReqStatus = 85;
     bool PayStatus = 86;
