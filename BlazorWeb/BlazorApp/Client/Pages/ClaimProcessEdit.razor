@@ -450,7 +450,7 @@
                                     ReadOnly="true"
                                     InputCssClass="text-blue" />
                 </div>
-                
+
             </div>
 
             <!--Row 2-------------------------------------------------->
@@ -898,9 +898,22 @@
     </CardBody>
 </MyCard>
 
+<!--Add images-->
+<MyPopup @ref="@ImagesPopup"
+         VerticalAlignment="@VerticalAlignment.Top"
+         HeaderText="Hình ảnh"
+         Width="1000px"
+         ZIndex="1001">
+    <BodyContentTemplate>
+        <ImagesView MyForm="@ImagesPopup"
+                    VoucherNo="@Model.ClaimNo" />
+    </BodyContentTemplate>
+</MyPopup>
+
 <!--OK, Cancel-->
 <div class="container-fluid">
     <div class="row justify-content-center mt-2">
+        <MyButtonImage OnClick="ShowImages" />
         <MyButtonSave OnClick="SaveMain" />
         <MyButtonCancel OnClick="CloseMain" />
     </div>
@@ -941,6 +954,7 @@
     private MyComboBox<RepairerMasterModel> RefRepairer;
     private MyComboBox<UserAccountModel> RefApprover;
     MyMemoEdit RefDamageCause;
+    private MyPopup ImagesPopup;
     //Css
     private string PriorityCss = "";
     private bool DamageInfoCollapse = true;
@@ -1214,6 +1228,10 @@
     void CloseMain()
     {
         MyForm.Close();
+    }
+    void ShowImages()
+    {
+        ImagesPopup.Show();
     }
     #endregion
 

@@ -14,6 +14,8 @@ namespace BlazorApp.Client.BindingModels
         [Required(ErrorMessage = "Chưa chọn file đính kèm")]
         public string FileName { get; set; } = "";
         public byte[] FileContent { get; set; } = new byte[] { };
+        public bool IsMakeThumbnail { get; set; }
+        public byte[] Thumbnail { get; set; } = new byte[] { };
         public int ArchiveMode { get; set; }
         [Required(ErrorMessage = "Bắt buộc nhập")]
         public int SecureLevel { get; set; }

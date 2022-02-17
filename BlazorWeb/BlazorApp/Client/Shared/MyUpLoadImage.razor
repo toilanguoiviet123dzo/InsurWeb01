@@ -2,13 +2,12 @@
 @using System.Collections.ObjectModel;
 @using System.IO;
 @inject grpcResourceService.grpcResourceServiceClient resourceServiceClient;
-@inject MasterService masterService;
 @inject IJSRuntime JsRuntime;
 @inject IToastService toastService
 
 <div class="container-fluid">
     <div class="row">
-        <InputFile OnChange="@(async(e) => await LoadFile(e))"
+        <InputFile class="btn btn-primary" id="inputFileID" OnChange="@(async(e) => await LoadFile(e))"
                    @attributes="Attributes" />
     </div>
     <div class="row image-container">
@@ -24,9 +23,9 @@
     [Parameter]
     public MyPopup MyForm { get; set; }
     [Parameter]
-    public string Literal { get; set; } = "";
+    public UpLoadFileModel UpLoadFile { get; set; } = new UpLoadFileModel();
     [Parameter]
-    public EventCallback<bool> OnSubmit { get; set; }
+    public EventCallback<UpLoadFileModel> OnSubmit { get; set; }
 
     //Attributes
     private Dictionary<string, object> Attributes { get; set; }
@@ -43,7 +42,15 @@
                                                 { "capture", "camera" }
                                             };
     }
-    private UpLoadFileModel UpLoadedFile = new UpLoadFileModel();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JsRuntime.InvokeAsync<string>("clickElementByID", "inputFileID");
+        }
+    }
+
     private IBrowserFile selectedFile;
     async Task LoadFile(InputFileChangeEventArgs e)
     {
@@ -57,11 +64,11 @@
             await stream.CopyToAsync(ms);
             stream.Close();
             //
-            UpLoadedFile.FileName = selectedFile.Name;
-            UpLoadedFile.FileContent = ms.ToArray();
-            UpLoadedFile.IsFileChanged = true;
+            UpLoadFile.FileName = selectedFile.Name;
+            UpLoadFile.FileContent = ms.ToArray();
+            UpLoadFile.IsFileChanged = true;
             //
-            ImageSource = "data:image/png;base64," + Convert.ToBase64String(UpLoadedFile.FileContent);
+            ImageSource = "data:image/png;base64," + Convert.ToBase64String(UpLoadFile.FileContent);
             //
             this.StateHasChanged();
         }
@@ -75,7 +82,11 @@
     {
         try
         {
-            var request = new SaveResourceFile_Request();
+
+            await JsRuntime.InvokeAsync<string>("clickElementByID", "inputFileID");
+            return;
+
+            var request = new Resource.Services.SaveResourceFile_Request();
             var Credential = new Resource.Services.UserCredential()
                 {
                     Username = WebUserCredential.Username,
@@ -84,28 +95,26 @@
                     ApiKey = WebUserCredential.ApiKey
                 };
             request.Credential = Credential;
-            request.ResourceFile = new grpcResourceFileModel();
+            request.Record = new grpcResourceFileModel();
             //
-            ClassHelper.CopyPropertiesDataDateConverted(row, request.ResourceFile);
-            request.ResourceFile.UpdMode = row.UpdMode;
+            ClassHelper.CopyPropertiesData(UpLoadFile, request.Record);
             //
             var response = await resourceServiceClient.SaveResourceFileAsync(request);
             // Success
             if (response == null || response.ReturnCode != GrpcReturnCode.OK)
             {
-                toastService.ShowError("Upload files", "Upload file failed !!");
+                toastService.ShowError("", MyMessage.Error_UploadFile);
             }
             else
             {
-                //Resource ID
-                row.ResourceID = response.StringValue;
+                //OnSubmit
+                UpLoadFile.ResourceID = response.StringValue;
+                await OnSubmit.InvokeAsync(UpLoadFile);
             }
-            //OnSubmit
-            await OnSubmit.InvokeAsync(true);
         }
         catch (Exception ex)
         {
-            toastService.ShowError(ex.Message, "Save failed.");
+            toastService.ShowError(ex.Message, MyMessage.Error_UploadFile);
         }
     }
 

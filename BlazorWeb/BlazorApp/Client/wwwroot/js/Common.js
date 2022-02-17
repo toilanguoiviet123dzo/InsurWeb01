@@ -17,9 +17,14 @@ window.getDimensions = function () {
     };
 };
 
-
 function clickElement(element) {
     element.click();
+}
+
+function clickElementByID(elementID) {
+    var element = document.getElementById(elementID);
+    alert(element.id);
+    clickElement(element);
 }
 
 function downloadFile(mimeType, base64String, fileName) {
@@ -45,7 +50,7 @@ function uploadFile_FileSelected() {
     var count = document.getElementById('fileToUpload').files.length;
     document.getElementById('details').innerHTML = "";
     for (var index = 0; index < count; index++) {
-        var file = document.getElementById('fileToUpload').files\[index\];
+        var file = document.getElementById('fileToUpload').files[index];
         var fileSize = 0;
         if (file.size > 1024 * 1024)
             fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';

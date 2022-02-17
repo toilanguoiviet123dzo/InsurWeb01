@@ -1,7 +1,8 @@
-﻿<button @ref="Ref" class="@BtnCss" style="width:9rem; height:2rem; vertical-align:middle; margin-left:10px; margin-right:10px; padding:0" @onclick="@OnClickHandler">
+﻿
+<button @ref="Ref" class="btn btn-info" style="width:9rem; height:2rem; vertical-align:middle; margin-left:10px; margin-right:10px; padding:0" @onclick="@OnClickHandler">
     <div style="text-align:start; display:flex">
         <div style="vertical-align: middle; margin-left: 10px; margin-right: 10px;">
-            <i class="@IconCss" aria-hidden="true"></i>
+            <i class="fas fa-image fa-2x" aria-hidden="true"></i>
         </div>
         <div style="vertical-align: middle; margin-left: 10px; font-size: medium;">
             @Literal
@@ -13,11 +14,7 @@
     [Parameter]
     public ElementReference Ref { get; set; }
     [Parameter]
-    public string Literal { get; set; } = "";
-    [Parameter]
-    public string BtnCss { get; set; } = "btn btn-success";
-    [Parameter]
-    public string IconCss { get; set; } = "";
+    public string Literal { get; set; } = "Hình ảnh";
     [Parameter]
     public EventCallback OnClick { get; set; }
 
@@ -25,5 +22,5 @@
     {
         await OnClick.InvokeAsync();
     }
-}
 
+}

@@ -169,6 +169,26 @@ namespace BlazorApp.Server.Services
         }
 
         //-------------------------------------------------------------------------------------------------------/
+        // DeleteResourceFile
+        //-------------------------------------------------------------------------------------------------------/
+        public override async Task<Resource.Services.Empty_Response> DeleteResourceFile(String_Request request, ServerCallContext context)
+        {
+            var response = new Resource.Services.Empty_Response();
+            response.ReturnCode = GrpcReturnCode.OK;
+            try
+            {
+                await DB.DeleteAsync<mdResourceFile>(request.StringValue);
+            }
+            catch (Exception ex)
+            {
+                response.ReturnCode = GrpcReturnCode.Error_ByServer;
+                response.MsgCode = ex.Message;
+                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ResourceService", "DeleteResourceFile", "Exception", response.ReturnCode, ex.Message);
+            }
+            return await Task.FromResult(response);
+        }
+
+        //-------------------------------------------------------------------------------------------------------/
         // GetResourceFile
         //-------------------------------------------------------------------------------------------------------/
         public override async Task<GetResourceFile_Response> GetResourceFile(Resource.Services.String_Request request, ServerCallContext context)

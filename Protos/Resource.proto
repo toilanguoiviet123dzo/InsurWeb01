@@ -11,6 +11,9 @@ service grpcResourceService {
     // multiple
     rpc SaveResourceFiles (SaveResourceFiles_Request) returns (SaveResourceFiles_Response);
     rpc GetResourceFiles (GetResourceFiles_Request) returns (GetResourceFiles_Response);
+
+    //Delete
+    rpc DeleteResourceFile (String_Request) returns (Empty_Response);
 }
 //======================================================
 // Common Messages

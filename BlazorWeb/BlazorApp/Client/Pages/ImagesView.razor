@@ -1,0 +1,291 @@
+﻿@using Resource.Services
+@using System.Collections.ObjectModel;
+@using System.IO;
+@inject grpcResourceService.grpcResourceServiceClient resourceServiceClient;
+@inject MasterService masterService;
+@inject IJSRuntime JsRuntime;
+@inject IToastService toastService
+
+<!-- Photo Grid -->
+<div class="row">
+    <div class="column">
+        @for (var i = 0; i < DetailData.Count; i++)
+        {
+            @if (i % 4 == 0)
+            {
+                <img @onclick="@(() => ShowImageDetail(UpLoadFile.ResourceID))" src="@("data:image/png;base64," + Convert.ToBase64String(UpLoadFile.FileContent))" style="width:100%">
+                <figure>@(UpLoadFile.IssueDate.ToString("dd/MM/yyyy HH:mm")) @UpLoadFile.AccountID  </figure>
+                <a @onclick="@(() => DeleteImage_Handler(UpLoadFile.ResourceID))" style="cursor:pointer"><i class="fa fa-trash-can"></i></a>
+            }
+        }
+    </div>
+    <div class="column">
+        @for (var i = 0; i < DetailData.Count; i++)
+        {
+            @if (i % 4 == 1)
+            {
+                <img @onclick="@(() => ShowImageDetail(UpLoadFile.ResourceID))" src="@("data:image/png;base64," + Convert.ToBase64String(UpLoadFile.FileContent))" style="width:100%">
+                <figure>@(UpLoadFile.IssueDate.ToString("dd/MM/yyyy HH:mm")) @UpLoadFile.AccountID  </figure>
+                <a @onclick="@(() => DeleteImage_Handler(UpLoadFile.ResourceID))" style="cursor:pointer"><i class="fa fa-trash-can"></i></a>
+            }
+        }
+    </div>
+    <div class="column">
+        @for (var i = 0; i < DetailData.Count; i++)
+        {
+            @if (i % 4 == 2)
+            {
+                <img @onclick="@(() => ShowImageDetail(UpLoadFile.ResourceID))" src="@("data:image/png;base64," + Convert.ToBase64String(UpLoadFile.FileContent))" style="width:100%">
+                <figure>@(UpLoadFile.IssueDate.ToString("dd/MM/yyyy HH:mm")) @UpLoadFile.AccountID  </figure>
+                <a @onclick="@(() => DeleteImage_Handler(UpLoadFile.ResourceID))" style="cursor:pointer"><i class="fa fa-trash-can"></i></a>
+            }
+        }
+    </div>
+    <div class="column">
+        @for (var i = 0; i < DetailData.Count; i++)
+        {
+            @if (i % 4 == 3)
+            {
+                <img @onclick="@(() => ShowImageDetail(UpLoadFile.ResourceID))" src="@("data:image/png;base64," + Convert.ToBase64String(UpLoadFile.FileContent))" style="width:100%">
+                <figure>@(UpLoadFile.IssueDate.ToString("dd/MM/yyyy HH:mm")) @UpLoadFile.AccountID  </figure>
+                <a @onclick="@(() => DeleteImage_Handler(UpLoadFile.ResourceID))" style="cursor:pointer"><i class="fa fa-trash-can"></i></a>
+            }
+        }
+    </div>
+</div>
+
+<!--Image popup-->
+<MyPopup @ref="@AddImagePopup"
+         VerticalAlignment="@VerticalAlignment.Top"
+         HeaderText="Thêm hình ảnh"
+         Width="600px"
+         ZIndex="1001">
+    <BodyContentTemplate>
+        <MyUpLoadImage MyForm="@AddImagePopup"
+                       UpLoadFile="@UpLoadFile"
+                       OnSubmit="@((uploadedFile) => Add_UploadFileToView(uploadedFile))" />
+    </BodyContentTemplate>
+</MyPopup>
+
+<!--Add images-->
+<div class="container-fluid">
+    <div class="row justify-content-center mt-2">
+        <MyButton Literal="Thêm ảnh"
+                  OnClick="ShowAddImage"
+                  BtnCss="btn btn-primary"
+                  IconCss="fa fa-plus" />
+    </div>
+</div>
+
+<!--Confirm dialog-->
+<MessageBox Title="Xóa anh đính kèm" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
+
+@code {
+    [Parameter]
+    public MyPopup MyForm { get; set; }
+    [Parameter]
+    public string VoucherNo { get; set; } = "21000001";
+    //DetailData
+    private List<UpLoadFileModel> DetailData = new List<UpLoadFileModel>();
+
+    // Confirm dialog
+    private int ConfirmAction = 0;
+    private string ConfirmMessage = "";
+    private bool ConfirmVisible = false;
+    //Popup
+    private MyPopup AddImagePopup;
+    private UpLoadFileModel UpLoadFile = new UpLoadFileModel();
+    //
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+
+        //Load master
+        await DisplayMain();
+
+    }
+    #region Load data
+    async Task DisplayMain()
+    {
+        try
+        {
+            //Request
+            var request = new Resource.Services.GetResourceFiles_Request();
+            var Credential = new Resource.Services.UserCredential()
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                };
+            request.Credential = Credential;
+            //ClaimNo
+            request.OwnerID = UpLoadFile.OwnerID;
+            //Call api
+            var response = await resourceServiceClient.GetResourceFilesAsync(request);
+            // Success
+            if (response != null && response.ReturnCode == GrpcReturnCode.OK)
+            {
+                foreach (var record in response.Records)
+                {
+                    var item = new UpLoadFileModel();
+                    ClassHelper.CopyPropertiesData(record, item);
+                    DetailData.Add(item);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message, MyMessage.Error_LoadDataFailed);
+        }
+    }
+
+    #endregion
+
+    #region Save
+    private string DeleteResourceID = "";
+    void ConfirmHandler()
+    {
+        //Save main
+        if (ConfirmAction == MyConstant.ConfirmAction_DeleteRow)
+        {
+            DeleteImage(DeleteResourceID);
+        }
+        //Close confirm delete popup
+        ConfirmVisible = false;
+        StateHasChanged();
+    }
+
+    void DeleteImage_Handler(string resourceID)
+    {
+        DeleteResourceID = resourceID;
+        //
+        ConfirmVisible = true;
+        ConfirmAction = MyConstant.ConfirmAction_DeleteRow;
+        ConfirmMessage = "Xóa ảnh?";
+        //
+        this.StateHasChanged();
+    }
+
+    //
+    async void DeleteImage(string resourceID)
+    {
+        try
+        {
+            //Request
+            var request = new Resource.Services.String_Request();
+            var Credential = new Resource.Services.UserCredential()
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                };
+            request.Credential = Credential;
+            //resourceID
+            request.StringValue = resourceID;
+            //Call api
+            var response = await resourceServiceClient.DeleteResourceFileAsync(request);
+            // Success
+            if (response != null && response.ReturnCode == GrpcReturnCode.OK)
+            {
+                Refresh_View();
+            }
+            else
+            {
+                toastService.ShowError("", MyMessage.Error_DeleteFile);
+            }
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message, MyMessage.Error_DeleteFile);
+        }
+    }
+
+    void Refresh_View()
+    {
+
+    }
+    void ShowAddImage()
+    {
+        AddImagePopup.Show();
+    }
+    void Add_UploadFileToView(UpLoadFileModel uploadedFile)
+    {
+
+    }
+
+    void ShowImageDetail(string resourceID)
+    {
+        
+    }
+
+    #endregion
+
+
+
+    #region Screen items
+
+    private IBrowserFile selectedFile;
+    async Task LoadFile(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            selectedFile = e.File;
+
+            //Update edit context
+            Stream stream = selectedFile.OpenReadStream(10000000);
+            MemoryStream ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            stream.Close();
+            //
+            UpLoadFile.FileName = selectedFile.Name;
+            UpLoadFile.FileContent = ms.ToArray();
+            UpLoadFile.IsFileChanged = true;
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message, "Load file bị lỗi");
+        }
+    }
+
+    async void DownLoadFile(UpLoadFileModel dataRow)
+    {
+        //Download file content
+        if (dataRow.FileContent == null || dataRow.FileContent.Length == 0)
+        {
+            var request = new Resource.Services.String_Request();
+            var Credential = new Resource.Services.UserCredential()
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                };
+            request.Credential = Credential;
+            request.StringValue = dataRow.ResourceID;
+            //
+            var response = await resourceServiceClient.GetResourceFileAsync(request);
+            // Success
+            if (response != null && response.ReturnCode == GrpcReturnCode.OK)
+            {
+                dataRow.FileContent = ClassHelper.ByteArray_FromByteString(response.Record.FileContent);
+            }
+        }
+        if (dataRow.FileContent == null || dataRow.FileContent.Length == 0)
+        {
+            toastService.ShowError("", "Download file thất bại !!");
+            return;
+        }
+
+        //call javascript function to download the file
+        await JsRuntime.InvokeVoidAsync("downloadFile", "application/octet-stream", Convert.ToBase64String(dataRow.FileContent), dataRow.FileName);
+    }
+
+    #endregion
+    //
+
+
+
+
+}
