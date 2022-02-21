@@ -5,25 +5,36 @@
 @inject IJSRuntime JsRuntime;
 @inject IToastService toastService
 
+<style>
+    img {
+        max-width: 100%;
+    }
+</style>
+
+<div class="image-container">
+    <img id="imageToCrop" src="@ImageSource" alt="Image" />
+</div>
+@*<div class="canvas-container" style="left:2000px">
+    <canvas id="crop-result" width="200" height="300"></canvas>
+</div>*@
+
 <div class="container-fluid">
-    <div class="row">
-        <InputFile class="btn btn-primary" id="inputFileID" OnChange="@(async(e) => await LoadFile(e))"
+    <div class="row mt-2">
+        <InputFile class="btn btn-light" id="inputFileID" OnChange="@(async(e) => await LoadFile(e))"
                    @attributes="Attributes" />
     </div>
-    <div class="row image-container">
-        <img id="imageToCrop" src="@ImageSource" alt="Image" />
-    </div>
     <div class="row justify-content-center mt-2">
-        <MyButtonSave OnClick="UploadFile" />
+        <MyButtonOK OnClick="UploadFile" />
         <MyButtonCancel OnClick="CloseMain" />
     </div>
 </div>
+
 
 @code {
     [Parameter]
     public MyPopup MyForm { get; set; }
     [Parameter]
-    public UpLoadFileModel UpLoadFile { get; set; } = new UpLoadFileModel();
+    public UpLoadFileModel Model { get; set; } = new UpLoadFileModel();
     [Parameter]
     public EventCallback<UpLoadFileModel> OnSubmit { get; set; }
 
@@ -64,13 +75,18 @@
             await stream.CopyToAsync(ms);
             stream.Close();
             //
-            UpLoadFile.FileName = selectedFile.Name;
-            UpLoadFile.FileContent = ms.ToArray();
-            UpLoadFile.IsFileChanged = true;
+            Model.FileType = MyFile.Get_FileExtention(selectedFile.Name);
+            Model.FileName = selectedFile.Name;
+            Model.IsFileChanged = true;
+            Model.UpdMode = 1;
             //
-            ImageSource = "data:image/png;base64," + Convert.ToBase64String(UpLoadFile.FileContent);
+            ImageSource = $"data:image/png;base64," + Convert.ToBase64String(ms.ToArray());
             //
             this.StateHasChanged();
+
+            //Cropper
+            await JsRuntime.InvokeAsync<object>("initCropper");
+            await JsRuntime.InvokeAsync<object>("initCropper");
         }
         catch (Exception ex)
         {
@@ -82,10 +98,14 @@
     {
         try
         {
+            //Get cropped image
+            //string croppedImage = await JsRuntime.InvokeAsync<string>("getCropBytes", UpLoadFile.FileType);
+            string croppedImage = await JsRuntime.InvokeAsync<string>("getCropBytes");
+            if (croppedImage == null) return;
 
-            await JsRuntime.InvokeAsync<string>("clickElementByID", "inputFileID");
-            return;
-
+            //Convert to bytes[]
+            Model.FileContent = System.Convert.FromBase64String(croppedImage);
+            //
             var request = new Resource.Services.SaveResourceFile_Request();
             var Credential = new Resource.Services.UserCredential()
                 {
@@ -97,7 +117,9 @@
             request.Credential = Credential;
             request.Record = new grpcResourceFileModel();
             //
-            ClassHelper.CopyPropertiesData(UpLoadFile, request.Record);
+            Model.IssueDate = DateTime.Now;
+            //
+            ClassHelper.CopyPropertiesDataDateConverted(Model, request.Record);
             //
             var response = await resourceServiceClient.SaveResourceFileAsync(request);
             // Success
@@ -108,8 +130,9 @@
             else
             {
                 //OnSubmit
-                UpLoadFile.ResourceID = response.StringValue;
-                await OnSubmit.InvokeAsync(UpLoadFile);
+                Model.ResourceID = response.StringValue;
+                await OnSubmit.InvokeAsync(Model);
+                CloseMain();
             }
         }
         catch (Exception ex)

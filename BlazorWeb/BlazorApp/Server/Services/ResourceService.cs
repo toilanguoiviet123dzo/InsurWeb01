@@ -18,6 +18,7 @@ using BlazorApp.Server.Common;
 using BlazorApp.Server.Models;
 using Cores.Helpers;
 using Cores.Utilities;
+using System.IO;
 
 namespace BlazorApp.Server.Services
 {
@@ -228,7 +229,10 @@ namespace BlazorApp.Server.Services
                     {
                         string fileName = archiveFolder + findRecord.ServerFileName;
                         //
-                        response.Record.FileContent = ClassHelper.ByteString_FromByteArray(MyFile.Load_ToByteArray(fileName));
+                        if (File.Exists(fileName))
+                        {
+                            response.Record.FileContent = ClassHelper.ByteString_FromByteArray(MyFile.Load_ToByteArray(fileName));
+                        }
                     }
                 }
             }

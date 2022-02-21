@@ -11,13 +11,10 @@ namespace BlazorApp.Client.BindingModels
         public string ResourceID { get; set; } = "";
         public string FileType { get; set; } = "";
         public string Title { get; set; } = "";
-        [Required(ErrorMessage = "Chưa chọn file đính kèm")]
         public string FileName { get; set; } = "";
         public byte[] FileContent { get; set; } = new byte[] { };
         public bool IsMakeThumbnail { get; set; }
         public byte[] Thumbnail { get; set; } = new byte[] { };
-        public int ArchiveMode { get; set; }
-        [Required(ErrorMessage = "Bắt buộc nhập")]
         public int SecureLevel { get; set; }
         public string SecureLevelName { get; set; }
         public string AccountID { get; set; } = "";

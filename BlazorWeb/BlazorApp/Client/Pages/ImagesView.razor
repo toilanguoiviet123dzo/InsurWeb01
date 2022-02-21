@@ -6,66 +6,63 @@
 @inject IJSRuntime JsRuntime;
 @inject IToastService toastService
 
-<!-- Photo Grid -->
-<div class="row">
-    <div class="column">
-        @for (var i = 0; i < DetailData.Count; i++)
-        {
-            @if (i % 4 == 0)
+@if (DetailData.Count > 0)
+{
+    <!-- Photo Grid -->
+    <div class="__row">
+        <div class="__column">
+            @for (var i = 0; i < DetailData.Count; i++)
             {
-                <img @onclick="@(() => ShowImageDetail(UpLoadFile.ResourceID))" src="@("data:image/png;base64," + Convert.ToBase64String(UpLoadFile.FileContent))" style="width:100%">
-                <figure>@(UpLoadFile.IssueDate.ToString("dd/MM/yyyy HH:mm")) @UpLoadFile.AccountID  </figure>
-                <a @onclick="@(() => DeleteImage_Handler(UpLoadFile.ResourceID))" style="cursor:pointer"><i class="fa fa-trash-can"></i></a>
+                @if (i % 4 == 0)
+                {
+                    <span class="closes" title="Delete">×</span>
+                    <button id="removeImage" class="hide" @onclick="@(() => DeleteImage_Handler(DetailData[i].ResourceID))">x</button>
+                    <img @onclick="@(() => ShowImageDetail(DetailData[i].ResourceID))" src="@("data:image/png;base64," + Convert.ToBase64String(DetailData[i].FileContent))" style="width:100%">
+                    <small class="text-muted">@(DetailData[i].IssueDate.ToString("dd/MM/yyyy HH:mm")) @DetailData[i].AccountID  </small>
+                }
             }
-        }
-    </div>
-    <div class="column">
-        @for (var i = 0; i < DetailData.Count; i++)
-        {
-            @if (i % 4 == 1)
+        </div>
+        <div class="__column">
+            @for (var i = 0; i < DetailData.Count; i++)
             {
-                <img @onclick="@(() => ShowImageDetail(UpLoadFile.ResourceID))" src="@("data:image/png;base64," + Convert.ToBase64String(UpLoadFile.FileContent))" style="width:100%">
-                <figure>@(UpLoadFile.IssueDate.ToString("dd/MM/yyyy HH:mm")) @UpLoadFile.AccountID  </figure>
-                <a @onclick="@(() => DeleteImage_Handler(UpLoadFile.ResourceID))" style="cursor:pointer"><i class="fa fa-trash-can"></i></a>
+                @if (i % 4 == 1)
+                {
+                    <img @onclick="@(() => ShowImageDetail(DetailData[i].ResourceID))" src="@("data:image/png;base64," + Convert.ToBase64String(DetailData[i].FileContent))" style="width:100%">
+                    <figure>@(DetailData[i].IssueDate.ToString("dd/MM/yyyy HH:mm")) @DetailData[i].AccountID  </figure>
+                    <a @onclick="@(() => DeleteImage_Handler(DetailData[i].ResourceID))" style="cursor:pointer"><i class="fa fa-trash-can"></i></a>
+                }
             }
-        }
-    </div>
-    <div class="column">
-        @for (var i = 0; i < DetailData.Count; i++)
-        {
-            @if (i % 4 == 2)
+        </div>
+        <div class="__column">
+            @for (var i = 0; i < DetailData.Count; i++)
             {
-                <img @onclick="@(() => ShowImageDetail(UpLoadFile.ResourceID))" src="@("data:image/png;base64," + Convert.ToBase64String(UpLoadFile.FileContent))" style="width:100%">
-                <figure>@(UpLoadFile.IssueDate.ToString("dd/MM/yyyy HH:mm")) @UpLoadFile.AccountID  </figure>
-                <a @onclick="@(() => DeleteImage_Handler(UpLoadFile.ResourceID))" style="cursor:pointer"><i class="fa fa-trash-can"></i></a>
+                @if (i % 4 == 2)
+                {
+                    <img @onclick="@(() => ShowImageDetail(DetailData[i].ResourceID))" src="@("data:image/png;base64," + Convert.ToBase64String(DetailData[i].FileContent))" style="width:100%">
+                    <figure>@(DetailData[i].IssueDate.ToString("dd/MM/yyyy HH:mm")) @DetailData[i].AccountID  </figure>
+                    <a @onclick="@(() => DeleteImage_Handler(DetailData[i].ResourceID))" style="cursor:pointer"><i class="fa fa-trash-can"></i></a>
+                }
             }
-        }
-    </div>
-    <div class="column">
-        @for (var i = 0; i < DetailData.Count; i++)
-        {
-            @if (i % 4 == 3)
+        </div>
+        <div class="__column">
+            @for (var i = 0; i < DetailData.Count; i++)
             {
-                <img @onclick="@(() => ShowImageDetail(UpLoadFile.ResourceID))" src="@("data:image/png;base64," + Convert.ToBase64String(UpLoadFile.FileContent))" style="width:100%">
-                <figure>@(UpLoadFile.IssueDate.ToString("dd/MM/yyyy HH:mm")) @UpLoadFile.AccountID  </figure>
-                <a @onclick="@(() => DeleteImage_Handler(UpLoadFile.ResourceID))" style="cursor:pointer"><i class="fa fa-trash-can"></i></a>
+                @if (i % 4 == 3)
+                {
+                    <img @onclick="@(() => ShowImageDetail(DetailData[i].ResourceID))" src="@("data:image/png;base64," + Convert.ToBase64String(DetailData[i].FileContent))" style="width:100%">
+                    <figure>@(DetailData[i].IssueDate.ToString("dd/MM/yyyy HH:mm")) @DetailData[i].AccountID  </figure>
+                    <a @onclick="@(() => DeleteImage_Handler(DetailData[i].ResourceID))" style="cursor:pointer"><i class="fa fa-trash-can"></i></a>
+                }
             }
-        }
+        </div>
     </div>
-</div>
-
-<!--Image popup-->
-<MyPopup @ref="@AddImagePopup"
-         VerticalAlignment="@VerticalAlignment.Top"
-         HeaderText="Thêm hình ảnh"
-         Width="600px"
-         ZIndex="1001">
-    <BodyContentTemplate>
-        <MyUpLoadImage MyForm="@AddImagePopup"
-                       UpLoadFile="@UpLoadFile"
-                       OnSubmit="@((uploadedFile) => Add_UploadFileToView(uploadedFile))" />
-    </BodyContentTemplate>
-</MyPopup>
+}
+else
+{
+    <div class="text-center text-info">
+        <i class="fa fa-face-laugh fa-2x"></i> <span>Chưa có ảnh nào</span>
+    </div>
+}
 
 <!--Add images-->
 <div class="container-fluid">
@@ -76,6 +73,21 @@
                   IconCss="fa fa-plus" />
     </div>
 </div>
+
+<!--Image popup-->
+<MyPopup @ref="@AddImagePopup"
+         VerticalAlignment="@VerticalAlignment.Top"
+         HeaderText="Thêm hình ảnh"
+         Width="1000px"
+         ZIndex="1002">
+    <BodyContentTemplate>
+        <MyUpLoadImage MyForm="@AddImagePopup"
+                       Model="@UpLoadFile"
+                       OnSubmit="@((uploadedFile) => Add_UploadFileToView(uploadedFile))" />
+    </BodyContentTemplate>
+</MyPopup>
+
+
 
 <!--Confirm dialog-->
 <MessageBox Title="Xóa anh đính kèm" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
@@ -102,9 +114,9 @@
 
         //Load master
         await DisplayMain();
-
     }
     #region Load data
+
     async Task DisplayMain()
     {
         try
@@ -189,7 +201,8 @@
             // Success
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
-                Refresh_View();
+                DetailData.RemoveAll(x => x.ResourceID == resourceID);
+                this.StateHasChanged();
             }
             else
             {
@@ -202,22 +215,27 @@
         }
     }
 
-    void Refresh_View()
-    {
-
-    }
     void ShowAddImage()
     {
+        UpLoadFile = new UpLoadFileModel();
+        UpLoadFile.OwnerID = VoucherNo;
+        UpLoadFile.CategoryID = "01";
+        UpLoadFile.IsMakeThumbnail = true;
+        UpLoadFile.SecureLevel = 0;
+        UpLoadFile.AccountID = WebUserCredential.Username;
+        //
         AddImagePopup.Show();
     }
     void Add_UploadFileToView(UpLoadFileModel uploadedFile)
     {
-
+        DetailData.Add(uploadedFile);
+        //
+        this.StateHasChanged();
     }
 
     void ShowImageDetail(string resourceID)
     {
-        
+
     }
 
     #endregion
@@ -284,8 +302,4 @@
 
     #endregion
     //
-
-
-
-
 }

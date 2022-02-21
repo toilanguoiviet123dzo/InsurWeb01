@@ -25,13 +25,21 @@ body {
     padding: 0 4px;
 }
 
+.hide {
+    display: none;
+}
+
 /* Create four equal columns that sits next to each other */
 .__column {
+    position: relative;
+    display: inline-block;
+    font-size: 0;
     -ms-flex: 25%; /* IE10 */
     flex: 25%;
     max-width: 25%;
-    padding: 0 4px;
+    padding: 0 2px;
 }
+
 
     .__column img {
         margin-top: 8px;
@@ -45,6 +53,29 @@ body {
         .__column img:hover {
             transform: scale(1.05);
         }
+
+
+
+
+    .__column .closes {
+        position: absolute;
+        top: 5px;
+        right: 8px;
+        z-index: 1003;
+        background-color: #FFF;
+        padding: 4px 3px;
+        color: #000;
+        font-weight: bold;
+        cursor: pointer;
+        text-align: center;
+        font-size: 22px;
+        line-height: 10px;
+        border-radius: 50%;
+        border: 1px solid red;
+    }
+    .__column:hover .closes {
+        opacity: 1;
+    }
 
 /* Responsive layout - makes a two column-layout instead of four columns */
 @media screen and (max-width: 800px) {

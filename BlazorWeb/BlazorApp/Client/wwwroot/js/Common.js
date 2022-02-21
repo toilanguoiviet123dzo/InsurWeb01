@@ -23,7 +23,6 @@ function clickElement(element) {
 
 function clickElementByID(elementID) {
     var element = document.getElementById(elementID);
-    alert(element.id);
     clickElement(element);
 }
 
@@ -33,7 +32,6 @@ function downloadFile(mimeType, base64String, fileName) {
     fetch(fileDataUrl)
         .then(response => response.blob())
         .then(blob => {
-
             //create a link
             var link = window.document.createElement("a");
             link.href = window.URL.createObjectURL(blob, { type: mimeType });
@@ -60,4 +58,28 @@ function uploadFile_FileSelected() {
         document.getElementById('details').innerHTML += '<p>';
     }
     document.getElementById("ImagePreView").src = "data:image/png;base64," + file;
+}
+
+var cropper;
+function initCropper() {
+    cropper = jsCrop.initialise(document.getElementById("imageToCrop"), {
+        "outputCanvas": document.getElementById("crop-result")
+    });
+}
+
+function getCropResult() {
+    return cropper.downloadCroppedImage();
+}
+
+function cropperDestroy() {
+    cropper.destroy();
+}
+
+function getCropBytes(fileExtentions) {
+    // Update the crop result
+    return cropper.downloadCroppedImage();
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }

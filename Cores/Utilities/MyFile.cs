@@ -133,6 +133,11 @@ namespace Cores.Utilities
         {
             return Path.GetFileName(filePath);
         }
+
+        public static string Get_FileExtention(string filePath)
+        {
+            return Path.GetExtension(filePath).Replace(".","");
+        }
         #endregion
     }
 }

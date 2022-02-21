@@ -217,6 +217,13 @@ namespace Cores.Helpers
                     {
                         destProperty.SetValue(dest, ByteString.CopyFrom(valueSrc), null);
                     }
+                    //Google bytes
+                    else if (valueSrc != null &&
+                            srcProperty.PropertyType.ToString() == "Google.Protobuf.ByteString" &&
+                            destProperty.PropertyType.ToString() == "Google.Protobuf.ByteString")
+                    {
+                        destProperty.SetValue(dest, valueSrc, null);
+                    }
                     else
                     {
                         //Only copy for IsPrimitive property && same datatype
