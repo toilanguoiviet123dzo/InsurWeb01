@@ -56,27 +56,6 @@ body {
 
 
 
-
-    .__column .closes {
-        position: absolute;
-        top: 5px;
-        right: 8px;
-        z-index: 1003;
-        background-color: #FFF;
-        padding: 4px 3px;
-        color: #000;
-        font-weight: bold;
-        cursor: pointer;
-        text-align: center;
-        font-size: 22px;
-        line-height: 10px;
-        border-radius: 50%;
-        border: 1px solid red;
-    }
-    .__column:hover .closes {
-        opacity: 1;
-    }
-
 /* Responsive layout - makes a two column-layout instead of four columns */
 @media screen and (max-width: 800px) {
     .__column {

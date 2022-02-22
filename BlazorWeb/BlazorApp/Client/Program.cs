@@ -18,6 +18,7 @@ using Blazored.Toast;
 using Claim.Services;
 using Resource.Services;
 using BlazorApp.Client.Services;
+using MudBlazor.Services;
 
 namespace BlazorApp.Client
 {
@@ -44,6 +45,9 @@ namespace BlazorApp.Client
             //Blazored Toast
             builder.Services.AddBlazoredToast();
 
+            //MudBlazor
+            builder.Services.AddMudServices();
+            //
             await builder.Build().RunAsync();
         }
     }

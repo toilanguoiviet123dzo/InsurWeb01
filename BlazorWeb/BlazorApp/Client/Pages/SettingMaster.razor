@@ -5,11 +5,10 @@
 @inject IJSRuntime JsRuntime
 @inject IToastService toastService
 
-<br />
 <div style="width:100%">
     <DxDataGrid @ref="@Grid"
                 Data="@ListSettingMaster"
-                EditMode="DataGridEditMode.PopupEditForm"
+                EditMode="DevExpress.Blazor.DataGridEditMode.PopupEditForm"
                 PageSize="20"
                 ShowFilterRow="true"
                 HtmlRowDecoration="@OnHtmlRowDecoration"
@@ -126,7 +125,7 @@
     </div>
 </div>
 
-<MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
+<MessageBox Title="@WebUserCredential.Program.ProgramName" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
 
 @code{
     // Popup

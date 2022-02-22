@@ -1,37 +1,115 @@
 ﻿@using Blazored.Toast.Configuration
 @inherits LayoutComponentBase
+@inject NavigationManager Navigation
+@inject IJSRuntime JsRuntime;
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu @bind-Program="Program" />
-    </div>
-    <div class="main">
-        <div class="top-row px-4">
-            <div style="width:100%">
-                <div style="float:left">
-                    <h3>@Program.ProgramName</h3>
-                </div>
-                <div style="float:right">
-                    <LoginDisplay />
-                </div>
-            </div>
-        </div>
-        <div class="content px-0 px-lg-4">
-            <CascadingValue Value="Program">
-                @Body
-            </CascadingValue>
-        </div>
-    </div>
-</div>
-<BlazoredToasts Position="ToastPosition.BottomRight"
-                Timeout="3"
-                IconType="IconType.FontAwesome"
-                SuccessClass="success-toast-override"
-                SuccessIcon="fa fa-thumbs-up"
-                ErrorIcon="fa fa-bug"
-                WarningIcon="fa fa-warning"
-                InfoIcon="fa fa-info" />
+<style>
+    #bottomAppBar .mud-toolbar {
+        margin: auto !important;
+    }
 
+    .mud-main-content {
+        padding-top: 10px !important;
+    }
+
+</style>
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <!--Top App bar-->
+    <MudAppBar Color="Color.Primary" Fixed="false" Elevation="1" Dense="true">
+        <MudAvatar Color="Color.Success" Variant="Variant.Filled" Class="mr-3">
+            <MudIcon Color="Color.Info" Icon="@Icons.Filled.HealthAndSafety" Size="Size.Large" 
+                     @onclick="@(async () => await JsRuntime.InvokeAsync<object>("open", "http://insurtechvietnam.com.vn/", "_blank"))" />
+        </MudAvatar>
+        @if (string.IsNullOrWhiteSpace(WebUserCredential.Program.ProgramName))
+        {
+            <h5 class="m-auto">InsureTech TPA</h5>
+        }
+        else
+        {
+            <h5 class="m-auto">@WebUserCredential.Program.ProgramName</h5>
+        }
+        <MudSpacer />
+        <LoginDisplay />
+    </MudAppBar>
+
+    <!--Body content-->
+    <MudMainContent>
+        <CascadingValue Value="Program">
+            @Body
+        </CascadingValue>
+    </MudMainContent>
+
+    <!--Bottom App bar-->
+    <MudAppBar id="bottomAppBar" Bottom="true" Fixed="true" Elevation="1" Dense="true" Class="justify-center" Style="@($"color:white; background:{Colors.Grey.Darken3};")">
+        <!--Admin-->
+        <MudMenu FullWidth="false" ActivationEvent="@MouseEvent.MouseOver" OffsetY>
+            <ActivatorContent>
+                <MudChip Icon="@Icons.Material.Filled.AdminPanelSettings" Color="Color.Error">Admin</MudChip>
+            </ActivatorContent>
+            <ChildContent>
+                <MudNavMenu Color="Color.Info">
+                    <MudNavLink IconColor="Color.Info" Icon="@Icons.Filled.Settings" OnClick="@(() => ShowProgram( new ProgramInfo("SettingMaster","Cài đặt hệ thống")))">Cài đặt hệ thống</MudNavLink>
+                    <MudNavLink IconColor="Color.Info" Icon="@Icons.Filled.Functions" OnClick="@(() => ShowProgram( new ProgramInfo("FunctionList","Danh sách màn hình")))">Danh sách màn hình</MudNavLink>
+                    <MudNavLink IconColor="Color.Info" Icon="@Icons.Filled.Security" OnClick="@(() => ShowProgram( new ProgramInfo("RoleList","Danh sách vai trò")))">Danh sách vai trò</MudNavLink>
+                    <MudNavLink IconColor="Color.Info" Icon="@Icons.Filled.Checklist" OnClick="@(() => ShowProgram( new ProgramInfo("RoleDetail","Định nghĩa vai trò")))">Định nghĩa vai trò</MudNavLink>
+                    <MudNavLink IconColor="Color.Info" Icon="@Icons.Filled.List" OnClick="@(() => ShowProgram( new ProgramInfo("OptionListHeader","Danh mục tùy chọn")))">Danh mục tùy chọn</MudNavLink>
+                    <MudNavLink IconColor="Color.Info" Icon="@Icons.Filled.FormatListBulleted" OnClick="@(() => ShowProgram( new ProgramInfo("OptionListDetail","Chi tiết danh mục tùy chọn")))">Chi tiết danh mục tùy chọn</MudNavLink>
+                    <MudNavLink IconColor="Color.Info" Icon="@Icons.Filled.AccountCircle" OnClick="@(() => ShowProgram( new ProgramInfo("UserAccount","Quản lý account")))">Quản lý account</MudNavLink>
+                </MudNavMenu>
+            </ChildContent>
+        </MudMenu>
+
+        <!--Master-->
+        <MudMenu FullWidth="false" ActivationEvent="@MouseEvent.MouseOver" OffsetY>
+            <ActivatorContent>
+                <MudChip Icon="@Icons.Filled.DensityMedium" Color="Color.Success">Master</MudChip>
+            </ActivatorContent>
+            <ChildContent>
+                <MudNavMenu Color="Color.Info">
+                    <MudNavLink IconColor="Color.Info" Icon="@Icons.Filled.HealthAndSafety" OnClick="@(() => ShowProgram( new ProgramInfo("BrancheMaster","List trung tâm bồi thường")))">List trung tâm bồi thường</MudNavLink>
+                    <MudNavLink IconColor="Color.Info" Icon="@Icons.Filled.LocalHospital" OnClick="@(() => ShowProgram( new ProgramInfo("RepairerMaster","List nơi sửa chữa")))">List nơi sửa chữa</MudNavLink>
+                </MudNavMenu>
+            </ChildContent>
+        </MudMenu>
+
+        <!--Master-->
+        <MudMenu FullWidth="false" ActivationEvent="@MouseEvent.MouseOver" OffsetY>
+            <ActivatorContent>
+                <MudChip Icon="@Icons.Custom.Uncategorized.Radioactive" Color="Color.Warning">Claim</MudChip>
+            </ActivatorContent>
+            <ChildContent>
+                <MudNavMenu Color="Color.Info">
+                    <MudNavLink IconColor="Color.Info" Icon="@Icons.Filled.AddAlert" OnClick="@(() => ShowProgram( new ProgramInfo("ClaimRequest","Tiếp nhận")))">Tiếp nhận</MudNavLink>
+                    <MudNavLink IconColor="Color.Info" Icon="@Icons.Filled.PlayArrow" OnClick="@(() => ShowProgram( new ProgramInfo("ClaimProcess","Xử lý")))">Xử lý</MudNavLink>
+                    <MudNavLink IconColor="Color.Info" Icon="@Icons.Filled.GetApp" OnClick="@(() => ShowProgram( new ProgramInfo("ClaimPickup","Lấy thiết bị")))">Lấy thiết bị</MudNavLink>
+                    <MudNavLink IconColor="Color.Info" Icon="@Icons.Filled.Calculate" OnClick="@(() => ShowProgram( new ProgramInfo("ClaimRepair","Báo giá & sửa chữa")))">Báo giá & sửa chữa</MudNavLink>
+                    <MudNavLink IconColor="Color.Info" Icon="@Icons.Filled.Check" OnClick="@(() => ShowProgram( new ProgramInfo("ClaimApprove","Duyệt")))">Duyệt</MudNavLink>
+                    <MudNavLink IconColor="Color.Info" Icon="@Icons.Filled.DeliveryDining" OnClick="@(() => ShowProgram( new ProgramInfo("ClaimReturn","Trả thiết bị")))">Trả thiết bị</MudNavLink>
+                    <MudNavLink IconColor="Color.Info" Icon="@Icons.Filled.Payment" OnClick="@(() => ShowProgram( new ProgramInfo("ClaimPayment","Chi trả")))">Chi trả</MudNavLink>
+                </MudNavMenu>
+            </ChildContent>
+        </MudMenu>
+
+    </MudAppBar>
+</MudLayout>
 @code {
     public ProgramInfo Program { get; set; } = new ProgramInfo("", "");
-}}
+    bool _drawerOpen = false;
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    void ShowProgram(ProgramInfo program)
+    {
+        WebUserCredential.Program = program;
+        Navigation.NavigateTo($"/{program.ProgramID}");
+    }
+}
+

@@ -11,25 +11,18 @@
     <!-- Photo Grid -->
     <div class="__row">
         <div class="__column">
-            @for (var i = 0; i < DetailData.Count; i++)
+            @foreach (var item in DetailData)
             {
-                @if (i % 4 == 0)
-                {
-                    <span class="closes" title="Delete">×</span>
-                    <button id="removeImage" class="hide" @onclick="@(() => DeleteImage_Handler(DetailData[i].ResourceID))">x</button>
-                    <img @onclick="@(() => ShowImageDetail(DetailData[i].ResourceID))" src="@("data:image/png;base64," + Convert.ToBase64String(DetailData[i].FileContent))" style="width:100%">
-                    <small class="text-muted">@(DetailData[i].IssueDate.ToString("dd/MM/yyyy HH:mm")) @DetailData[i].AccountID  </small>
-                }
+                <img @onclick="@(() => ShowImageDetail(item.ResourceID))" src="@("data:image/png;base64," + Convert.ToBase64String(item.FileContent))" style="width:100%">
             }
+
         </div>
         <div class="__column">
             @for (var i = 0; i < DetailData.Count; i++)
             {
                 @if (i % 4 == 1)
                 {
-                    <img @onclick="@(() => ShowImageDetail(DetailData[i].ResourceID))" src="@("data:image/png;base64," + Convert.ToBase64String(DetailData[i].FileContent))" style="width:100%">
-                    <figure>@(DetailData[i].IssueDate.ToString("dd/MM/yyyy HH:mm")) @DetailData[i].AccountID  </figure>
-                    <a @onclick="@(() => DeleteImage_Handler(DetailData[i].ResourceID))" style="cursor:pointer"><i class="fa fa-trash-can"></i></a>
+                    <img @onclick="@(() => ShowImageDetail(i.ToString()))" src="@("data:image/png;base64," + Convert.ToBase64String(DetailData[i].FileContent))" style="width:100%">
                 }
             }
         </div>
@@ -38,9 +31,7 @@
             {
                 @if (i % 4 == 2)
                 {
-                    <img @onclick="@(() => ShowImageDetail(DetailData[i].ResourceID))" src="@("data:image/png;base64," + Convert.ToBase64String(DetailData[i].FileContent))" style="width:100%">
-                    <figure>@(DetailData[i].IssueDate.ToString("dd/MM/yyyy HH:mm")) @DetailData[i].AccountID  </figure>
-                    <a @onclick="@(() => DeleteImage_Handler(DetailData[i].ResourceID))" style="cursor:pointer"><i class="fa fa-trash-can"></i></a>
+                    <img @onclick="@(() => ShowImageDetail(i.ToString()))" src="@("data:image/png;base64," + Convert.ToBase64String(DetailData[i].FileContent))" style="width:100%">
                 }
             }
         </div>
@@ -49,9 +40,7 @@
             {
                 @if (i % 4 == 3)
                 {
-                    <img @onclick="@(() => ShowImageDetail(DetailData[i].ResourceID))" src="@("data:image/png;base64," + Convert.ToBase64String(DetailData[i].FileContent))" style="width:100%">
-                    <figure>@(DetailData[i].IssueDate.ToString("dd/MM/yyyy HH:mm")) @DetailData[i].AccountID  </figure>
-                    <a @onclick="@(() => DeleteImage_Handler(DetailData[i].ResourceID))" style="cursor:pointer"><i class="fa fa-trash-can"></i></a>
+                    <img @onclick="@(() => ShowImageDetail(i.ToString()))" src="@("data:image/png;base64," + Convert.ToBase64String(DetailData[i].FileContent))" style="width:100%">
                 }
             }
         </div>
@@ -235,7 +224,7 @@ else
 
     void ShowImageDetail(string resourceID)
     {
-
+        toastService.ShowInfo("",resourceID.ToString());
     }
 
     #endregion

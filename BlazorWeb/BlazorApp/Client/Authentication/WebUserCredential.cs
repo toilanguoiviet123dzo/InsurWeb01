@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BlazorApp.Client.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,6 +8,9 @@ namespace Cores.GrpcClient.Authentication
 {
     public static class WebUserCredential
     {
+        //Program
+        public static ProgramInfo Program = new ProgramInfo("", "");
+        //
         public static bool IsAuthenticated = false;
         //
         public static string Username = "";

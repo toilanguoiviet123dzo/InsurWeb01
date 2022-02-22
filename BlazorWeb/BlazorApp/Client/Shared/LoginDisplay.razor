@@ -5,31 +5,27 @@
 
 <AuthorizeView>
     <Authorized>
-        <div style="margin-right:2rem;font-size:larger;font-weight:bold;float:right">
-            <button class="btn btn-danger" @onclick="LogOut">Logout</button>
-        </div>
-        <div style="margin-right:2rem;font-size:larger;font-weight:bold;float:right">
-            Hello, @WebUserCredential.Fullname
-        </div>
+        <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+            <h6 class="m-auto">Hello, @WebUserCredential.Fullname</h6>
+        </MudHidden>
+        <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" OnClick="@((e) => LogOut())" />
     </Authorized>
     <NotAuthorized>
-        <div style="margin-right:2rem;font-size:larger;font-weight:bold;float:right">
-            <button class="btn btn-primary" @onclick="LogIn">Login</button>
-        </div>
-        <div style="margin-right:2rem;font-size:larger;font-weight:bold;float:right">
-            Hello, You need to login.
-        </div>
+        <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+            <h6 class="m-auto" Style="@($"color:{Colors.Red.Default};")">Hello, You need to login.</h6>
+        </MudHidden>
+        <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Warning" OnClick="@((e) => LogIn())" />
     </NotAuthorized>
 </AuthorizeView>
 
-@code{
-    private void LogOut(MouseEventArgs args)
+@code {
+    private void LogOut()
     {
         AuthService.Logout();
         Navigation.NavigateTo("/");
     }
 
-    private void LogIn(MouseEventArgs args)
+    private void LogIn()
     {
         Navigation.NavigateTo("/login");
     }
