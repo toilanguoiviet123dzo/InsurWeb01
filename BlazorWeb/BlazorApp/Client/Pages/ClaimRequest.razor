@@ -7,6 +7,7 @@
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
 @inject grpcClaimService.grpcClaimServiceClient ClaimServiceClient;
 @inject MasterService masterService;
+@inject IDialogService DialogService
 @inject IJSRuntime JsRuntime;
 @inject IToastService toastService
 @using System.Collections.Concurrent
@@ -212,20 +213,6 @@
 <!--Confirm dialog-->
 <MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
 
-<!--Edit compen request-->
-<MyPopup @ref="@ClaimPopup"
-         VerticalAlignment="@VerticalAlignment.Top"
-         HeaderText="Yêu cầu bồi thường"
-         FocusFirstItem="cusphone-focus"
-         Width="1000px"
-         ZIndex="1001">
-    <BodyContentTemplate>
-        <ClaimRequestEdit ClaimNo="@ClaimNo"
-                          MyForm="@ClaimPopup"
-                          OnValidSumit="@(async() => await DisplayMain())" />
-    </BodyContentTemplate>
-</MyPopup>
-
 
 @code {
     //Program
@@ -364,9 +351,8 @@
     #region Grid main
     void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<ClaimRequestListModel> eventArgs)
     {
-        MyColor myColor = new MyColor();
         //AcceptStatus
-        if (eventArgs.DataItem.RepairStatus) eventArgs.Style += myColor.DoneRowColor;
+        if (eventArgs.DataItem.RepairStatus) eventArgs.Style += MyColor.DoneRowColor;
     }
     void OnHtmlDataCellDecoration(DataGridHtmlDataCellDecorationEventArgs<ClaimRequestListModel> eventArgs)
     {
@@ -453,7 +439,7 @@
     }
 
     //Get data for edit/insert
-    void OnRowEditStarting(ClaimRequestListModel editingRow)
+    async void OnRowEditStarting(ClaimRequestListModel editingRow)
     {
         if (editingRow == null)
         {
@@ -465,16 +451,13 @@
             //ClaimNo
             ClaimNo = editingRow.ClaimNo;
         }
-        //ClaimEditVisible = true;
-        //StateHasChanged();
-        ClaimPopup.Show();
-    }
-    //Update row
-    async Task UpdateRow()
-    {
-        //Close popup & refresh data
-        await grid.CancelRowEdit();
-        await grid.Refresh();
+        //Show edit form
+        var parameters = new DialogParameters { ["ClaimNo"] = ClaimNo };
+        var result = await DialogService.Show<ClaimRequestEdit>("", parameters, MyOptions.GetPopupEditFormOptions(MaxWidth.Large)).Result;
+        if (!result.Cancelled)
+        {
+            await DisplayMain();
+        }
     }
 
     #endregion

@@ -156,7 +156,6 @@
 
 <!--Edit compen request-->
 <MyPopup @ref="@ClaimPopup"
-         VerticalAlignment="@VerticalAlignment.Top"
          HeaderText="Cập nhật lấy thiết bị"
          Width="1000px"
          ZIndex="1001">
@@ -282,9 +281,9 @@
     #region Grid main
     void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<ClaimRequestListModel> eventArgs)
     {
-        MyColor myColor = new MyColor();
+        
         //CloseStatus
-        if (eventArgs.DataItem.CloseStatus) eventArgs.Style += myColor.DoneRowColor;
+        if (eventArgs.DataItem.CloseStatus) eventArgs.Style += MyColor.DoneRowColor;
     }
     void OnHtmlDataCellDecoration(DataGridHtmlDataCellDecorationEventArgs<ClaimRequestListModel> eventArgs)
     {

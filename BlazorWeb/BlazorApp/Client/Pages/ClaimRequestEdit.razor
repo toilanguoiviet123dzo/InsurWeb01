@@ -7,304 +7,330 @@
 @inject VoucherService voucherService;
 @inject IJSRuntime JsRuntime;
 @inject IToastService toastService
+@inject IDialogService DialogService
 
+<style>
+    .mud-container {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
 
-<!--Thông tin chung-->
-<MyCard Title="Thông tin chung">
-    <CardBody>
-        <div class="container-fluid">
-            <!--Row 1-------------------------------------------------->
-            <div class="row">
-                <!--Số tiếp nhận-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.ClaimNo"
-                                ReadOnly="true"
-                                Literal="Số tiếp nhận"
-                                Width="8rem"
-                                InputCssClass="text-blue font-weight-bold" />
-                </div>
+    .mud-expand-panel .mud-expand-panel-header {
+        padding: 0 !important;
+    }
+</style>
 
-                <!--Ngày tiếp nhận-->
-                <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.ClaimDate"
-                                    Literal="Ngày tiếp nhận"
-                                    ReadOnly="true"
-                                    InputCssClass="text-blue" />
-                </div>
-                <!--Người tiếp nhận-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.ClaimAccountName"
-                                ReadOnly="true"
-                                Literal="Người tiếp nhận" />
-                </div>
-            </div>
+<MudDialog Style="@($"width:{Width}; max-width: 100%; max-height: 100%; overflow-y: scroll")"
+           ClassActions="justify-center"
+           ClassContent="p-1">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            @if (Model.UpdMode == 1)
+            {
+                <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-3 mb-n1" />
+            }
+            else
+            {
+                <MudIcon Icon="@Icons.Material.Filled.Create" Class="mr-3 mb-n1" />
+            }
+            Yêu cầu bồi thường
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudContainer>
+            <MudExpansionPanels MultiExpansion="true" Elevation="1">
+                <!--Thông tin chung-->
+                <MudExpansionPanel IsInitiallyExpanded="true" Dense="true" DisableGutters="true" Class="pb-2">
+                    <TitleContent>
+                        <h6 class="font-weight-bold">Thông tin chung</h6>
+                    </TitleContent>
+                    <ChildContent>
+                        <div class="container-fluid">
+                            <!--Row 1-------------------------------------------------->
+                            <div class="row">
+                                <!--Số tiếp nhận-->
+                                <div class="col-12 col-lg-3">
+                                    <MyTextEdit @bind-Text="Model.ClaimNo"
+                                                ReadOnly="true"
+                                                Literal="Số tiếp nhận"
+                                                Width="8rem"
+                                                InputCssClass="text-blue font-weight-bold" />
+                                </div>
 
-            <!--Row 2-------------------------------------------------->
-            <div class="row">
-                <!--Phone-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit Text="@Model.CusPhone"
-                                TextChanged="@((string x) => OnTextChanged_Phone(x))"
-                                Literal="Điện thoại liên hệ"
-                                InputCssClass="text-blue font-weight-bold"
-                                CssClass="cusphone-focus" />
-                </div>
-                <!--Tên khách hàng-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.CusFullname"
-                                Literal="Tên khách hàng"
-                                CssClass="cusfullname-focus" />
-                </div>
-                <!--Email-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.CusEmail"
-                                Literal="Email" />
-                </div>
-                <!--Số CMND/CCCD-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.CusCardID"
-                                Literal="Số CMND/CCCD" />
-                </div>
-            </div>
+                                <!--Ngày tiếp nhận-->
+                                <div class="col-12 col-lg-3">
+                                    <MyDateTimeEdit @bind-Date="Model.ClaimDate"
+                                                    Literal="Ngày tiếp nhận"
+                                                    ReadOnly="true"
+                                                    InputCssClass="text-blue" />
+                                </div>
+                                <!--Người tiếp nhận-->
+                                <div class="col-12 col-lg-3">
+                                    <MyTextEdit @bind-Text="Model.ClaimAccountName"
+                                                ReadOnly="true"
+                                                Literal="Người tiếp nhận" />
+                                </div>
+                            </div>
 
-            <!--Row 3-------------------------------------------------->
-            <div class="row">
-                <!--Loại sản phẩm-->
-                <div class="col-12 col-lg-3">
-                    <MyComboBox @ref="RefProduct"
-                                @bind-Value="SelectedProduct"
-                                Data="ProductList"
-                                AllowUserInput="true"
-                                TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                SelectedItemChanged="@((OptionListModel selectedRow) => {
+                            <!--Row 2-------------------------------------------------->
+                            <div class="row">
+                                <!--Phone-->
+                                <div class="col-12 col-lg-3">
+                                    <MyTextEdit Text="@Model.CusPhone"
+                                                TextChanged="@((string x) => OnTextChanged_Phone(x))"
+                                                Literal="Điện thoại liên hệ"
+                                                InputCssClass="text-blue font-weight-bold"
+                                                CssClass="cusphone-focus" />
+                                </div>
+                                <!--Tên khách hàng-->
+                                <div class="col-12 col-lg-3">
+                                    <MyTextEdit @bind-Text="Model.CusFullname"
+                                                Literal="Tên khách hàng"
+                                                CssClass="cusfullname-focus" />
+                                </div>
+                                <!--Email-->
+                                <div class="col-12 col-lg-3">
+                                    <MyTextEdit @bind-Text="Model.CusEmail"
+                                                Literal="Email" />
+                                </div>
+                                <!--Số CMND/CCCD-->
+                                <div class="col-12 col-lg-3">
+                                    <MyTextEdit @bind-Text="Model.CusCardID"
+                                                Literal="Số CMND/CCCD" />
+                                </div>
+                            </div>
+
+                            <!--Row 3-------------------------------------------------->
+                            <div class="row">
+                                <!--Loại sản phẩm-->
+                                <div class="col-12 col-lg-3">
+                                    <MyComboBox @ref="RefProduct"
+                                                @bind-Value="SelectedProduct"
+                                                Data="ProductList"
+                                                AllowUserInput="true"
+                                                TextFieldName="@(nameof(OptionListModel.ItemName))"
+                                                SelectedItemChanged="@((OptionListModel selectedRow) => {
                                                    Model.TPAProductID = selectedRow.ItemCode;
                                                    Model.TPAProductName = selectedRow.ItemName;
                                              })"
-                                Literal="Loại sản phẩm" />
-                </div>
-                <!--Số IMEI thiết bị-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.DeviceIMEI"
-                                Literal="Số IMEI thiết bị"
-                                InputCssClass="text-purple font-weight-bold text-uppercase" />
-                </div>
-                <!--Model-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.DeviceModel"
-                                Literal="Model" />
-                </div>
-            </div>
+                                                Literal="Loại sản phẩm" />
+                                </div>
+                                <!--Số IMEI thiết bị-->
+                                <div class="col-12 col-lg-3">
+                                    <MyTextEdit @bind-Text="Model.DeviceIMEI"
+                                                Literal="Số IMEI thiết bị"
+                                                InputCssClass="text-purple font-weight-bold text-uppercase" />
+                                </div>
+                                <!--Model-->
+                                <div class="col-12 col-lg-3">
+                                    <MyTextEdit @bind-Text="Model.DeviceModel"
+                                                Literal="Model" />
+                                </div>
+                            </div>
 
-            <!--Row 4-------------------------------------------------->
-            <div class="row">
-                <!--Địa chỉ nhận thiết bị-->
-                <div class="col-12 col-lg-6">
-                    <MyTextEdit @bind-Text="Model.PickupAddress"
-                                Literal="Địa chỉ nhận thiết bị"
-                                CssClass="pickupaddress-focus" />
-                </div>
-                <!--Địa chỉ trả thiết bị-->
-                <div class="col-12 col-lg-6">
-                    <MyTextEdit @bind-Text="Model.ReturnAddress"
-                                Literal="Địa chỉ trả thiết bị" />
-                </div>
-            </div>
-        </div>
-    </CardBody>
-</MyCard>
-
-<!--Thông tin hư hỏng-->
-<MyCard Title="Thông tin hư hỏng">
-    <CardBody>
-        <div class="container-fluid">
-            <!--Row 1-------------------------------------------------->
-            <div class="row">
-                <!--Ngày KH thông báo-->
-                <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.NotificationDate"
-                                    Literal="Ngày KH thông báo"
-                                    InputCssClass="text-green" />
-                </div>
-                <!--Ngày sự cố-->
-                <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.IncidentDate"
-                                    Literal="Ngày sự cố"
-                                    InputCssClass="text-maroon" />
-                </div>
-                <!--Kênh thông báo-->
-                <div class="col-12 col-lg-3">
-                    <MyComboBox @ref="RefChannel"
-                                @bind-Value="SelectedChannel"
-                                Data="ChannelList"
-                                AllowUserInput="true"
-                                TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                SelectedItemChanged="@((OptionListModel selectedRow) => {
+                            <!--Row 4-------------------------------------------------->
+                            <div class="row">
+                                <!--Địa chỉ nhận thiết bị-->
+                                <div class="col-12 col-lg-6">
+                                    <MyTextEdit @bind-Text="Model.PickupAddress"
+                                                Literal="Địa chỉ nhận thiết bị"
+                                                CssClass="pickupaddress-focus" />
+                                </div>
+                                <!--Địa chỉ trả thiết bị-->
+                                <div class="col-12 col-lg-6">
+                                    <MyTextEdit @bind-Text="Model.ReturnAddress"
+                                                Literal="Địa chỉ trả thiết bị" />
+                                </div>
+                            </div>
+                        </div>
+                    </ChildContent>
+                </MudExpansionPanel>
+                <!--Thông tin hư hỏng-->
+                <MudExpansionPanel IsInitiallyExpanded="true" Dense="true" DisableGutters="true" Class="pb-2">
+                    <TitleContent>
+                        <h6 class="font-weight-bold">Thông tin hư hỏng</h6>
+                    </TitleContent>
+                    <ChildContent>
+                        <div class="container-fluid">
+                            <!--Row 1-------------------------------------------------->
+                            <div class="row">
+                                <!--Ngày KH thông báo-->
+                                <div class="col-12 col-lg-3">
+                                    <MyDateTimeEdit @bind-Date="Model.NotificationDate"
+                                                    Literal="Ngày KH thông báo"
+                                                    InputCssClass="text-green" />
+                                </div>
+                                <!--Ngày sự cố-->
+                                <div class="col-12 col-lg-3">
+                                    <MyDateTimeEdit @bind-Date="Model.IncidentDate"
+                                                    Literal="Ngày sự cố"
+                                                    InputCssClass="text-maroon" />
+                                </div>
+                                <!--Kênh thông báo-->
+                                <div class="col-12 col-lg-3">
+                                    <MyComboBox @ref="RefChannel"
+                                                @bind-Value="SelectedChannel"
+                                                Data="ChannelList"
+                                                AllowUserInput="true"
+                                                TextFieldName="@(nameof(OptionListModel.ItemName))"
+                                                SelectedItemChanged="@((OptionListModel selectedRow) => {
                                                             Model.NotificationChannelID = selectedRow.ItemCode;
                                                             Model.NotificationChannelName = selectedRow.ItemName;
                                                         })"
-                                Literal="Kênh thông báo" />
-                </div>
-                <!--Loại hư hỏng-->
-                <div class="col-12 col-lg-3">
-                    <MyComboBox @ref="RefDamageType"
-                                @bind-Value="SelectedDamageCause"
-                                Data="DamageCauseList"
-                                AllowUserInput="true"
-                                TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                SelectedItemChanged="@((OptionListModel selectedRow) => {
+                                                Literal="Kênh thông báo" />
+                                </div>
+                                <!--Loại hư hỏng-->
+                                <div class="col-12 col-lg-3">
+                                    <MyComboBox @ref="RefDamageType"
+                                                @bind-Value="SelectedDamageCause"
+                                                Data="DamageCauseList"
+                                                AllowUserInput="true"
+                                                TextFieldName="@(nameof(OptionListModel.ItemName))"
+                                                SelectedItemChanged="@((OptionListModel selectedRow) => {
                                                    Model.DamageType = selectedRow.ItemCode;
                                                    Model.DamageTypeName = selectedRow.ItemName;
                                              })"
-                                Literal="Loại hư hỏng" />
-                </div>
-            </div>
+                                                Literal="Loại hư hỏng" />
+                                </div>
+                            </div>
 
-            <!--Row 2-------------------------------------------------->
-            <div class="row">
-                <!--Nguyên nhân hư hỏng-->
-                <div class="col-12 col-lg-7">
-                    @*<MyMuteLabel Literal="Nguyên nhân hư hỏng" />*@
-                    <MyMemoEdit @ref="RefDamageCause"
-                                @bind-Text="Model.DamageCause"
-                                Rows="5"
-                                Literal="Nguyên nhân hư hỏng" />
-                </div>
-                <!--Ghi chú-->
-                <div class="col-12 col-lg-5">
-                    <MyMemoEdit @bind-Text="Model.AcceptNotes"
-                                Rows="5"
-                                Literal="Ghi chú" />
-                </div>
-            </div>
-        </div><!--End container-->
-    </CardBody>
-</MyCard>
+                            <!--Row 2-------------------------------------------------->
+                            <div class="row">
+                                <!--Nguyên nhân hư hỏng-->
+                                <div class="col-12 col-lg-7">
+                                    @*<MyMuteLabel Literal="Nguyên nhân hư hỏng" />*@
+                                    <MyMemoEdit @ref="RefDamageCause"
+                                                @bind-Text="Model.DamageCause"
+                                                Rows="5"
+                                                Literal="Nguyên nhân hư hỏng" />
+                                </div>
+                                <!--Ghi chú-->
+                                <div class="col-12 col-lg-5">
+                                    <MyMemoEdit @bind-Text="Model.AcceptNotes"
+                                                Rows="5"
+                                                Literal="Ghi chú" />
+                                </div>
+                            </div>
+                        </div><!--End container-->
+                    </ChildContent>
+                </MudExpansionPanel>
 
-<!--Thông hợp tin đồng-->
-<MyCard Title="Thông tin hợp đồng">
-    <CardBody>
-        <div class="container-fluid">
-            <!--Row 1-------------------------------------------------->
-            <div class="row">
-                <!--Công ty bảo hiểm-->
-                <div class="col-12 col-lg-3">
-                    <MyComboBox @ref="RefInsure"
-                                @bind-Value="SelectedInsure"
-                                Data="InsureList"
-                                AllowUserInput="true"
-                                TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                SelectedItemChanged="@((OptionListModel selectedRow) => {
+                <!--Thông hợp tin đồng-->
+                <MudExpansionPanel IsInitiallyExpanded="true" Dense="true" DisableGutters="true" Class="pb-2">
+                    <TitleContent>
+                        <h6 class="font-weight-bold">Thông hợp tin đồng</h6>
+                    </TitleContent>
+                    <ChildContent>
+                        <div class="container-fluid">
+                            <!--Row 1-------------------------------------------------->
+                            <div class="row">
+                                <!--Công ty bảo hiểm-->
+                                <div class="col-12 col-lg-3">
+                                    <MyComboBox @ref="RefInsure"
+                                                @bind-Value="SelectedInsure"
+                                                Data="InsureList"
+                                                AllowUserInput="true"
+                                                TextFieldName="@(nameof(OptionListModel.ItemName))"
+                                                SelectedItemChanged="@((OptionListModel selectedRow) => {
                                                    Model.InsurCompanyID = selectedRow.ItemCode;
                                                    Model.InsurCompanyName = selectedRow.ItemName;
                                                    OnInsurCompanyID_Changed(Model.InsurCompanyID);
                                              })"
-                                Literal="Công ty bảo hiểm" />
-                </div>
-                <!--Số hợp đồng-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit Text="@Model.InsurContractNo"
-                                TextChanged="@((string x) => OnInsurContractNo_Changed(x))"
-                                Literal="Số hợp đồng"
-                                InputCssClass="text-blue font-weight-bold text-uppercase" />
-                </div>
-                <!--Từ ngày-->
-                <div class="col-12 col-lg-2">
-                    <MyDateTimeEdit @bind-Date="Model.InsurStartDate"
-                                    Literal="Từ ngày"
-                                    ReadOnly="true"
-                                    InputCssClass="text-green" />
-                </div>
-                <!--Đến ngày-->
-                <div class="col-12 col-lg-2">
-                    <MyDateTimeEdit @bind-Date="Model.InsurEndDate"
-                                    Literal="Đến ngày"
-                                    ReadOnly="true"
-                                    InputCssClass="text-maroon" />
-                </div>
-            </div>
+                                                Literal="Công ty bảo hiểm" />
+                                </div>
+                                <!--Số hợp đồng-->
+                                <div class="col-12 col-lg-3">
+                                    <MyTextEdit Text="@Model.InsurContractNo"
+                                                TextChanged="@((string x) => OnInsurContractNo_Changed(x))"
+                                                Literal="Số hợp đồng"
+                                                InputCssClass="text-blue font-weight-bold text-uppercase" />
+                                </div>
+                                <!--Từ ngày-->
+                                <div class="col-12 col-lg-2">
+                                    <MyDateTimeEdit @bind-Date="Model.InsurStartDate"
+                                                    Literal="Từ ngày"
+                                                    ReadOnly="true"
+                                                    InputCssClass="text-green" />
+                                </div>
+                                <!--Đến ngày-->
+                                <div class="col-12 col-lg-2">
+                                    <MyDateTimeEdit @bind-Date="Model.InsurEndDate"
+                                                    Literal="Đến ngày"
+                                                    ReadOnly="true"
+                                                    InputCssClass="text-maroon" />
+                                </div>
+                            </div>
 
-            <!--Row 2-------------------------------------------------->
-            <div class="row">
-                <!--Chi nhánh bồi thường-->
-                <div class="col-12 col-lg-3">
-                    <MyComboBox @ref="RefBranch"
-                                @bind-Value="SelectedBranch"
-                                Data="BranchList"
-                                AllowUserInput="true"
-                                TextFieldName="@(nameof(BranchMasterModel.BranchName))"
-                                SelectedItemChanged="@((BranchMasterModel selectedRow) => {
+                            <!--Row 2-------------------------------------------------->
+                            <div class="row">
+                                <!--Chi nhánh bồi thường-->
+                                <div class="col-12 col-lg-3">
+                                    <MyComboBox @ref="RefBranch"
+                                                @bind-Value="SelectedBranch"
+                                                Data="BranchList"
+                                                AllowUserInput="true"
+                                                TextFieldName="@(nameof(BranchMasterModel.BranchName))"
+                                                SelectedItemChanged="@((BranchMasterModel selectedRow) => {
                                                    Model.BrancheID = selectedRow.BranchID;
                                                    Model.BrancheName = selectedRow.BranchName;
                                              })"
-                                Literal="Chi nhánh bồi thường" />
-                </div>
-                <!--Mức độ ưu tiên-->
-                <div class="col-12 col-lg-3">
-                    <MyComboBox @ref="RefPriority"
-                                @bind-Value="SelectedPriority"
-                                Data="PriorityList"
-                                AllowUserInput="true"
-                                TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                SelectedItemChanged="@((OptionListModel selectedRow) => {
+                                                Literal="Chi nhánh bồi thường" />
+                                </div>
+                                <!--Mức độ ưu tiên-->
+                                <div class="col-12 col-lg-3">
+                                    <MyComboBox @ref="RefPriority"
+                                                @bind-Value="SelectedPriority"
+                                                Data="PriorityList"
+                                                AllowUserInput="true"
+                                                TextFieldName="@(nameof(OptionListModel.ItemName))"
+                                                SelectedItemChanged="@((OptionListModel selectedRow) => {
                                                    Model.Priority = selectedRow.IntCode;
                                                    PriorityCss = "";
                                                    if (Model.Priority == 2) PriorityCss = "bg-warning";
                                                    if (Model.Priority == 3) PriorityCss = "bg-danger";
                                                    this.StateHasChanged();
                                              })"
-                                InputCssClass="@PriorityCss"
-                                Literal="Mức độ ưu tiên" />
-                </div>
-                <!--Giá trị hợp đồng-->
-                <div class="col-12 col-lg-2">
-                    <MyNumEdit @bind-Value="Model.ContractAmount"
-                               Mask="N0"
-                               ReadOnly="true"
-                               InputCssClass="text-blue font-weight-bold"
-                               Literal="Giá trị hợp đồng" />
-                </div>
-                <!--Số tiền bảo hiểm còn lại-->
-                <div class="col-12 col-lg-2">
-                    <MyNumEdit @bind-Value="Model.InsurAmount"
-                               Mask="N0"
-                               ReadOnly="true"
-                               InputCssClass="text-maroon font-weight-bold"
-                               Literal="Tiền bảo hiểm còn lại" />
-                </div>
-            </div>
-
-        </div><!--End container-->
-    </CardBody>
-</MyCard>
-
-<!--OK, Cancel-->
-<div class="container-fluid">
-    <div class="row justify-content-center mt-2">
-        <MyButtonSave OnClick="SaveMain" />
+                                                InputCssClass="@PriorityCss"
+                                                Literal="Mức độ ưu tiên" />
+                                </div>
+                                <!--Giá trị hợp đồng-->
+                                <div class="col-12 col-lg-2">
+                                    <MyNumEdit @bind-Value="Model.ContractAmount"
+                                               Mask="N0"
+                                               ReadOnly="true"
+                                               InputCssClass="text-blue font-weight-bold"
+                                               Literal="Giá trị hợp đồng" />
+                                </div>
+                                <!--Số tiền bảo hiểm còn lại-->
+                                <div class="col-12 col-lg-2">
+                                    <MyNumEdit @bind-Value="Model.InsurAmount"
+                                               Mask="N0"
+                                               ReadOnly="true"
+                                               InputCssClass="text-maroon font-weight-bold"
+                                               Literal="Tiền bảo hiểm còn lại" />
+                                </div>
+                            </div>
+                        </div><!--End container-->
+                    </ChildContent>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
         <MyButtonCancel OnClick="CloseMain" />
-    </div>
-</div>
+        <MyButtonSave OnClick="SaveMain" />
+    </DialogActions>
+</MudDialog>
 
 @code {
-    [CascadingParameter]
-    protected ProgramInfo Program { get; set; }
-    [Parameter]
-    public MyPopup MyForm { get; set; }
-    //Parameters and events
-    [Parameter]
-    public string ClaimNo { get; set; } = "";
-    [Parameter]
-    public EventCallback OnValidSumit { get; set; }
-    [Parameter]
-    public bool Visible { get; set; }
-    [Parameter]
-    public EventCallback<bool> VisibleChanged { get; set; }
-    private async Task OnVisibleChanged(bool newValue)
-    {
-        await VisibleChanged.InvokeAsync(newValue);
-    }
-    private ClaimRequestModel Model = new ClaimRequestModel();
 
+    [CascadingParameter] protected ProgramInfo Program { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    private string Width = "1200px";
+    //Parameters and events
+    [Parameter] public string ClaimNo { get; set; } = "";
+    //
+    private ClaimRequestModel Model = new ClaimRequestModel();
     //Master
     private List<OptionListModel> ProductList = new List<OptionListModel>();
     private List<OptionListModel> ChannelList = new List<OptionListModel>();
@@ -347,6 +373,7 @@
         {
             await DisplayMain();
         }
+        this.StateHasChanged();
     }
     //
     async Task LoadMaster()
@@ -596,9 +623,8 @@
                 toastService.ShowError("", MyMessage.Error_SaveFailed);
             }
 
-            //Reload data
-            await OnValidSumit.InvokeAsync();
-            CloseMain();
+            //Close
+            MudDialog.Close(DialogResult.Ok(Model));
         }
         catch (Exception ex)
         {
@@ -607,7 +633,7 @@
     }
     void CloseMain()
     {
-        MyForm.Close();
+        MudDialog.Cancel();
     }
     #endregion
 

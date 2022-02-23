@@ -1,23 +1,18 @@
-﻿<button @ref="Ref" class="@BtnCss" style="width:9rem; height:2rem; vertical-align:middle; margin-left:10px; margin-right:10px; padding:0" @onclick="@OnClickHandler">
-    <div style="text-align:start; display:flex">
-        <div style="vertical-align: middle; margin-left: 10px; margin-right: 10px;">
-            <i class="@IconCss" aria-hidden="true"></i>
-        </div>
-        <div style="vertical-align: middle; margin-left: 10px; font-size: medium;">
-            @Literal
-        </div>
-    </div>
-</button>
+﻿<MudChip Style="width:120px"
+         Variant="Variant.Filled"
+         Icon="@IconCss"
+         Color="@Color.Primary"
+         OnClick="OnClickHandler">
+    @Literal
+</MudChip>
 
 @code {
     [Parameter]
-    public ElementReference Ref { get; set; }
-    [Parameter]
-    public string Literal { get; set; } = "";
-    [Parameter]
-    public string BtnCss { get; set; } = "btn btn-success";
+    public string Literal { get; set; } = "Click me";
     [Parameter]
     public string IconCss { get; set; } = "";
+    [Parameter]
+    public MudBlazor.Color ButtonColor { get; set; } = Color.Primary;
     [Parameter]
     public EventCallback OnClick { get; set; }
 

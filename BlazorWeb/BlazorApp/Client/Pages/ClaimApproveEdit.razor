@@ -95,17 +95,17 @@
                     <MyComboBox @ref="RefPriority"
                                 @bind-Value="SelectedPriority"
                                 Data="PriorityList"
-                                AllowUserInput="true"
+                                Disabled="false"
                                 ReadOnly="true"
                                 TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                SelectedItemChanged="@((OptionListModel selectedRow) => {
-                                                   Model.Priority = selectedRow.IntCode;
+                                SelectedItemChanged="@((IEnumerable<OptionListModel> selectedRow) => {
+                                                   Model.Priority = selectedRow.FirstOrDefault<OptionListModel>().IntCode;
                                                    PriorityCss = "";
                                                    if (Model.Priority == 2) PriorityCss = "bg-warning";
                                                    if (Model.Priority == 3) PriorityCss = "bg-danger";
                                                    this.StateHasChanged();
                                              })"
-                                InputCssClass="@PriorityCss"
+                                Class="@PriorityCss"
                                 Literal="Mức độ ưu tiên" />
                 </div>
             </div>
@@ -352,7 +352,7 @@
                 <div class="col-12 col-lg-3">
                     <DxCheckBox @bind-Checked="@Model.EstimationStatus" Enabled="false" CssClass="text-green">Đã báo giá</DxCheckBox>
                 </div>
-                
+
             </div>
 
             <!--Row 3-------------noi dung bao gia------------------------------------->
@@ -1004,13 +1004,13 @@
     // Color of edit data
     void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<EstimationModel> eventArgs)
     {
-        MyColor myColor = new MyColor();
+
         if (eventArgs.DataItem.UpdMode == 1)
-            eventArgs.Style += myColor.NewRowColor;
+            eventArgs.Style += MyColor.NewRowColor;
         else if (eventArgs.DataItem.UpdMode == 2)
-            eventArgs.Style += myColor.EditRowColor;
+            eventArgs.Style += MyColor.EditRowColor;
         else if (eventArgs.DataItem.UpdMode == 3)
-            eventArgs.Style += myColor.DeleteRowColor;
+            eventArgs.Style += MyColor.DeleteRowColor;
     }
     void OnHtmlDataCellDecoration(DataGridHtmlDataCellDecorationEventArgs<EstimationModel> eventArgs)
     {

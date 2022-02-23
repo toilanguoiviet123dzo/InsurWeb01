@@ -9,6 +9,7 @@
 @inject MasterService masterService;
 @inject IJSRuntime JsRuntime;
 @inject IToastService toastService
+@inject IDialogService DialogService
 @using System.Collections.Concurrent
 @using System.Threading
 
@@ -198,7 +199,6 @@
 
 <!--Edit compen request-->
 <MyPopup @ref="@ClaimPopup"
-         VerticalAlignment="@VerticalAlignment.Top"
          HeaderText="Xử lý yêu cầu bồi thường"
          Width="1200px"
          ZIndex="1001">
@@ -346,9 +346,9 @@
     #region Grid main
     void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<ClaimRequestListModel> eventArgs)
     {
-        MyColor myColor = new MyColor();
+        
         //RepairStatus
-        if (eventArgs.DataItem.RepairStatus) eventArgs.Style += myColor.DoneRowColor;
+        if (eventArgs.DataItem.RepairStatus) eventArgs.Style += MyColor.DoneRowColor;
     }
     void OnHtmlDataCellDecoration(DataGridHtmlDataCellDecorationEventArgs<ClaimRequestListModel> eventArgs)
     {
@@ -383,7 +383,7 @@
     }
 
     //Get data for edit/insert
-    void OnRowEditStarting(ClaimRequestListModel editingRow)
+    async void OnRowEditStarting(ClaimRequestListModel editingRow)
     {
         if (editingRow == null)
         {
@@ -395,7 +395,16 @@
             //ClaimNo
             ClaimNo = editingRow.ClaimNo;
         }
-        ClaimPopup.Show();
+        //ClaimPopup.Show();
+
+        var dialog = DialogService.Show<DialogPassingDataExample_Dialog>();
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            
+        }
+
     }
     //Update row
     async Task UpdateRow()

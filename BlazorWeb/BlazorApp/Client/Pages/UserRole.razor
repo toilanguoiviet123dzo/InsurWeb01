@@ -433,13 +433,13 @@
     // Color of edit data
     void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<UserRoleModel> eventArgs)
     {
-        MyColor myColor = new MyColor();
+        
         if (eventArgs.DataItem.UpdMode == 1)
-            eventArgs.Style += myColor.NewRowColor;
+            eventArgs.Style += MyColor.NewRowColor;
         else if (eventArgs.DataItem.UpdMode == 2)
-            eventArgs.Style += myColor.EditRowColor;
+            eventArgs.Style += MyColor.EditRowColor;
         else if (eventArgs.DataItem.UpdMode == 3)
-            eventArgs.Style += myColor.DeleteRowColor;
+            eventArgs.Style += MyColor.DeleteRowColor;
     }
     #endregion
 

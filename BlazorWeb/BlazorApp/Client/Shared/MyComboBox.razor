@@ -1,66 +1,112 @@
-﻿@typeparam TValue
-<div style="width:@Width">
-    <label class="text-muted" style="padding:0;margin:0;font-size:small">@Literal</label>
-    <DxComboBox @ref="Ref"
-                Data="@Data"
-                Value="@Value"
-                ValueChanged="@((TValue selectedValue) => OnValueChanged(selectedValue))"
-                SelectedItemChanged="@((TValue selectedValue) => OnSelectedItemChanged(selectedValue))"
-                TextFieldName="@TextFieldName"
-                ClearButtonDisplayMode="@ClearButtonDisplayMode"
-                AllowUserInput="@AllowUserInput"
-                ReadOnly="@ReadOnly"
-                InputCssClass="@InputCssClass"
-                CssClass="@CssClass"
-                FilteringMode="DataGridFilteringMode.Contains"
-                @attributes="Attributes">
-    </DxComboBox>
-</div>
+﻿@using System.Linq.Expressions
+@using System.Globalization
+@typeparam TValue
+
+<MudSelect @ref="@Ref"
+           Value="Value"
+           SelectedValues="SelectedValues"
+           ValueChanged="@((TValue value) => OnValueChanged(value))"
+           SelectedValuesChanged="@((IEnumerable<TValue> selectedValue) => OnSelectedItemChanged(selectedValue))"
+           TextChanged="@((string value) => OnTextChanged(value))"
+           Error="@Error"
+           ErrorText="@ErrorText"
+           Required="@Required"
+           Validation="@Validation"
+           OpenIcon="@OpenIcon"
+           CloseIcon="@CloseIcon"
+           AutoFocus="@AutoFocus"
+           Clearable="@Clearable"
+           Culture="@Culture"
+           Disabled="@Disabled"
+           ReadOnly="@ReadOnly"
+           HelperTextOnFocus="true"
+           AdornmentIcon="@AdornmentIcon"
+           AdornmentColor="@AdornmentColor"
+           HelperText="@HelperText"
+           InputMode="@InputMode"
+           Placeholder="@Placeholder"
+           Strict="@Strict"
+           FullWidth="@FullWidth"
+           SelectAll="@SelectAll"
+           ToStringFunc="@ToStringFunc"
+           Dense="@Dense"
+           MaxHeight="@MaxHeight"
+           Class="@Class"
+           Style="@Style"
+           Tag="@Tag"
+           UserAttributes="@UserAttributes"
+           Label="@Literal">
+    @foreach (TValue item in Data)
+    {
+        <MudSelectItem Value="@item">@(ClassHelper.GetPropertiesData<string>(item,TextFieldName))</MudSelectItem>
+    }
+</MudSelect>
 
 @code {
-    [Parameter]
-    public bool TabStop { get; set; } = true;
-    [Parameter]
-    public string Width { get; set; } = "100%";
-    [Parameter]
-    public string Literal { get; set; } = "";
-    [Parameter]
-    public string InputCssClass { get; set; } = "";
-    [Parameter]
-    public string CssClass { get; set; } = "";
-    [Parameter]
-    public string TextFieldName { get; set; } = "";
-    [Parameter]
-    public DataEditorClearButtonDisplayMode ClearButtonDisplayMode { get; set; } = DataEditorClearButtonDisplayMode.Never;
-    [Parameter]
-    public List<TValue> Data { get; set; } = new List<TValue>();
-    [Parameter]
-    public bool ReadOnly { get; set; } = false;
-    [Parameter]
-    public bool AllowUserInput { get; set; } = true;
+
+    [Parameter] public bool TabStop { get; set; } = true;
+    [Parameter] public string Width { get; set; } = "100%";
+    [Parameter] public string OpenIcon { get; set; } = "";
+    [Parameter] public string CloseIcon { get; set; } = "";
+    [Parameter] public string AdornmentIcon { get; set; } = "";
+    [Parameter] public string Literal { get; set; } = "";
+    [Parameter] public string HelperText { get; set; } = "";
+    [Parameter] public string ErrorText { get; set; } = "";
+    [Parameter] public bool Error { get; set; } = false;
+    [Parameter] public bool Required { get; set; } = false;
+    [Parameter] public object Validation { get; set; }
+    [Parameter] public bool AutoFocus { get; set; } = false;
+    [Parameter] public bool Clearable { get; set; } = false;
+    [Parameter] public CultureInfo Culture { get; set; }
+    [Parameter] public bool Disabled { get; set; } = false;
+    [Parameter] public bool ReadOnly { get; set; } = false;
+    [Parameter] public InputMode InputMode { get; set; } = InputMode.text;
+    [Parameter] public string Placeholder { get; set; } = "";
+    [Parameter] public bool Strict { get; set; } = false;
+    [Parameter] public Color AdornmentColor { get; set; } = Color.Default;
+    [Parameter] public bool FullWidth { get; set; } = false;
+    [Parameter] public bool SelectAll { get; set; } = false;
+    [Parameter] public bool Dense { get; set; } = true;
+    [Parameter] public int MaxHeight { get; set; } = 300;
+    [Parameter] public Func<TValue, string> ToStringFunc { get; set; }
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+    [Parameter] public object Tag { get; set; }
+    [Parameter] public Dictionary<string, object> UserAttributes { get; set; }
+    [Parameter] public string TextFieldName { get; set; } = "";
+    //
+    [Parameter] public List<TValue> Data { get; set; } = new List<TValue>();
 
     //Value
-    [Parameter]
-    public TValue Value { get; set; }
-    [Parameter]
-    public EventCallback<TValue> ValueChanged { get; set; }
+    [Parameter] public TValue Value { get; set; }
+    [Parameter] public IEnumerable<TValue> SelectedValues { get; set; }
+
+    //ValueChanged
+    [Parameter] public EventCallback<TValue> ValueChanged { get; set; }
     private async Task OnValueChanged(TValue newValue)
     {
         Value = newValue;
         await ValueChanged.InvokeAsync(newValue);
     }
 
+    //TextChanged
+    [Parameter] public EventCallback<string> TextChanged { get; set; }
+    private async Task OnTextChanged(string newValue)
+    {
+        await TextChanged.InvokeAsync(newValue);
+    }
+
     //SelectedItemChanged
     [Parameter]
-    public EventCallback<TValue> SelectedItemChanged { get; set; }
-    private async void OnSelectedItemChanged(TValue newValue)
+    public EventCallback<IEnumerable<TValue>> SelectedItemChanged { get; set; }
+    private async void OnSelectedItemChanged(IEnumerable<TValue> newValue)
     {
-        Value = newValue;
+        SelectedValues = newValue;
         await SelectedItemChanged.InvokeAsync(newValue);
     }
 
     //Ref
-    private DxComboBox<TValue, TValue> Ref;
+    private MudSelect<TValue> Ref;
 
     //Attributes
     private Dictionary<string, object> Attributes { get; set; }
@@ -68,6 +114,7 @@
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
+
         //ReadOnly
         if (ReadOnly || !TabStop)
         {
@@ -82,4 +129,6 @@
     {
         await Ref.FocusAsync();
     }
+
+
 }

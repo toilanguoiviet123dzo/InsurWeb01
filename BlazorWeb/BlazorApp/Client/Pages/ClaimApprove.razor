@@ -198,7 +198,6 @@
 
 <!--Edit compen request-->
 <MyPopup @ref="@ClaimPopup"
-         VerticalAlignment="@VerticalAlignment.Top"
          HeaderText="Duyệt yêu cầu bồi thường"
          Width="1200px"
          ZIndex="1001">
@@ -347,9 +346,9 @@
     #region Grid main
     void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<ClaimRequestListModel> eventArgs)
     {
-        MyColor myColor = new MyColor();
+        
         //RepairStatus
-        if (eventArgs.DataItem.RepairStatus) eventArgs.Style += myColor.DoneRowColor;
+        if (eventArgs.DataItem.RepairStatus) eventArgs.Style += MyColor.DoneRowColor;
     }
     void OnHtmlDataCellDecoration(DataGridHtmlDataCellDecorationEventArgs<ClaimRequestListModel> eventArgs)
     {

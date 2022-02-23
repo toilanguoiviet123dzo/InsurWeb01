@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace BlazorApp.Client.Common
 {
-    public class MyColor
+    public static class MyColor
     {
-        public string NewRowColor = "background-color: #83d0c9; color: black;";
-        public string EditRowColor = "background-color: #ead5dc; color: black;";
-        public string DeleteRowColor = "background-color: #bbbbbb; color: red; text-decoration: line-through;";
-        public string DisabledRowColor = "background-color: #bbbbbb;";
-        public string DoneRowColor = "background-color: #e7eff6;";
+        public static string NewRowColor = "background-color: #83d0c9; color: black;";
+        public static string EditRowColor = "background-color: #ead5dc; color: black;";
+        public static string DeleteRowColor = "background-color: #bbbbbb; color: red; text-decoration: line-through;";
+        public static string DisabledRowColor = "background-color: #bbbbbb;";
+        public static string DoneRowColor = "background-color: #e7eff6;";
     }
 }
