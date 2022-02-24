@@ -53,12 +53,9 @@
                     </DxFormLayoutItem>
                     <DxFormLayoutItem Caption="RoleName: " ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
-                            <DxComboBox @bind-Value="@EditContext.RoleName"
+                            <MyComboBox @bind-Value="@SelectedRole"
                                         Data="@ListRoleList"
-                                        AllowUserInput="true"
-                                        FilteringMode="DataGridFilteringMode.Contains"
                                         TextFieldName="@nameof(RoleListModel.RoleName)"
-                                        ValueFieldName="@nameof(RoleListModel.RoleName)"
                                         SelectedItemChanged="@((RoleListModel value) => RoleList_ItemChanged(value))" />
                             <ValidationMessage For="@(() => EditContext.RoleName)" />
                         </Template>
@@ -93,6 +90,7 @@
     private bool ConfirmVisible = false;
     // RoleList
     private readonly List<RoleListModel> ListRoleList = new List<RoleListModel>();
+    private RoleListModel SelectedRole;
     // UserRole
     readonly ObservableCollection<UserRoleModel> ListUserRole = new ObservableCollection<UserRoleModel>();
     // Init

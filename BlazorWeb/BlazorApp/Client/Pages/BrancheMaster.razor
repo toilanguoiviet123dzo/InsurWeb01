@@ -65,7 +65,7 @@
                 <DxFormLayout>
                     <DxFormLayoutItem Caption="Mã: " ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
-                            <DxTextBox @bind-Text="@EditContext.BranchID" InputCssClass="text-uppercase" />
+                            <DxTextBox @bind-Text="@EditContext.BranchID" Class="text-uppercase" />
                             <ValidationMessage For="@(() => EditContext.BranchID)" />
                         </Template>
                     </DxFormLayoutItem>
@@ -103,7 +103,7 @@
                     <DxFormLayoutItem Caption="Thứ tự" ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
                             <DxMaskedInput @bind-Value="@EditContext.DspOrder"
-                                           Mask="N0" />
+                                           Format="N0" />
                         </Template>
                     </DxFormLayoutItem>
                     <DxFormLayoutItem Caption="Hữu hiệu" ColSpanMd="12" Context="FormLayoutContext">

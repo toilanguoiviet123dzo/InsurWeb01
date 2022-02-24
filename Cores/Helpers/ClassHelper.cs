@@ -24,11 +24,11 @@ namespace Cores.Helpers
         public static TResult GetPropertiesData<TResult>(dynamic fromObject, string propertyName)
         {
             //initialising s with the same values as 
-            foreach (var property in fromObject.GetType().GetProperties())
+            foreach (PropertyInfo property in fromObject.GetType().GetProperties())
             {
                 if (property.Name == propertyName)
                 {
-                    return property.GetValue(fromObject, default(TResult));
+                    return property.GetValue(fromObject);
                 }
             }
             //Not found

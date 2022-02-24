@@ -20,7 +20,7 @@
                                 ReadOnly="true"
                                 Literal="Số tiếp nhận"
                                 Width="8rem"
-                                InputCssClass="text-blue font-weight-bold" />
+                                Class="text-blue font-weight-bold" />
                 </div>
 
                 <!--Ngày tiếp nhận-->
@@ -28,7 +28,7 @@
                     <MyDateTimeEdit @bind-Date="Model.ClaimDate"
                                     Literal="Ngày tiếp nhận"
                                     ReadOnly="true"
-                                    InputCssClass="text-blue" />
+                                    Class="text-blue" />
                 </div>
                 <!--Người tiếp nhận-->
                 <div class="col-12 col-lg-3">
@@ -44,16 +44,15 @@
                 <div class="col-12 col-lg-3">
                     <MyTextEdit Text="@Model.CusPhone"
                                 Literal="Điện thoại liên hệ"
-                                InputCssClass="text-blue font-weight-bold"
-                                ReadOnly="true"
-                                CssClass="cusphone-focus" />
+                                Class="text-blue font-weight-bold"
+                                ReadOnly="true" />
                 </div>
                 <!--Tên khách hàng-->
                 <div class="col-12 col-lg-3">
                     <MyTextEdit @bind-Text="Model.CusFullname"
                                 Literal="Tên khách hàng"
                                 ReadOnly="true"
-                                CssClass="cusfullname-focus" />
+                                Class="cusfullname-focus" />
                 </div>
                 <!--Email-->
                 <div class="col-12 col-lg-3">
@@ -82,7 +81,7 @@
                     <MyTextEdit @bind-Text="Model.DeviceIMEI"
                                 Literal="Số IMEI thiết bị"
                                 ReadOnly="true"
-                                InputCssClass="text-purple font-weight-bold" />
+                                Class="text-purple font-weight-bold" />
                 </div>
                 <!--Model-->
                 <div class="col-12 col-lg-3">
@@ -95,7 +94,6 @@
                     <MyComboBox @ref="RefPriority"
                                 @bind-Value="SelectedPriority"
                                 Data="PriorityList"
-                                AllowUserInput="true"
                                 ReadOnly="true"
                                 TextFieldName="@(nameof(OptionListModel.ItemName))"
                                 SelectedItemChanged="@((OptionListModel selectedRow) => {
@@ -105,7 +103,7 @@
                                                    if (Model.Priority == 3) PriorityCss = "bg-danger";
                                                    this.StateHasChanged();
                                              })"
-                                InputCssClass="@PriorityCss"
+                                Class="@PriorityCss"
                                 Literal="Mức độ ưu tiên" />
                 </div>
             </div>
@@ -117,7 +115,7 @@
                     <MyTextEdit @bind-Text="Model.PickupAddress"
                                 Literal="Địa chỉ nhận thiết bị"
                                 ReadOnly="true"
-                                CssClass="pickupaddress-focus" />
+                                Class="pickupaddress-focus" />
                 </div>
                 <!--Địa chỉ trả thiết bị-->
                 <div class="col-12 col-lg-6">
@@ -141,14 +139,14 @@
                     <MyDateTimeEdit @bind-Date="Model.NotificationDate"
                                     Literal="Ngày KH thông báo"
                                     ReadOnly="true"
-                                    InputCssClass="text-green" />
+                                    Class="text-green" />
                 </div>
                 <!--Ngày sự cố-->
                 <div class="col-12 col-lg-3">
                     <MyDateTimeEdit @bind-Date="Model.IncidentDate"
                                     Literal="Ngày sự cố"
                                     ReadOnly="true"
-                                    InputCssClass="text-maroon" />
+                                    Class="text-maroon" />
                 </div>
             </div>
 
@@ -211,14 +209,14 @@
                     <MyDateTimeEdit @bind-Date="Model.EstReqDate"
                                     Literal="Ngày yêu cầu báo giá"
                                     ReadOnly="true"
-                                    InputCssClass="text-green" />
+                                    Class="text-green" />
                 </div>
                 <!--Ngày báo giá xong-->
                 <div class="col-12 col-lg-3">
                     <MyDateTimeEdit @bind-Date="Model.EstDoneDate"
                                     Literal="Ngày báo giá xong"
                                     ReadOnly="true"
-                                    InputCssClass="text-blue" />
+                                    Class="text-blue" />
                 </div>
             </div>
 
@@ -226,11 +224,11 @@
             <div class="row mt-2">
                 <!--Check: yêu cầu báo giá-->
                 <div class="col-12 col-lg-3">
-                    <DxCheckBox @bind-Checked="@Model.EstimationReqStatus" CssClass="text-green" Enabled="false">Yêu cầu báo giá</DxCheckBox>
+                    <DxCheckBox @bind-Checked="@Model.EstimationReqStatus" Class="text-green" Enabled="false">Yêu cầu báo giá</DxCheckBox>
                 </div>
                 <!--Check: Đã báo giá-->
                 <div class="col-12 col-lg-3">
-                    <DxCheckBox @bind-Checked="@Model.EstimationStatus" CssClass="text-green" Enabled="@(Model.EstimationReqStatus && !Model.ApproveStatus && Model.Estimations.Count > 0)">Đã báo giá</DxCheckBox>
+                    <DxCheckBox @bind-Checked="@Model.EstimationStatus" Class="text-green" Enabled="@(Model.EstimationReqStatus && !Model.ApproveStatus && Model.Estimations.Count > 0)">Đã báo giá</DxCheckBox>
                 </div>
             </div>
 
@@ -347,7 +345,7 @@
                                     <Template>
                                         <MyNumEdit Value="@EditContext.Quantity"
                                                    ValueChanged="@((double newValue) => Quantity_Changed(newValue))"
-                                                   Mask="N0" />
+                                                   Format="N0" />
                                         <ValidationMessage For="@(() => EditContext.Quantity)" />
                                     </Template>
                                 </DxFormLayoutItem>
@@ -356,7 +354,7 @@
                                     <Template>
                                         <MyNumEdit Value="@EditContext.UnitPrice"
                                                    ValueChanged="@((double newValue) => UnitPrice_Changed(newValue))"
-                                                   Mask="N0" />
+                                                   Format="N0" />
                                         <ValidationMessage For="@(() => EditContext.UnitPrice)" />
                                     </Template>
                                 </DxFormLayoutItem>
@@ -365,7 +363,7 @@
                                     <Template>
                                         <MyNumEdit @bind-Value="@EditContext.Amount"
                                                    ReadOnly="true"
-                                                   Mask="N0" />
+                                                   Format="N0" />
                                     </Template>
                                 </DxFormLayoutItem>
                                 <!--ApproveAmount-->
@@ -373,7 +371,7 @@
                                     <Template>
                                         <MyNumEdit @bind-Value="@EditContext.ApproveAmount"
                                                    ReadOnly="@ApproveAmount_ReadOnly"
-                                                   Mask="N0" />
+                                                   Format="N0" />
                                     </Template>
                                 </DxFormLayoutItem>
                                 <!--Notes-->
@@ -403,14 +401,14 @@
                 <div class="col-12 col-lg-2">
                     <MyNumEdit @bind-Value="Model.ClaimAmount"
                                ReadOnly="true"
-                               InputCssClass="text-blue font-weight-bold"
+                               Class="text-blue font-weight-bold"
                                Literal="Tiền bồi thường" />
                 </div>
                 <!--Tiền duyệt-->
                 <div class="col-12 col-lg-2">
                     <MyNumEdit @bind-Value="Model.ApproveAmount"
                                ReadOnly="true"
-                               InputCssClass="text-maroon font-weight-bold"
+                               Class="text-maroon font-weight-bold"
                                Literal="Tiền duyệt" />
                 </div>
             </div>
@@ -421,18 +419,18 @@
                     <MyDateTimeEdit @bind-Date="Model.RepairDoneDate"
                                     Literal="Ngày sửa chữa xong"
                                     ReadOnly="true"
-                                    InputCssClass="text-maroon" />
+                                    Class="text-maroon" />
                 </div>
                 <!--Check: Đã sửa xong-->
                 <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.RepairStatus" Enabled="@(Model.EstimationStatus && !Model.ReturnStatus1)" CssClass="text-green">Đã sửa xong</DxCheckBox>
+                    <DxCheckBox @bind-Checked="@Model.RepairStatus" Enabled="@(Model.EstimationStatus && !Model.ReturnStatus1)" Class="text-green">Đã sửa xong</DxCheckBox>
                 </div>
                 <!--Số IMEI thiết bị-->
                 <div class="col-12 col-lg-2">
                     <MyTextEdit @bind-Text="Model.NewDeviceIMEI"
                                 Literal="Số IMEI thiết bị mới"
                                 ReadOnly="@Model.ReturnStatus1"
-                                InputCssClass="text-purple font-weight-bold" />
+                                Class="text-purple font-weight-bold" />
                 </div>
                 <!--Model-->
                 <div class="col-12 col-lg-2">
@@ -475,11 +473,11 @@
                                     Literal="Ngày yêu cầu duyệt"
                                     ReadOnly="true"
                                     Width="100%"
-                                    InputCssClass="text-green" />
+                                    Class="text-green" />
                 </div>
                 <!--Check: yêu cầu duyệt-->
                 <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.ApproveReqStatus" CssClass="text-green" Enabled="false">Yêu cầu duyệt</DxCheckBox>
+                    <DxCheckBox @bind-Checked="@Model.ApproveReqStatus" Class="text-green" Enabled="false">Yêu cầu duyệt</DxCheckBox>
                 </div>
                 <!--Ngày yêu cầu duyệt-->
                 <div class="col-12 col-lg-2">
@@ -487,11 +485,11 @@
                                     Literal="Ngày duyệt"
                                     Width="100%"
                                     ReadOnly="true"
-                                    InputCssClass="text-blue" />
+                                    Class="text-blue" />
                 </div>
                 <!--Check: yêu cầu duyệt-->
                 <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.ApproveStatus" CssClass="text-green" Enabled="false">Đã duyệt</DxCheckBox>
+                    <DxCheckBox @bind-Checked="@Model.ApproveStatus" Class="text-green" Enabled="false">Đã duyệt</DxCheckBox>
                 </div>
             </div>
 
@@ -531,11 +529,11 @@
                                     Literal="Ngày YC trả thiết bị"
                                     ReadOnly="true"
                                     Width="100%"
-                                    InputCssClass="text-green" />
+                                    Class="text-green" />
                 </div>
                 <!--Check: yêu cầu trả hàng-->
                 <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.ReturnReqStatus" CssClass="text-green" Enabled="false">YC trả thiết bị</DxCheckBox>
+                    <DxCheckBox @bind-Checked="@Model.ReturnReqStatus" Class="text-green" Enabled="false">YC trả thiết bị</DxCheckBox>
                 </div>
                 <!--Ngày xuất hàng-->
                 <div class="col-12 col-lg-2">
@@ -543,11 +541,11 @@
                                     Literal="Ngày xuất thiết bị"
                                     Width="100%"
                                     ReadOnly="true"
-                                    InputCssClass="text-blue" />
+                                    Class="text-blue" />
                 </div>
                 <!--Check: Đã xuất hàng-->
                 <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.ReturnStatus1" CssClass="text-blue" Enabled="false">Đã xuất thiết bị</DxCheckBox>
+                    <DxCheckBox @bind-Checked="@Model.ReturnStatus1" Class="text-blue" Enabled="false">Đã xuất thiết bị</DxCheckBox>
                 </div>
                 <!--Ngày trả hàng-->
                 <div class="col-12 col-lg-2">
@@ -555,11 +553,11 @@
                                     Literal="Ngày trả thiết bị"
                                     Width="100%"
                                     ReadOnly="true"
-                                    InputCssClass="text-maroon" />
+                                    Class="text-maroon" />
                 </div>
                 <!--Check: Đã trả hàng-->
                 <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.ReturnStatus2" CssClass="text-maroon" Enabled="false">Đã trả thiết bị</DxCheckBox>
+                    <DxCheckBox @bind-Checked="@Model.ReturnStatus2" Class="text-maroon" Enabled="false">Đã trả thiết bị</DxCheckBox>
                 </div>
             </div>
             <!--Row 2-------------------------------------------------->
@@ -604,11 +602,11 @@
                                     Literal="Ngày yêu cầu chi trả"
                                     ReadOnly="true"
                                     Width="100%"
-                                    InputCssClass="text-green" />
+                                    Class="text-green" />
                 </div>
                 <!--Check: yêu cầu chi trả-->
                 <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.PayReqStatus" CssClass="text-green" Enabled="false">YC chi trả</DxCheckBox>
+                    <DxCheckBox @bind-Checked="@Model.PayReqStatus" Class="text-green" Enabled="false">YC chi trả</DxCheckBox>
                 </div>
                 <!--Ngày chi trả-->
                 <div class="col-12 col-lg-2">
@@ -616,11 +614,11 @@
                                     Literal="Ngày chi trả"
                                     Width="100%"
                                     ReadOnly="true"
-                                    InputCssClass="text-maroon" />
+                                    Class="text-maroon" />
                 </div>
                 <!--Check: Đã chi trả-->
                 <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.PayStatus" CssClass="text-maroon" Enabled="false">Đã chi trả</DxCheckBox>
+                    <DxCheckBox @bind-Checked="@Model.PayStatus" Class="text-maroon" Enabled="false">Đã chi trả</DxCheckBox>
                 </div>
                 <!--Người chi trả-->
                 <div class="col-12 col-lg-3">

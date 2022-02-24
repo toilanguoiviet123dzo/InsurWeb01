@@ -23,13 +23,13 @@
                 <div class="col-12 col-lg-2">
                     <MyTextEdit @bind-Text="Filter_CusPhone"
                                 Literal="Phone"
-                                InputCssClass="text-blue font-weight-bold" />
+                                Class="text-blue font-weight-bold" />
                 </div>
                 <!--Số IMEI thiết bị-->
                 <div class="col-12 col-lg-2">
                     <MyTextEdit @bind-Text="Filter_DeviceIMEI"
                                 Literal="Số IMEI thiết bị"
-                                InputCssClass="text-purple font-weight-bold" />
+                                Class="text-purple font-weight-bold" />
                 </div>
                 <!--Tên khách hàng-->
                 <div class="col-12 col-lg-2">
@@ -42,13 +42,11 @@
             <div class="row align-items-end">
                 <!--Công ty bảo hiểm-->
                 <div class="col-12 col-lg-2">
-                    <MyMuteLabel Literal="Công ty bảo hiểm" />
-                    <DxComboBox @bind-Value="Filter_Insure"
+                    <MyComboBox @bind-Value="Filter_Insure"
                                 Data="InsureList"
-                                AllowUserInput="true"
-                                ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
-                                FilteringMode="DataGridFilteringMode.Contains"
-                                TextFieldName="@(nameof(OptionListModel.ItemName))" />
+                                Clearable="true"
+                                TextFieldName="@(nameof(OptionListModel.ItemName))"
+                                Literal="Công ty bảo hiểm"/>
                 </div>
                 <!--Thời gian-->
                 <div class="col-12 col-lg-4">
@@ -58,7 +56,6 @@
                             <MyComboBox @bind-Value="Filter_TimeFlag"
                                         Data="TimeFlagList"
                                         TextFieldName="@(nameof(CodeNameModel.Name))"
-                                        AllowUserInput="true"
                                         SelectedItemChanged="@((CodeNameModel selectedItem) =>
                                                        {
                                                             var timeRange = MyDateTimeSelector.Select_DateTimeRange1(selectedItem);
@@ -66,7 +63,7 @@
                                                             Filter_EndDate = timeRange.EndDate;
                                                             this.StateHasChanged();
                                                        })"
-                                        ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                                        Clearable="true"
                                         Literal="Thời gian" />
                         </div>
                         <!--Start-->
@@ -92,8 +89,7 @@
                             <MyComboBox @bind-Value="Filter_Status"
                                         Data="StatusList"
                                         TextFieldName="@(nameof(CodeNameModel.Name))"
-                                        AllowUserInput="true"
-                                        ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                                        Clearable="true"
                                         Literal="Trạng thái" />
                         </div>
                         <div class="col-4">

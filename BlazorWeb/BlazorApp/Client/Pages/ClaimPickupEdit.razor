@@ -20,14 +20,14 @@
                                 ReadOnly="true"
                                 Literal="Số tiếp nhận"
                                 Width="8rem"
-                                InputCssClass="text-blue font-weight-bold" />
+                                Class="text-blue font-weight-bold" />
                 </div>
                 <!--Ngày tiếp nhận-->
                 <div class="col-12 col-lg-2">
                     <MyDateTimeEdit @bind-Date="Model.ClaimDate"
                                     Literal="Ngày tiếp nhận"
                                     ReadOnly="true"
-                                    InputCssClass="text-blue" />
+                                    Class="text-blue" />
                 </div>
                 <!--Phụ trách bồi thường-->
                 <div class="col-12 col-lg-3">
@@ -46,7 +46,6 @@
                     <MyComboBox @ref="RefPriority"
                                 @bind-Value="SelectedPriority"
                                 Data="PriorityList"
-                                AllowUserInput="true"
                                 ReadOnly="true"
                                 TextFieldName="@(nameof(OptionListModel.ItemName))"
                                 SelectedItemChanged="@((OptionListModel selectedRow) => {
@@ -56,7 +55,7 @@
                                                    if (Model.Priority == 3) PriorityCss = "bg-danger";
                                                    this.StateHasChanged();
                                              })"
-                                InputCssClass="@PriorityCss"
+                                Class="@PriorityCss"
                                 Literal="Mức độ ưu tiên" />
                 </div>
             </div>
@@ -68,15 +67,14 @@
                     <MyTextEdit @bind-Text="Model.CusFullname"
                                 Literal="Tên khách hàng"
                                 ReadOnly="true"
-                                CssClass="cusfullname-focus" />
+                                Class="cusfullname-focus" />
                 </div>
                 <!--Phone-->
                 <div class="col-12 col-lg-3">
                     <MyTextEdit Text="@Model.CusPhone"
                                 Literal="Điện thoại liên hệ"
-                                InputCssClass="text-blue font-weight-bold"
-                                ReadOnly="true"
-                                CssClass="cusphone-focus" />
+                                Class="text-blue font-weight-bold"
+                                ReadOnly="true"/>
                 </div>
                 <!--Email-->
                 <div class="col-12 col-lg-3">
@@ -99,7 +97,7 @@
                     <MyTextEdit @bind-Text="Model.DeviceIMEI"
                                 Literal="Số IMEI thiết bị"
                                 ReadOnly="true"
-                                InputCssClass="text-purple font-weight-bold" />
+                                Class="text-purple font-weight-bold" />
                 </div>
                 <!--Model-->
                 <div class="col-12 col-lg-3">
@@ -117,7 +115,7 @@
                     <MyTextEdit @bind-Text="Model.PickupAddress"
                                 Literal="Địa chỉ lấy thiết bị"
                                 ReadOnly="true"
-                                CssClass="pickupaddress-focus" />
+                                Class="pickupaddress-focus" />
                 </div>
                 <!--Địa chỉ trả thiết bị-->
                 <div class="col-12 col-lg-6">
@@ -141,7 +139,7 @@
                     <MyDateTimeEdit @bind-Date="Model.NotificationDate"
                                     Literal="Ngày KH thông báo"
                                     ReadOnly="true"
-                                    InputCssClass="text-green" />
+                                    Class="text-green" />
                 </div>
             </div>
 
@@ -179,21 +177,21 @@
                     <MyDateTimeEdit @bind-Date="Model.PickupReqDate"
                                     Literal="Ngày yêu cầu lấy"
                                     ReadOnly="true"
-                                    InputCssClass="text-green" />
+                                    Class="text-green" />
                 </div>
                 <!--Ngày lấy thiết bị-->
                 <div class="col-12 col-lg-3">
                     <MyDateTimeEdit @bind-Date="Model.PickupDoneDate1"
                                     Literal="Ngày lấy thiết bị"
                                     ReadOnly="true"
-                                    InputCssClass="text-blue" />
+                                    Class="text-blue" />
                 </div>
                 <!--Ngày nhập thiết bị-->
                 <div class="col-12 col-lg-3">
                     <MyDateTimeEdit @bind-Date="Model.PickupDoneDate1"
                                     Literal="Ngày nhập thiết bị"
                                     ReadOnly="true"
-                                    InputCssClass="text-maroon" />
+                                    Class="text-maroon" />
                 </div>
             </div>
 
@@ -202,7 +200,7 @@
                 <!--Check: đã lấy thiết bị-->
                 <div class="col-12 col-lg-3">
                     <DxCheckBox @bind-Checked="@Model.PickupStatus1"
-                                CssClass="text-blue">
+                                Class="text-blue">
                         Đã lấy thiết bị
                     </DxCheckBox>
                 </div>
@@ -210,7 +208,7 @@
                 <!--Check: đã nhập thiết bị-->
                 <div class="col-12 col-lg-3">
                     <DxCheckBox @bind-Checked="@Model.PickupStatus2"
-                                CssClass="text-maroon"
+                                Class="text-maroon"
                                 Enabled="@Model.PickupStatus1">
                         Đã nhập thiết bị
                     </DxCheckBox>

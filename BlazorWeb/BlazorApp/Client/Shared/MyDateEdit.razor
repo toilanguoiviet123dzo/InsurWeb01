@@ -1,43 +1,79 @@
-﻿<div style="width:@Width">
-    <label class="text-muted" style="padding: 0; margin: 0; font-size: small">@Literal</label>
-    <DxDateEdit CssClass="@CssClass"
-                InputCssClass="@InputCssClass"
-                Format="@Format"
-                Mask="@Format"
-                ReadOnly="@ReadOnly"
-                DateChanged="@((DateTime newValue) => OnDateChanged(newValue))"
-                Date="@Date"
-                @attributes="Attributes"/>
-</div>
+﻿<MudDatePicker @ref="@Ref"
+               Date="Date"
+               DateChanged="@((DateTime? value) => OnDateChanged(value))"
+               TextChanged="@((string value) => OnTextChanged(value))"
+               Label="@Literal"
+               HelperText="@HelperText"
+               Editable="@Editable"
+               ReadOnly="@ReadOnly"
+               DateFormat="@Format"
+               PickerVariant="@PickerVariant"
+               Color="@Color"
+               Rounded="true"
+               Elevation="12"
+               Class="@Class"
+               Style="@Style"
+               Tag="@Tag"
+               MinDate="@MinDate"
+               MaxDate="@MaxDate"
+               Required="@Required"
+               StartMonth="@StartMonth"
+               DisplayMonths="@DisplayMonths"
+               UserAttributes="@Attributes" />
+
 @code {
-    [Parameter]
-    public bool TabStop { get; set; } = true;
-    [Parameter]
-    public string Width { get; set; } = "10rem";
-    [Parameter]
-    public string Literal { get; set; } = "";
-    [Parameter]
-    public string InputCssClass { get; set; } = "";
-    [Parameter]
-    public string CssClass { get; set; } = "";
-    [Parameter]
-    public string Format { get; set; } = "dd/MM/yyyy";
-    [Parameter]
-    public bool ReadOnly { get; set; } = false;
-    [Parameter]
-    public DateTime Date { get; set; } = DateTime.Today;
-    [Parameter]
-    public EventCallback<DateTime> DateChanged { get; set; }
-    private async Task OnDateChanged(DateTime newValue)
+    [Parameter] public bool TabStop { get; set; } = true;
+    [Parameter] public string Literal { get; set; } = "";
+    [Parameter] public string HelperText { get; set; } = "";
+    [Parameter] public bool ReadOnly { get; set; } = false;
+    [Parameter] public bool Editable { get; set; } = true;
+    [Parameter] public PickerVariant PickerVariant { get; set; } = PickerVariant.Dialog;
+    [Parameter] public Color Color { get; set; } = Color.Success;
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+    [Parameter] public object Tag { get; set; }
+    [Parameter] public string Width { get; set; } = "10rem";
+    [Parameter] public string Format { get; set; } = "dd/MM/yyyy";
+    [Parameter] public DateTime? MinDate { get; set; } = null;
+    [Parameter] public DateTime? MaxDate { get; set; } = null;
+    [Parameter] public bool Required { get; set; } = true;
+    [Parameter] public DateTime? StartMonth { get; set; } = DateTime.Now;
+    [Parameter] public int DisplayMonths { get; set; } = 2;
+
+    //DateChanged
+    [Parameter] public DateTime Date { get; set; } = DateTime.Today;
+    [Parameter] public EventCallback<DateTime> DateChanged { get; set; }
+    private async void OnDateChanged(DateTime? newValue)
     {
-        await DateChanged.InvokeAsync(newValue);
+        if (newValue != null)
+        {
+            Date = (DateTime)newValue;
+            await DateChanged.InvokeAsync((DateTime)newValue);
+        }
+        await TextChanged.InvokeAsync(newValue.ToString());
     }
+    //
+    [Parameter] public EventCallback<string> TextChanged { get; set; }
+    private async void OnTextChanged(string newValue)
+    {
+        await TextChanged.InvokeAsync(newValue);
+    }
+
     //Attributes
     private Dictionary<string, object> Attributes { get; set; }
     //
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
+        //Mobile
+        if (BrowserInfo.IsMobile) DisplayMonths = 1;
+
+        //Editable
+        if (ReadOnly) Editable = false;
+
+        //Set width
+        Style = $"width:{Width}; {Style}";
+
         //ReadOnly
         if (ReadOnly || !TabStop)
         {
@@ -46,5 +82,11 @@
                                                 { "tabIndex", "-1" }
                                             };
         }
+    }
+    //Focus
+    private MudDatePicker Ref;
+    public async void Focus()
+    {
+        await Ref.FocusAsync();
     }
 }

@@ -1,7 +1,7 @@
 ﻿<MudChip Style="width:120px"
          Variant="Variant.Filled"
-         Icon="@IconCss"
-         Color="@Color.Primary"
+         Icon="@Icon"
+         Color="@Color"
          OnClick="OnClickHandler">
     @Literal
 </MudChip>
@@ -10,9 +10,9 @@
     [Parameter]
     public string Literal { get; set; } = "Click me";
     [Parameter]
-    public string IconCss { get; set; } = "";
+    public string Icon { get; set; } = "";
     [Parameter]
-    public MudBlazor.Color ButtonColor { get; set; } = Color.Primary;
+    public MudBlazor.Color Color { get; set; } = Color.Primary;
     [Parameter]
     public EventCallback OnClick { get; set; }
 

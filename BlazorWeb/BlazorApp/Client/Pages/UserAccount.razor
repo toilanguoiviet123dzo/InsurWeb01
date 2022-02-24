@@ -109,24 +109,18 @@
                     </DxFormLayoutItem>
                     <DxFormLayoutItem Caption="Role: " ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
-                            <DxComboBox @bind-Value="@EditContext.RoleID"
+                            <MyComboBox @bind-Value="@SelectedRole"
                                         Data="@RoleList"
-                                        AllowUserInput="true"
-                                        FilteringMode="DataGridFilteringMode.Contains"
                                         TextFieldName="@nameof(RoleListModel.RoleName)"
-                                        ValueFieldName="@nameof(RoleListModel.RoleID)"
                                         SelectedItemChanged="@((RoleListModel value) => RoleList_ItemChanged(value))" />
                             <ValidationMessage For="@(() => EditContext.RoleID)" />
                         </Template>
                     </DxFormLayoutItem>
                     <DxFormLayoutItem Caption="Approve level: " ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
-                            <DxComboBox @bind-Value="@EditContext.ApproveLevel"
+                            <MyComboBox @bind-Value="@SelectedApproveLevel"
                                         Data="@ApproveLevelList"
-                                        AllowUserInput="true"
-                                        FilteringMode="DataGridFilteringMode.Contains"
                                         TextFieldName="@nameof(OptionListModel.ItemName)"
-                                        ValueFieldName="@nameof(OptionListModel.IntCode)"
                                         SelectedItemChanged="@((OptionListModel value) => {
                                                                    EditContext.ApproveLevel = value.IntCode;
                                                                    EditContext.ApproveLevelName = value.ItemName;
@@ -135,12 +129,9 @@
                     </DxFormLayoutItem>
                     <DxFormLayoutItem Caption="Document level: " ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
-                            <DxComboBox @bind-Value="@EditContext.DocumentLevel"
+                            <MyComboBox @bind-Value="@SelectedDocumentLevel"
                                         Data="@DocumentLevelList"
-                                        AllowUserInput="true"
-                                        FilteringMode="DataGridFilteringMode.Contains"
                                         TextFieldName="@nameof(OptionListModel.ItemName)"
-                                        ValueFieldName="@nameof(OptionListModel.IntCode)"
                                         SelectedItemChanged="@((OptionListModel value) => {
                                                                    EditContext.DocumentLevel = value.IntCode;
                                                                    EditContext.DocumentLevelName = value.ItemName;
@@ -179,6 +170,10 @@
     private List<RoleListModel> RoleList = new List<RoleListModel>();
     private List<OptionListModel> ApproveLevelList = new List<OptionListModel>();
     private List<OptionListModel> DocumentLevelList = new List<OptionListModel>();
+    //
+    private RoleListModel SelectedRole;
+    private OptionListModel SelectedApproveLevel;
+    private OptionListModel SelectedDocumentLevel;
     // Popup
     private string ConfirmMessage = "";
     private string ConfirmAction = "";

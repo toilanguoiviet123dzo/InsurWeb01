@@ -114,12 +114,9 @@
                                         <DxFormLayout>
                                             <DxFormLayoutItem Caption="Page: " ColSpanMd="12" Context="FormLayoutContextChild">
                                                 <Template>
-                                                    <DxComboBox @bind-Value="@EditContextChild.PageID"
+                                                    <MyComboBox @bind-Value="@SelectedPage"
                                                                 Data="@ListFunctionList"
-                                                                AllowUserInput="true"
-                                                                FilteringMode="DataGridFilteringMode.Contains"
                                                                 TextFieldName="@nameof(FunctionListModel.PageName)"
-                                                                ValueFieldName="@nameof(FunctionListModel.PageID)"
                                                                 SelectedItemChanged="@((FunctionListModel value) => FunctionList_ItemChanged(value))" />
                                                     <ValidationMessage For="@(() => EditContextChild.PageID)" />
                                                 </Template>
@@ -230,6 +227,7 @@
     private bool PopupVisibleChild = false;
     // FunctionList
     private readonly List<FunctionListModel> ListFunctionList = new List<FunctionListModel>();
+    private FunctionListModel SelectedPage;
     // MenuGroup
     private string GetGroupID = "";
     readonly ObservableCollection<MenuGroupModel> ListMenuGroup = new ObservableCollection<MenuGroupModel>();

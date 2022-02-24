@@ -8,12 +8,10 @@
 <br />
 <div style="width:15rem">
     <label>Loại danh sách</label>
-    <DxComboBox Data="@ListCodeData"
-                AllowUserInput="true"
-                FilteringMode="DataGridFilteringMode.Contains"
+    <MyComboBox Data="@ListCodeData"
                 ValueChanged="@((OptionListHeaderModel Value) => ListCode_ValueChanged(Value))"
                 TextFieldName="@nameof(OptionListHeaderModel.ListName)">
-    </DxComboBox>
+    </MyComboBox>
 </div>
 <br />
 <div style="width:100%">
@@ -77,7 +75,7 @@
                     <DxFormLayoutItem Caption="Trị (số nguyên): " ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
                             <DxMaskedInput @bind-Value="@EditContext.IntCode"
-                                           Mask="N0" />
+                                           Format="N0" />
                         </Template>
                     </DxFormLayoutItem>
                     <DxFormLayoutItem Caption="Trị (số thập phân): " ColSpanMd="12" Context="FormLayoutContext">

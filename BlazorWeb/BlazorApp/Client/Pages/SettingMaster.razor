@@ -87,14 +87,14 @@
                     <DxFormLayoutItem Caption="IntValue1: " ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
                             <DxMaskedInput @bind-Value="@EditContext.IntValue1"
-                                           Mask="N0" />
+                                           Format="N0" />
                             <ValidationMessage For="@(() => EditContext.IntValue1)" />
                         </Template>
                     </DxFormLayoutItem>
                     <DxFormLayoutItem Caption="IntValue2: " ColSpanMd="12" Context="FormLayoutContext">
                         <Template>
                             <DxMaskedInput @bind-Value="@EditContext.IntValue2"
-                                           Mask="N0" />
+                                           Format="N0" />
                             <ValidationMessage For="@(() => EditContext.IntValue2)" />
                         </Template>
                     </DxFormLayoutItem>

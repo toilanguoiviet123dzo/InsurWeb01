@@ -1,0 +1,86 @@
+﻿@inject IJSRuntime JsRuntime;
+
+<style>
+    .mud-container {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+
+    .mud-expand-panel .mud-expand-panel-header {
+        padding: 0 !important;
+    }
+</style>
+
+<MudDialog Style="@($"overflow-y: scroll")"
+           ClassActions="justify-center"
+           ClassContent="p-1"
+           IsVisibleChanged="@((value) => OnVisibleChanged(value))">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            @if (UpdMode == 1)
+            {
+                <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-3 mb-n1" />
+            }
+            else
+            {
+                <MudIcon Icon="@Icons.Material.Filled.Create" Class="mr-3 mb-n1" />
+            }
+            @Title
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudContainer>
+            @ChildContent
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        @if (IsShowCancelButton)
+        {
+            <MyButton OnClick="OnCancel" Icon="@CancelIcon" Color="CancelColor" Literal="CancelText" />
+        }
+        @if (IsShowSubmitButton)
+        {
+            <MyButton OnClick="OnSubmit" Icon="@SubmitIcon" Color="SubmitColor" Literal="SubmitText" />
+        }
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public int UpdMode { get; set; } = 1;
+    [Parameter] public bool IsShowCancelButton { get; set; } = true;
+    [Parameter] public bool IsShowSubmitButton { get; set; } = true;
+    [Parameter] public string CancelText { get; set; } = "Cancel";
+    [Parameter] public string SubmitText { get; set; } = "Save";
+    [Parameter] public string CancelIcon { get; set; } = Icons.Material.Filled.Cancel;
+    [Parameter] public string SubmitIcon { get; set; } = Icons.Material.Filled.Save;
+    [Parameter] public Color CancelColor { get; set; } = Color.Default;
+    [Parameter] public Color SubmitColor { get; set; } = Color.Primary;
+    [Parameter] public string FocusFirstItemID { get; set; } = "";
+
+    //Visible
+    [Parameter] public bool Visible { get; set; } = true;
+    [Parameter] public EventCallback<bool> VisibleChanged { get; set; }
+    private async void OnVisibleChanged(bool value)
+    {
+        Visible = value;
+        await VisibleChanged.InvokeAsync(value);
+    }
+
+    //Cancel
+    [Parameter] public EventCallback OnCancelClick { get; set; }
+    private async void OnCancel()
+    {
+        await OnCancelClick.InvokeAsync();
+    }
+
+    //Submit
+    [Parameter] public EventCallback OnSubmitClick { get; set; }
+    private async void OnSubmit()
+    {
+        await OnSubmitClick.InvokeAsync();
+    }
+
+}

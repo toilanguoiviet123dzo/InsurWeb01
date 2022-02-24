@@ -26,7 +26,6 @@
                             <MyComboBox @bind-Value="Filter_TimeFlag"
                                         Data="TimeFlagList"
                                         TextFieldName="@(nameof(CodeNameModel.Name))"
-                                        AllowUserInput="true"
                                         SelectedItemChanged="@((CodeNameModel selectedItem) =>
                                                        {
                                                             var timeRange = MyDateTimeSelector.Select_DateTimeRange1(selectedItem);
@@ -34,7 +33,7 @@
                                                             Filter_EndDate = timeRange.EndDate;
                                                             this.StateHasChanged();
                                                        })"
-                                        ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                                        Clearable="true"
                                         Literal="Thời gian" />
                         </div>
                         <!--Start-->
@@ -60,8 +59,7 @@
                             <MyComboBox @bind-Value="Filter_Status"
                                         Data="StatusList"
                                         TextFieldName="@(nameof(CodeNameModel.Name))"
-                                        AllowUserInput="true"
-                                        ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                                        Clearable="true"
                                         Literal="Trạng thái" />
                         </div>
                         <div class="col-4">

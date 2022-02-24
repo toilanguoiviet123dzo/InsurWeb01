@@ -7,13 +7,11 @@
 
 <div style="width:15rem">
         <label>Role</label>
-        <DxComboBox Data="@ListRoleList"
+        <MyComboBox Data="@ListRoleList"
                     Value="@ClearCmbRoleList"
-                    AllowUserInput="true"
-                    FilteringMode="DataGridFilteringMode.Contains"
                     ValueChanged="@((RoleListModel Value) => RoleList_ValueChanged(Value))"
                     TextFieldName="@nameof(RoleListModel.RoleName)">
-        </DxComboBox>
+        </MyComboBox>
     </div>
 <br />
 <div style="width:100%">

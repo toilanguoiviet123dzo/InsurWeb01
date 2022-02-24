@@ -1,39 +1,44 @@
-﻿<div style="width:@Width">
-    <label class="text-muted" style="padding: 0; margin: 0; font-size: small">@Literal</label>
-    <DxTextBox Text="@Text"
-               TextChanged="@((string x) => OnTextChanged(x))"
-               ClearButtonDisplayMode="@ClearButtonDisplayMode"
-               BindValueMode="@BindValueMode"
-               Password="@Password"
-               ReadOnly="@ReadOnly"
-               InputCssClass="@InputCssClass"
-               CssClass="@CssClass"
-               @attributes="Attributes"/>
-</div>
+﻿
+<MudTextField @ref="@Ref"
+              T="string"
+              Text="@Text"
+              TextChanged="@((string x) => OnTextChanged(x))"
+              Label="@Literal"
+              Variant="@Variant"
+              AutoFocus="@AutoFocus"
+              Clearable="@Clearable"
+              HelperText="@HelperText"
+              Placeholder="@Placeholder"
+              FullWidth="@FullWidth"
+              Class="@Class"
+              Style="@Style"
+              Tag="@Tag"
+              HelperTextOnFocus="true"
+              Disabled="@Disabled"
+              ReadOnly="@ReadOnly"
+              UserAttributes="@Attributes" />
+
 
 @code {
-    [Parameter]
-    public bool TabStop { get; set; } = true;
-    [Parameter]
-    public string CssClass { get; set; } = "";
-    [Parameter]
-    public string Width { get; set; } = "100%";
-    [Parameter]
-    public string Literal { get; set; } = "";
-    [Parameter]
-    public string InputCssClass { get; set; } = "";
-    [Parameter]
-    public bool ReadOnly { get; set; } = false;
-    [Parameter]
-    public bool Password { get; set; } = false;
-    [Parameter]
-    public DataEditorClearButtonDisplayMode ClearButtonDisplayMode { get; set; } = DataEditorClearButtonDisplayMode.Never;
-    [Parameter]
-    public BindValueMode BindValueMode { get; set; } = BindValueMode.OnLostFocus;
-    [Parameter]
-    public string Text { get; set; } = "";
-    [Parameter]
-    public EventCallback<string> TextChanged { get; set; }
+    [Parameter] public bool TabStop { get; set; } = true;
+    [Parameter] public string Literal { get; set; } = "";
+    [Parameter] public Variant Variant { get; set; } = Variant.Text;
+    [Parameter] public int Rows { get; set; } = 3;
+    [Parameter] public bool AutoFocus { get; set; } = false;
+    [Parameter] public bool Clearable { get; set; } = false;
+    [Parameter] public bool Disabled { get; set; } = false;
+    [Parameter] public string HelperText { get; set; } = "";
+    [Parameter] public string Placeholder { get; set; } = "";
+    [Parameter] public bool FullWidth { get; set; } = true;
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+    [Parameter] public object Tag { get; set; }
+    [Parameter] public string Width { get; set; } = "";
+    [Parameter] public bool ReadOnly { get; set; } = false;
+
+    //TextChanged
+    [Parameter] public string Text { get; set; } = "";
+    [Parameter] public EventCallback<string> TextChanged { get; set; }
     private async Task OnTextChanged(string newValue)
     {
         await TextChanged.InvokeAsync(newValue);
@@ -45,13 +50,27 @@
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        //ReadOnly
-        if (ReadOnly || ! TabStop)
+        //Width
+        if (!string.IsNullOrWhiteSpace(Width))
+        {
+            FullWidth = false;
+            Style = $"width:{Width}; {Style}";
+        }
+
+        //Skip Tab
+        if (ReadOnly || !TabStop)
         {
             Attributes = new Dictionary<string, object>()
                                             {
                                                 { "tabIndex", "-1" }
                                             };
         }
+    }
+
+    //Focus
+    public MudTextField<string> Ref { get; set; }
+    public async void Focus()
+    {
+        await Ref.FocusAsync();
     }
 }

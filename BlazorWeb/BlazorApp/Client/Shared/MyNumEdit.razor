@@ -1,64 +1,77 @@
-﻿@typeparam T
+﻿@using System.Globalization
+@typeparam T
 
-<style>
-    .text-align-right {
-        text-align: right;
-    }
-</style>
+<MudNumericField @ref="@Ref"
+                 T="T"
+                 Value="@Value"
+                 ValueChanged="@((T value) => OnValueChanged(value))"
+                 TextChanged="@((string text) => OnTextChanged(text))"
+                 Immediate="false"
+                 Label="@Literal"
+                 Placeholder="@Placeholder"
+                 Clearable="@Clearable"
+                 Disabled="@Disabled"
+                 ReadOnly="@ReadOnly"
+                 FullWidth="@FullWidth"
+                 Format="@Format"
+                 Culture="@_en"
+                 HelperText="@HelperText"
+                 HelperTextOnFocus="true"
+                 HideSpinButtons="true"
+                 Variant="@Variant"
+                 Class="@Class"
+                 Style="@Style"
+                 Tag="@Tag"
+                 UserAttributes="@Attributes"/>
 
-<div style="width:@Width">
-    @if (!string.IsNullOrWhiteSpace(@Literal))
-    {
-        <label class="text-muted" style="padding: 0; margin: 0; font-size: small">@Literal</label>
-    }
-    <DxMaskedInput Value="@Value"
-                   ValueChanged="@((T value) => OnValueChanged(value))"
-                   ValueExpression="@(() => @Value)"
-                   BindValueMode="BindValueMode.OnLostFocus"
-                   TextChanged="@(async (text) => await OnTextChanged(text))"
-                   Mask="@Mask"
-                   ReadOnly="@ReadOnly"
-                   InputCssClass="@(InputCssClass + " text-align-right" )"
-                   CssClass="@CssClass"
-                   @attributes="Attributes" />
-</div>
 
 @code {
-    [Parameter]
-    public bool TabStop { get; set; } = true;
-    [Parameter]
-    public string CssClass { get; set; } = "";
-    [Parameter]
-    public string Width { get; set; } = "100%";
-    [Parameter]
-    public string Literal { get; set; } = "";
-    [Parameter]
-    public string InputCssClass { get; set; } = "";
-    [Parameter]
-    public bool ReadOnly { get; set; } = false;
-    [Parameter]
-    public string Mask { get; set; } = "N0";
-    [Parameter]
-    public T Value { get; set; }
-    [Parameter]
-    public EventCallback<T> ValueChanged { get; set; }
-    private async Task OnValueChanged(T newValue)
+    [Parameter] public bool TabStop { get; set; } = true;
+    [Parameter] public string Literal { get; set; } = "";
+    [Parameter] public string Placeholder { get; set; } = "";
+    [Parameter] public string HelperText { get; set; } = "";
+    [Parameter] public bool Clearable { get; set; } = false;
+    [Parameter] public bool Disabled { get; set; } = false;
+    [Parameter] public bool ReadOnly { get; set; } = false;
+    [Parameter] public bool FullWidth { get; set; } = true;
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string Style { get; set; } = "";
+    [Parameter] public object Tag { get; set; }
+    [Parameter] public string Width { get; set; } = "";
+    [Parameter] public Variant Variant { get; set; } = Variant.Text;
+    [Parameter] public string Format { get; set; } = "N0";
+
+    //ValueChanged
+    [Parameter] public T Value { get; set; }
+    [Parameter] public EventCallback<T> ValueChanged { get; set; }
+    private async void OnValueChanged(T newValue)
     {
         await ValueChanged.InvokeAsync(newValue);
+        await TextChanged.InvokeAsync(newValue.ToString());
     }
     [Parameter]
+    //TextChanged
     public EventCallback<string> TextChanged { get; set; }
-    private async Task OnTextChanged(string newValue)
+    private async void OnTextChanged(string newValue)
     {
         await TextChanged.InvokeAsync(newValue);
     }
-
+    //Culture
+    public CultureInfo _en = CultureInfo.GetCultureInfo("en-US");
     //Attributes
     private Dictionary<string, object> Attributes { get; set; }
     //
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
+
+        //Set width
+        if (!string.IsNullOrWhiteSpace(Width))
+        {
+            FullWidth = false;
+            Style = $"width:{Width}; {Style}";
+        }
+
         //ReadOnly
         if (ReadOnly || !TabStop)
         {
@@ -67,5 +80,11 @@
                                                 { "tabIndex", "-1" }
                                             };
         }
+    }
+    //Focus
+    private MudNumericField<T> Ref;
+    public async void Focus()
+    {
+        await Ref.FocusAsync();
     }
 }
