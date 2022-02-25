@@ -12,9 +12,7 @@ using Grpc.Net.Client.Web;
 using Microsoft.AspNetCore.Components;
 using Cores.GrpcClient.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
-using Blazored.LocalStorage;
 using Admin.Services;
-using Blazored.Toast;
 using Claim.Services;
 using Resource.Services;
 using BlazorApp.Client.Services;
@@ -31,7 +29,6 @@ namespace BlazorApp.Client
             builder.RootComponents.Add<App>("#app");
 
             //grpc Web
-            builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddOptions();
             builder.Services.AddAuthorizationCore();
             //Http client
@@ -43,9 +40,6 @@ namespace BlazorApp.Client
             //DevExpress blazor
             builder.Services.AddDevExpressBlazor();
 
-            //Blazored Toast
-            builder.Services.AddBlazoredToast();
-
             //MudBlazor
             builder.Services.AddMudServices(config =>
             {
@@ -53,7 +47,7 @@ namespace BlazorApp.Client
                 config.SnackbarConfiguration.PreventDuplicates = false;
                 config.SnackbarConfiguration.NewestOnTop = true;
                 config.SnackbarConfiguration.ShowCloseIcon = true;
-                config.SnackbarConfiguration.VisibleStateDuration = 5000;
+                config.SnackbarConfiguration.VisibleStateDuration = 4000;
                 config.SnackbarConfiguration.HideTransitionDuration = 500;
                 config.SnackbarConfiguration.ShowTransitionDuration = 500;
                 config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;

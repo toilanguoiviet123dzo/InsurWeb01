@@ -6,7 +6,7 @@
 @inject MasterService masterService;
 @inject VoucherService voucherService;
 @inject IJSRuntime JsRuntime;
-@inject IToastService toastService
+@inject ISnackbar Snackbar
 
 <!--Thông tin chung-->
 <MyCard Title="Thông tin chung">
@@ -324,9 +324,9 @@
             //Refresh layout
             StateHasChanged();
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, MyMessage.Error_LoadDataFailed);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Error);
         }
     }
 
@@ -335,7 +335,7 @@
         //Skip
         if (Model.CheckStatus)
         {
-            toastService.ShowWarning("", MyMessage.Error_DataReadOnly);
+            Snackbar.Add(MyMessage.Error_DataReadOnly, Severity.Error);
             return false;
         }
         //
@@ -401,16 +401,16 @@
             // Success
             if (response == null || response.ReturnCode != GrpcReturnCode.OK)
             {
-                toastService.ShowError("", MyMessage.Error_SaveFailed);
+                Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
             }
 
             //Reload data
             await OnValidSumit.InvokeAsync();
             CloseMain();
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, MyMessage.Error_SaveFailed);
+            Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
         }
     }
     void CloseMain()

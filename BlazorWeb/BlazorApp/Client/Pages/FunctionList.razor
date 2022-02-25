@@ -3,7 +3,7 @@
 @using System.Collections.ObjectModel;
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
 @inject IJSRuntime JsRuntime;
-@inject IToastService toastService
+@inject ISnackbar Snackbar
 
 <br />
 <div style="width:100%">
@@ -114,9 +114,9 @@
     </div>
 </div>
 
-<MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true  MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
+<MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
 
-@code{
+@code {
     [CascadingParameter]
     protected ProgramInfo Program { get; set; }
     FormEditContext EditContext = null;
@@ -143,15 +143,15 @@
         {
             //Filter
             var requestString = new Empty_Request()
-            {
-                Credential = new UserCredential()
                 {
-                    Username = WebUserCredential.Username,
-                    RoleID = WebUserCredential.RoleID,
-                    AccessToken = WebUserCredential.AccessToken,
-                    ApiKey = WebUserCredential.ApiKey
-                }
-            };
+                    Credential = new UserCredential()
+                    {
+                        Username = WebUserCredential.Username,
+                        RoleID = WebUserCredential.RoleID,
+                        AccessToken = WebUserCredential.AccessToken,
+                        ApiKey = WebUserCredential.ApiKey
+                    }
+                };
 
             //Get data from DB
             DetailData.Clear();
@@ -169,9 +169,9 @@
                 }
             }
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, "Load function list failed.");
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Error);
         }
     }
     #endregion
@@ -206,7 +206,7 @@
         if (!Check_Changed())
         {
             //Show message: Nothing changed!
-            toastService.ShowInfo("", MyMessage.Info_NothingChanged);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Info);
             return;
         }
         //Show popup confirm
@@ -227,7 +227,7 @@
         if (!Check_Changed())
         {
             //Show message: Nothing changed!
-            toastService.ShowInfo("", MyMessage.Info_NothingChanged);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Info);
             return;
         }
         //Show popup confirm
@@ -258,12 +258,12 @@
             //Request
             SaveFunctionList_Request request = new SaveFunctionList_Request();
             var Credential = new UserCredential()
-            {
-                Username = WebUserCredential.Username,
-                RoleID = WebUserCredential.RoleID,
-                AccessToken = WebUserCredential.AccessToken,
-                ApiKey = WebUserCredential.ApiKey
-            };
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                };
             request.Credential = Credential;
             //
             foreach (FunctionListModel row in DetailData)
@@ -282,46 +282,28 @@
             if (!hasChanged)
             {
                 //Message no change
-                toastService.ShowInfo("", MyMessage.Info_NothingChanged);
+                Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Info);
                 return;
             }
 
             //Call api
             var response = await adminServiceClient.SaveFunctionListAsync(request);
             // Success
-            if (response.ReturnCode == 200)
+            if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
                 //Show success
-                toastService.ShowSuccess("", MyMessage.Info_SaveSucess);
+                Snackbar.Add(MyMessage.Info_SaveSucess, Severity.Info);
+                //Reload data
+                await DisplayMain();
             }
-            //Error call
-            if (response == null)
+            else
             {
-                //Show error Call grpc
-                return;
+                Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
             }
-            if (response.ReturnCode != 200)
-            {
-                //201: Data not found
-                if (response.ReturnCode == 201)
-                {
-                    //Show error 201
-                    toastService.ShowError("", "Error 201");
-                }
-                //500: Data not found
-                if (response.ReturnCode == 500)
-                {
-                    //Show error 500
-                    toastService.ShowError("", "Error 500");
-                }
-                return;
-            }
-            //Reload data
-            await DisplayMain();
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, MyMessage.Error_SaveFailed);
+            Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
         }
     }
 
@@ -440,7 +422,7 @@
     // Color of edit data
     void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<FunctionListModel> eventArgs)
     {
-        
+
         if (eventArgs.DataItem.UpdMode == 1)
             eventArgs.Style += MyColor.NewRowColor;
         else if (eventArgs.DataItem.UpdMode == 2)

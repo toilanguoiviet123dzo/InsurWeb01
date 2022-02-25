@@ -6,7 +6,7 @@
 @inject MasterService masterService;
 @inject VoucherService voucherService;
 @inject IJSRuntime JsRuntime;
-@inject IToastService toastService
+@inject ISnackbar Snackbar
 
 <!--Thông tin chung-->
 <MyCard Title="Thông tin chung">
@@ -46,7 +46,7 @@
                                 TextChanged="@((string x) => OnTextChanged_Phone(x))"
                                 Literal="Điện thoại liên hệ"
                                 Class="text-blue font-weight-bold"
-                                ReadOnly="true"/>
+                                ReadOnly="true" />
                 </div>
                 <!--Tên khách hàng-->
                 <div class="col-12 col-lg-3">
@@ -1069,9 +1069,9 @@
             if (gridEst != null) await gridEst.Refresh();
             StateHasChanged();
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, MyMessage.Error_LoadDataFailed);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Error);
         }
     }
 
@@ -1080,41 +1080,41 @@
         //Skip
         if (Model.PayStatus & Model.ReturnStatus2)
         {
-            toastService.ShowWarning("", MyMessage.Error_DataReadOnly);
+            Snackbar.Add(MyMessage.Error_DataReadOnly, Severity.Error);
             return false;
         }
         //Loại hư hỏng
         if (string.IsNullOrWhiteSpace(Model.DamageType))
         {
-            toastService.ShowWarning("Loại hư hỏng", "Bắt buột nhập.");
+            Snackbar.Add("Bắt buột nhập: Loại hư hỏng", Severity.Warning);
             RefDamageType.Focus();
             return false;
         }
         //PickupCompanyID
         if (Model.PickupReqStatus && string.IsNullOrWhiteSpace(Model.PickupCompanyID))
         {
-            toastService.ShowWarning("Công ty lấy thiết bị", "Bắt buột nhập.");
+            Snackbar.Add("Bắt buột nhập: Công ty lấy thiết bị", Severity.Warning);
             RefLogistic.Focus();
             return false;
         }
         //RepairCompanyID
         if (Model.EstimationReqStatus && string.IsNullOrWhiteSpace(Model.RepairCompanyID))
         {
-            toastService.ShowWarning("Nơi sửa chữa", "Bắt buột nhập.");
+            Snackbar.Add("Bắt buột nhập: Nơi sửa chữa", Severity.Warning);
             RefRepairer.Focus();
             return false;
         }
         //RepairCompanyID
         if (Model.ReturnReqStatus && string.IsNullOrWhiteSpace(Model.ReturnCompanyID))
         {
-            toastService.ShowWarning("Công ty trả thiết bị", "Bắt buột nhập.");
+            Snackbar.Add("Bắt buột nhập: Công ty trả thiết bị", Severity.Warning);
             RefReturnComp.Focus();
             return false;
         }
         //ApproverAccount
         if (Model.ApproveReqStatus && string.IsNullOrWhiteSpace(Model.ApproveAccountID))
         {
-            toastService.ShowWarning("Người duyệt", "Bắt buột nhập.");
+            Snackbar.Add("Bắt buột nhập: Người duyệt", Severity.Warning);
             RefApprover.Focus();
             return false;
         }
@@ -1206,16 +1206,16 @@
             // Success
             if (response == null || response.ReturnCode != GrpcReturnCode.OK)
             {
-                toastService.ShowError("", MyMessage.Error_SaveFailed);
+                Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
             }
 
             //Reload data
             await OnValidSumit.InvokeAsync();
             CloseMain();
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, MyMessage.Error_SaveFailed);
+            Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
         }
     }
     void CloseMain()
@@ -1259,9 +1259,9 @@
                 this.StateHasChanged();
             }
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, MyMessage.Error_NoNetwork);
+            Snackbar.Add(MyMessage.Error_NoNetwork, Severity.Error);
         }
     }
 
@@ -1308,9 +1308,9 @@
                 this.StateHasChanged();
             }
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, MyMessage.Error_NoNetwork);
+            Snackbar.Add(MyMessage.Error_NoNetwork, Severity.Error);
         }
     }
     //
@@ -1436,7 +1436,7 @@
     // Color of edit data
     void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<EstimationModel> eventArgs)
     {
-        
+
         if (eventArgs.DataItem.UpdMode == 1)
             eventArgs.Style += MyColor.NewRowColor;
         else if (eventArgs.DataItem.UpdMode == 2)

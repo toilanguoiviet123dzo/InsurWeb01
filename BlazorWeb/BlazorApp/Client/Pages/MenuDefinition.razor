@@ -3,7 +3,7 @@
 @using System.Collections.ObjectModel
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
 @inject IJSRuntime JsRuntime;
-@inject IToastService toastService
+@inject ISnackbar Snackbar
 
 <br />
 <div style="width:900px">
@@ -85,27 +85,27 @@
                             var menuGroup = ListMenuGroup.Where(x => x.GroupID == context.GroupID).FirstOrDefault();
                             GetGroupID = menuGroup.GroupID;
                             <DxDataGrid @ref="@GridChild"
-                                        ColumnResizeMode="DataGridColumnResizeMode.Component"
-                                        Data="@ListMenuDetail.Where(x => x.GroupID == context.GroupID)"
-                                        PageSize="10"
-                                        ShowFilterRow="true"
-                                        HtmlRowDecoration="@OnHtmlRowDecorationChild"
-                                        RowInsertStart="@(() => OnRowEditStartingChild(null))"
-                                        RowEditStart="@(dataRow => OnRowEditStartingChild(dataRow))"
-                                        RowRemoving="@((dataRow) => OnRowRemovingChild(dataRow))">
+                                    ColumnResizeMode="DataGridColumnResizeMode.Component"
+                                    Data="@ListMenuDetail.Where(x => x.GroupID == context.GroupID)"
+                                    PageSize="10"
+                                    ShowFilterRow="true"
+                                    HtmlRowDecoration="@OnHtmlRowDecorationChild"
+                                    RowInsertStart="@(() => OnRowEditStartingChild(null))"
+                                    RowEditStart="@(dataRow => OnRowEditStartingChild(dataRow))"
+                                    RowRemoving="@((dataRow) => OnRowRemovingChild(dataRow))">
                                 <Columns>
                                     <DxDataGridColumn Field="@nameof(MenuDetailModel.PageName)"
-                                                      Caption="Page"
-                                                      Width="240px" />
+                                                  Caption="Page"
+                                                  Width="240px" />
                                     <DxDataGridColumn Field="@nameof(MenuDetailModel.IconUrl)"
-                                                      Caption="Icon Url"
-                                                      Width="290px" />
+                                                  Caption="Icon Url"
+                                                  Width="290px" />
                                     <DxDataGridSpinEditColumn Field="@nameof(MenuDetailModel.DisplayOrder)"
-                                                              Caption="Display order"
-                                                              Width="120px" />
+                                                          Caption="Display order"
+                                                          Width="120px" />
                                     <DxDataGridCheckBoxColumn Field="@nameof(MenuDetailModel.Enabled)"
-                                                              Caption="Enabled"
-                                                              Width="90px" />
+                                                          Caption="Enabled"
+                                                          Width="90px" />
                                     <DxDataGridCommandColumn Width="120px" />
                                 </Columns>
                                 <EditFormTemplate Context="EditFormTemplateChild">
@@ -115,9 +115,9 @@
                                             <DxFormLayoutItem Caption="Page: " ColSpanMd="12" Context="FormLayoutContextChild">
                                                 <Template>
                                                     <MyComboBox @bind-Value="@SelectedPage"
-                                                                Data="@ListFunctionList"
-                                                                TextFieldName="@nameof(FunctionListModel.PageName)"
-                                                                SelectedItemChanged="@((FunctionListModel value) => FunctionList_ItemChanged(value))" />
+                                                            Data="@ListFunctionList"
+                                                            TextFieldName="@nameof(FunctionListModel.PageName)"
+                                                            SelectedItemChanged="@((FunctionListModel value) => FunctionList_ItemChanged(value))" />
                                                     <ValidationMessage For="@(() => EditContextChild.PageID)" />
                                                 </Template>
                                             </DxFormLayoutItem>
@@ -214,7 +214,7 @@
     </FooterContentTemplate>
 </DxPopup>
 
-@code{
+@code {
     [CascadingParameter]
     protected ProgramInfo Program { get; set; }
     // Popup
@@ -245,15 +245,15 @@
     async Task Load_FunctionList()
     {
         var requestString = new Empty_Request()
-        {
-            Credential = new UserCredential()
             {
-                Username = WebUserCredential.Username,
-                RoleID = WebUserCredential.RoleID,
-                AccessToken = WebUserCredential.AccessToken,
-                ApiKey = WebUserCredential.ApiKey
-            }
-        };
+                Credential = new UserCredential()
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                }
+            };
         //Get data from DB
         ListFunctionList.Clear();
         var response = await adminServiceClient.GetFunctionListAsync(requestString);
@@ -274,15 +274,15 @@
     async void DisplayMain()
     {
         var request = new Empty_Request()
-        {
-            Credential = new UserCredential()
             {
-                Username = WebUserCredential.Username,
-                RoleID = WebUserCredential.RoleID,
-                AccessToken = WebUserCredential.AccessToken,
-                ApiKey = WebUserCredential.ApiKey
-            },
-        };
+                Credential = new UserCredential()
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                },
+            };
         //Get data MenuGroup from DB
         ListMenuGroup.Clear();
         var response = await adminServiceClient.GetMenuGroupAsync(request);
@@ -340,7 +340,7 @@
     // Color of edit data
     void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<MenuGroupModel> eventArgs)
     {
-        
+
         if (eventArgs.DataItem.UpdMode == 1)
             eventArgs.Style += MyColor.NewRowColor;
         else if (eventArgs.DataItem.UpdMode == 2)
@@ -375,7 +375,7 @@
     // Color of edit data
     void OnHtmlRowDecorationChild(DataGridHtmlRowDecorationEventArgs<MenuDetailModel> eventArgs)
     {
-        
+
         if (eventArgs.DataItem.UpdMode == 1)
             eventArgs.Style += MyColor.NewRowColor;
         else if (eventArgs.DataItem.UpdMode == 2)
@@ -404,7 +404,7 @@
         if (!Check_Changed())
         {
             //Show message: Nothing changed!
-            toastService.ShowInfo("", MyMessage.Info_NothingChanged);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Info);
             return;
         }
         // Show popup confirm
@@ -430,7 +430,7 @@
         if (!Check_Changed())
         {
             //Show message: Nothing changed!
-            toastService.ShowInfo("", MyMessage.Info_NothingChanged);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Info);
             return;
         }
         // Show popup confirm
@@ -532,12 +532,12 @@
         // Request SaveMain
         SaveMenuGroup_Request request = new SaveMenuGroup_Request();
         var Credential = new UserCredential()
-        {
-            Username = WebUserCredential.Username,
-            RoleID = WebUserCredential.RoleID,
-            AccessToken = WebUserCredential.AccessToken,
-            ApiKey = WebUserCredential.ApiKey
-        };
+            {
+                Username = WebUserCredential.Username,
+                RoleID = WebUserCredential.RoleID,
+                AccessToken = WebUserCredential.AccessToken,
+                ApiKey = WebUserCredential.ApiKey
+            };
         request.Credential = Credential;
         // Save SaveMain
         foreach (MenuGroupModel row in ListMenuGroup)
@@ -556,42 +556,23 @@
         if (!hasChanged)
         {
             //Message no change
-            toastService.ShowInfo("", MyMessage.Info_NothingChanged);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Info);
             return;
         }
         // Call api
         var response = await adminServiceClient.SaveMenuGroupAsync(request);
         // Success
-        if (response.ReturnCode == 200)
+        if (response != null && response.ReturnCode == GrpcReturnCode.OK)
         {
             //Show success
-            toastService.ShowSuccess("", MyMessage.Info_SaveSucess);
+            Snackbar.Add(MyMessage.Info_SaveSucess, Severity.Info);
+            // Reload data
+            DisplayMain();
         }
-        // Error call
-        if (response == null)
+        else
         {
-            // Show error Call grpc
-            toastService.ShowError("", "Error Call grpc");
-            return;
+            Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
         }
-        if (response.ReturnCode != 200)
-        {
-            // 201: Data not found
-            if (response.ReturnCode == 201)
-            {
-                // Show error 201
-                toastService.ShowError("", "Error 201");
-            }
-            // 500: Data not found
-            if (response.ReturnCode == 500)
-            {
-                //Show error 500
-                toastService.ShowError("", "Error 500");
-            }
-            return;
-        }
-        // Reload data
-        DisplayMain();
     }
     // Cancel edit
     async Task OnCancelButtonClick()
@@ -620,7 +601,7 @@
         if (!Check_ChangedChild())
         {
             //Show message: Nothing changed!
-            toastService.ShowInfo("", MyMessage.Info_NothingChanged);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Info);
             return;
         }
         // Show popup confirm
@@ -646,7 +627,7 @@
         if (!Check_ChangedChild())
         {
             //Show message: Nothing changed!
-            toastService.ShowInfo("", MyMessage.Info_NothingChanged);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Info);
             return;
         }
         // Show popup confirm
@@ -749,12 +730,12 @@
         // Request SaveMain
         SaveMenuDetail_Request request = new SaveMenuDetail_Request();
         var Credential = new UserCredential()
-        {
-            Username = WebUserCredential.Username,
-            RoleID = WebUserCredential.RoleID,
-            AccessToken = WebUserCredential.AccessToken,
-            ApiKey = WebUserCredential.ApiKey
-        };
+            {
+                Username = WebUserCredential.Username,
+                RoleID = WebUserCredential.RoleID,
+                AccessToken = WebUserCredential.AccessToken,
+                ApiKey = WebUserCredential.ApiKey
+            };
         request.Credential = Credential;
         // Save SaveMain
         foreach (MenuDetailModel row in ListMenuDetail)
@@ -773,42 +754,23 @@
         if (!hasChanged)
         {
             //Message no change
-            toastService.ShowInfo("", MyMessage.Info_NothingChanged);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Info);
             return;
         }
         // Call api
         var response = await adminServiceClient.SaveMenuDetailAsync(request);
         // Success
-        if (response.ReturnCode == 200)
+        if (response != null && response.ReturnCode == GrpcReturnCode.OK)
         {
             //Show success
-            toastService.ShowSuccess("", MyMessage.Info_SaveSucess);
+            Snackbar.Add(MyMessage.Info_SaveSucess, Severity.Info);
+            // Reload data
+            DisplayMain();
         }
-        // Error call
-        if (response == null)
+        else
         {
-            // Show error Call grpc
-
-            return;
+            Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
         }
-        if (response.ReturnCode != 200)
-        {
-            // 201: Data not found
-            if (response.ReturnCode == 201)
-            {
-                // Show error 201
-                toastService.ShowError("", "Error 201");
-            }
-            // 500: Data not found
-            if (response.ReturnCode == 500)
-            {
-                //Show error 500
-                toastService.ShowError("", "Error 500");
-            }
-            return;
-        }
-        // Reload data
-        DisplayMain();
     }
     // Cancel edit
     async Task OnCancelButtonClickChild()
@@ -819,7 +781,7 @@
     #endregion
 
     #region Screen items
-    
+
     // Select FunctionList
     string GetPageID = "";
     string GetPageName = "";

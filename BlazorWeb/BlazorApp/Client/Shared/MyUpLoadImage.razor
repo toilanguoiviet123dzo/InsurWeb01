@@ -3,7 +3,7 @@
 @using System.IO;
 @inject grpcResourceService.grpcResourceServiceClient resourceServiceClient;
 @inject IJSRuntime JsRuntime;
-@inject IToastService toastService
+@inject ISnackbar Snackbar
 
 <style>
     img {
@@ -88,9 +88,9 @@
             await JsRuntime.InvokeAsync<object>("initCropper");
             await JsRuntime.InvokeAsync<object>("initCropper");
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, "Load ảnh bị lỗi");
+            Snackbar.Add(MyMessage.Error_LoadFile, Severity.Error);
         }
     }
 
@@ -125,7 +125,7 @@
             // Success
             if (response == null || response.ReturnCode != GrpcReturnCode.OK)
             {
-                toastService.ShowError("", MyMessage.Error_UploadFile);
+                Snackbar.Add(MyMessage.Error_UploadFile, Severity.Error);
             }
             else
             {
@@ -135,9 +135,9 @@
                 CloseMain();
             }
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, MyMessage.Error_UploadFile);
+            Snackbar.Add(MyMessage.Error_UploadFile, Severity.Error);
         }
     }
 

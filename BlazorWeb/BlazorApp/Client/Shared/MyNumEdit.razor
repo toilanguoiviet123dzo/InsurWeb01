@@ -19,6 +19,9 @@
                  HelperTextOnFocus="true"
                  HideSpinButtons="true"
                  Variant="@Variant"
+                 Adornment="@Adornment"
+                 AdornmentIcon="@AdornmentIcon"
+                 AdornmentText="@AdornmentText"
                  Class="@Class"
                  Style="@Style"
                  Tag="@Tag"
@@ -39,6 +42,9 @@
     [Parameter] public object Tag { get; set; }
     [Parameter] public string Width { get; set; } = "";
     [Parameter] public Variant Variant { get; set; } = Variant.Text;
+    [Parameter] public Adornment Adornment { get; set; } = Adornment.None;
+    [Parameter] public string AdornmentIcon { get; set; } = "";
+    [Parameter] public string AdornmentText { get; set; } = "";
     [Parameter] public string Format { get; set; } = "N0";
 
     //ValueChanged

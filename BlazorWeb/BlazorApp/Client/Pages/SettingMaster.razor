@@ -3,7 +3,7 @@
 @using System.Collections.ObjectModel
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient
 @inject IJSRuntime JsRuntime
-@inject IToastService toastService
+@inject ISnackbar Snackbar
 
 <div style="width:100%">
     <DxDataGrid @ref="@Grid"
@@ -179,9 +179,9 @@
                 }
             }
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, MyMessage.Error_LoadDataFailed);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Error);
         }
 
     }
@@ -242,7 +242,7 @@
         if (!Check_Changed())
         {
             //Show message: Nothing changed!
-            toastService.ShowInfo("", MyMessage.Info_NothingChanged);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Info);
             return;
         }
         // Show popup confirm
@@ -268,7 +268,7 @@
         if (!Check_Changed())
         {
             //Show message: Nothing changed!
-            toastService.ShowInfo("", MyMessage.Info_NothingChanged);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Info);
             return;
         }
         // Show popup confirm
@@ -399,7 +399,7 @@
             if (!hasChanged)
             {
                 //Message no change
-                toastService.ShowInfo("", MyMessage.Info_NothingChanged);
+                Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Info);
                 return;
             }
             // Call api
@@ -408,18 +408,18 @@
             if (response != null && response.ReturnCode == 200)
             {
                 //Show success
-                toastService.ShowSuccess("", MyMessage.Info_SaveSucess);
+                Snackbar.Add(MyMessage.Info_SaveSucess, Severity.Info);
             }
             else
             {
-                toastService.ShowError("", MyMessage.Error_SaveFailed);
+                Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
             }
             // Reload data
             await DisplayMain();
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, MyMessage.Error_SaveFailed);
+            Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
         }
     }
     // Cancel edit

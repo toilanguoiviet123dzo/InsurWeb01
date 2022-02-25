@@ -9,13 +9,13 @@
 @inject MasterService masterService;
 @inject IDialogService DialogService
 @inject IJSRuntime JsRuntime;
-@inject IToastService toastService
+@inject ISnackbar Snackbar
 @using System.Collections.Concurrent
 @using System.Threading
 
-<!--Filter-->
-<MyCard Title="Bộ lọc dữ liệu">
-    <CardBody>
+<!--Header-->
+<MyPanels>
+    <MyPanel Title="Bộ lọc">
         <div class="container-fluid">
             <!--Row 1-------------------------------------------------->
             <div class="row">
@@ -41,8 +41,8 @@
                     <MyComboBox @bind-Value="Filter_Branch"
                                 Data="BranchList"
                                 Clearable="true"
-                                TextFieldName="@(nameof(BranchMasterModel.BranchName))" 
-                                Literal="Chi nhánh bồi thường"/>
+                                TextFieldName="@(nameof(BranchMasterModel.BranchName))"
+                                Literal="Chi nhánh bồi thường" />
                 </div>
             </div>
 
@@ -54,7 +54,7 @@
                                 Data="InsureList"
                                 Clearable="true"
                                 TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                Literal="Công ty bảo hiểm"/>
+                                Literal="Công ty bảo hiểm" />
                 </div>
                 <!--Thời gian-->
                 <div class="col-12 col-lg-4">
@@ -120,92 +120,40 @@
             </div>
 
         </div><!--End container-->
-    </CardBody>
-</MyCard>
+    </MyPanel>
+</MyPanels>
 
 <!--Grid-->
-<div style="width:100%">
-    <DxDataGrid @ref="@grid"
-                Data="@DetailData"
-                ColumnResizeMode="DataGridColumnResizeMode.Component"
-                SelectionMode="DataGridSelectionMode.SingleSelectedDataRow"
-                PageSize="@PageRowCount"
-                HorizontalScrollBarMode="ScrollBarMode.Auto"
-                HtmlRowDecoration="@OnHtmlRowDecoration"
-                HtmlDataCellDecoration="@OnHtmlDataCellDecoration">
-        <Columns>
-            <!--Command columns-->
-            <DxDataGridCommandColumn Width="5rem" VisibleIndex="0">
-                <HeaderCellTemplate>
-                    <div class="text-center">
-                        <a class="fa fa-plus fa-2x" @onclick="@(() => OnRowEditStarting(null))"></a>
-                    </div>
-                </HeaderCellTemplate>
-                <CellTemplate>
-                    <div style="display:flex;justify-content:center">
-                        @if (((ClaimRequestListModel)context).AcceptStatus)
-                        {
-                            <!--View-->
-                            <div class="text-center" style="width:3rem">
-                                <a class="fas fa-eye fa-2x" @onclick="@(() => OnRowEditStarting(context as ClaimRequestListModel))"></a>
-                            </div>
-                        }
-                        else
-                        {
-                            <!--Edit-->
-                            <div class="text-center" style="width:2.5rem">
-                                <a class="fa fa-pencil fa-2x" @onclick="@(() => OnRowEditStarting(context as ClaimRequestListModel))"></a>
-                            </div>
-                            <!--Delete-->
-                            <div class="text-center" style="width:2.5rem">
-                                <a class="fa fa-times fa-2x text-danger" @onclick="@(() => OnRowRemoving(context as ClaimRequestListModel))"></a>
-                            </div>
-                        }
-                    </div>
-                </CellTemplate>
-            </DxDataGridCommandColumn>
-            <!--columns-->
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.ClaimNo)"
-                              Caption="Số tiếp nhận"
-                              SortOrder="DataGridColumnSortOrder.Descending"
-                              Width="6rem" />
-            <DxDataGridDateEditColumn Field="@nameof(ClaimRequestListModel.ClaimDate)"
-                                      Caption="Ngày tiếp nhận"
-                                      DisplayFormat="dd/MM/yyyy HH:mm"
-                                      Width="9rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.StatusName)"
-                              Caption="Trạng thái"
-                              Width="7rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.CusFullname)"
-                              Caption="Tên khách hàng"
-                              Width="10rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.CusPhone)"
-                              Caption="Điện thoại"
-                              Width="6rem" />
-            <DxDataGridDateEditColumn Field="@nameof(ClaimRequestListModel.IncidentDate)"
-                                      Caption="Ngày sự cố"
-                                      DisplayFormat="dd/MM/yyyy"
-                                      Width="6rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.DeviceModel)"
-                              Caption="Model thiết bị"
-                              Width="8rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.DeviceIMEI)"
-                              Caption="Số IMEI thiết bị"
-                              Width="8rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.PickupAddress)"
-                              Caption="Địa chỉ lấy thiết bị"
-                              Width="15rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.ClaimAccountName)"
-                              Caption="Người tiếp nhận"
-                              Width="7rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.BrancheName)"
-                              Caption="Chi nhánh bồi thường"
-                              Width="7rem" />
-        </Columns>
-    </DxDataGrid>
-</div>
-<!--Confirm dialog-->
-<MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
+<MyDataGrid @ref="@grid"
+            T="ClaimRequestListModel"
+            Items="@DetailData">
+    <HeaderContent>
+        <MudTh>Số tiếp nhận</MudTh>
+        <MudTh>Ngày tiếp nhận</MudTh>
+        <MudTh>Trạng thái</MudTh>
+        <MudTh>Tên khách hàng</MudTh>
+        <MudTh>Điện thoại</MudTh>
+        <MudTh>Ngày sự cố</MudTh>
+        <MudTh>Model thiết bị</MudTh>
+        <MudTh>Số IMEI thiết bị</MudTh>
+        <MudTh>Địa chỉ lấy thiết bị</MudTh>
+        <MudTh>Người tiếp nhận</MudTh>
+        <MudTh>Chi nhánh bồi thường</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>@context.ClaimNo</MudTd>
+        <MudTd>@context.ClaimDate.ToString("dd/MM/yyyy HH:mm")</MudTd>
+        <MudTd>@context.StatusName</MudTd>
+        <MudTd>@context.CusFullname</MudTd>
+        <MudTd>@context.CusPhone</MudTd>
+        <MudTd>@context.IncidentDate</MudTd>
+        <MudTd>@context.DeviceModel</MudTd>
+        <MudTd>@context.DeviceIMEI</MudTd>
+        <MudTd>@context.PickupAddress</MudTd>
+        <MudTd>@context.PicAccountName</MudTd>
+        <MudTd>@context.BrancheName</MudTd>
+    </RowTemplate>
+</MyDataGrid>
 
 
 @code {
@@ -215,7 +163,7 @@
 
     // Detail data
     private int PageRowCount = MyConstant.Grid_PageRowCount;
-    DxDataGrid<ClaimRequestListModel> grid;
+    MyDataGrid<ClaimRequestListModel> grid;
     readonly ObservableCollection<ClaimRequestListModel> DetailData = new ObservableCollection<ClaimRequestListModel>();
 
     // Master
@@ -265,6 +213,8 @@
     {
         try
         {
+            grid.BeginLoadData();
+
             //Filter
             var request = new Claim.Services.GetClaimRequestList_Request();
             request.Credential = new Claim.Services.UserCredential()
@@ -314,13 +264,15 @@
             }
             if (DetailData.Count == 0)
             {
-                toastService.ShowInfo("", MyMessage.Error_NoData);
+                Snackbar.Add(MyMessage.Error_NoData, Severity.Info);
             }
-            await grid.Refresh();
+            //
+            grid.EndLoadData();
+            //this.StateHasChanged();
         }
         catch
         {
-            toastService.ShowError("", MyMessage.Error_LoadDataFailed);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Error);
         }
     }
 
@@ -377,7 +329,7 @@
     //Cancel edit
     async Task OnCancelButtonClick()
     {
-        await grid.CancelRowEdit();
+        //await grid.CancelRowEdit();
     }
 
     //Confirm delete
@@ -387,7 +339,7 @@
         //Validate skip if approved
         if (dataRow.AcceptStatus)
         {
-            toastService.ShowWarning("", MyMessage.Error_DeleteReadOnlyData);
+            Snackbar.Add(MyMessage.Error_DeleteReadOnlyData, Severity.Error);
             return;
         }
         //
@@ -421,14 +373,14 @@
             {
                 DetailData.Remove(DeletedRow);
                 //
-                toastService.ShowSuccess("", MyMessage.Info_DeleteSucess);
+                Snackbar.Add(MyMessage.Info_DeleteSucess, Severity.Error);
                 //Refresh layout
-                await grid.Refresh();
+                grid.Refresh();
             }
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, MyMessage.Error_DeleteFailed);
+            Snackbar.Add(MyMessage.Error_DeleteFailed, Severity.Error);
         }
     }
 

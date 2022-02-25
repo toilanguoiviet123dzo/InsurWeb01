@@ -16,6 +16,8 @@ namespace BlazorApp.Client.Common
         public const string Error_DeleteFailed = "Xóa dữ liệu thất bại";
         public const string Error_NoNetwork = "Không kết nối được với máy chủ";
         public const string Error_UploadFile = "Upload file thất bại";
+        public const string Error_DownloadFile = "Download file thất bại!";
+        public const string Error_LoadFile = "Load file bị lỗi!";
         public const string Error_DeleteFile = "Xóa file thất bại";
 
 

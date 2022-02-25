@@ -3,7 +3,7 @@
 @using System.Collections.ObjectModel;
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
 @inject IJSRuntime JsRuntime;
-@inject IToastService toastService
+@inject ISnackbar Snackbar
 
 <style>
     .dxbl-modal .dxbs-modal .dxbs-popup {
@@ -246,9 +246,9 @@
                 }
             }
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, MyMessage.Error_LoadDataFailed);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Error);
         }
     }
     // Load RoleList in EditForm
@@ -281,9 +281,9 @@
             //Order
             RoleList = RoleList.OrderBy(x => x.DspOrder).ToList<RoleListModel>();
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, "Load dánh sách vai trò thất bại.");
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Error);
         }
     }
     // Approve level list
@@ -318,9 +318,9 @@
             //Order
             ApproveLevelList = ApproveLevelList.OrderBy(x => x.DspOrder).ToList<OptionListModel>();
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, "Load approve level list failed.");
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Error);
         }
     }
     // Document level list
@@ -355,9 +355,9 @@
             //Order
             DocumentLevelList = DocumentLevelList.OrderBy(x => x.DspOrder).ToList<OptionListModel>();
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, "Load approve level list failed.");
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Error);
         }
     }
     #endregion
@@ -400,7 +400,7 @@
             // Success
             if (response == null || response.ReturnCode != GrpcReturnCode.OK)
             {
-                toastService.ShowError("", "Lưu thất bại.");
+                Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
             }
             else
             {
@@ -410,9 +410,9 @@
             //OK
             return true;
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, "Lưu thất bại.");
+            Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
         }
         //
         return false;
@@ -579,7 +579,7 @@
     // Color of edit data
     void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<UserAccountModel> eventArgs)
     {
-        
+
         if (eventArgs.DataItem.UpdMode == 1)
             eventArgs.Style += MyColor.NewRowColor;
         else if (eventArgs.DataItem.UpdMode == 2)

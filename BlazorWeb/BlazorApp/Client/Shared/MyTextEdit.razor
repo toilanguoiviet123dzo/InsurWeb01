@@ -13,6 +13,9 @@
               Class="@Class"
               Style="@Style"
               Tag="@Tag"
+              Adornment="@Adornment"
+              AdornmentIcon="@AdornmentIcon"
+              AdornmentText="@AdornmentText"
               HelperTextOnFocus="true"
               Disabled="@Disabled"
               ReadOnly="@ReadOnly"
@@ -35,11 +38,14 @@
     [Parameter] public object Tag { get; set; }
     [Parameter] public string Width { get; set; } = "";
     [Parameter] public bool ReadOnly { get; set; } = false;
+    [Parameter] public Adornment Adornment { get; set; } = Adornment.None;
+    [Parameter] public string AdornmentIcon { get; set; } = "";
+    [Parameter] public string AdornmentText { get; set; } = "";
 
     //TextChanged
     [Parameter] public string Text { get; set; } = "";
     [Parameter] public EventCallback<string> TextChanged { get; set; }
-    private async Task OnTextChanged(string newValue)
+    private async void OnTextChanged(string newValue)
     {
         await TextChanged.InvokeAsync(newValue);
     }

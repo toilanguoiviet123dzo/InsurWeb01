@@ -4,7 +4,7 @@
 @inject grpcResourceService.grpcResourceServiceClient resourceServiceClient;
 @inject MasterService masterService;
 @inject IJSRuntime JsRuntime;
-@inject IToastService toastService
+@inject ISnackbar Snackbar
 
 @if (DetailData.Count > 0)
 {
@@ -134,9 +134,9 @@ else
                 }
             }
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, MyMessage.Error_LoadDataFailed);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Error);
         }
     }
 
@@ -194,12 +194,12 @@ else
             }
             else
             {
-                toastService.ShowError("", MyMessage.Error_DeleteFile);
+                Snackbar.Add(MyMessage.Error_DeleteFile, Severity.Error);
             }
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, MyMessage.Error_DeleteFile);
+            Snackbar.Add(MyMessage.Error_DeleteFile, Severity.Error);
         }
     }
 
@@ -223,7 +223,7 @@ else
 
     void ShowImageDetail(string resourceID)
     {
-        toastService.ShowInfo("",resourceID.ToString());
+
     }
 
     #endregion
@@ -249,9 +249,9 @@ else
             UpLoadFile.FileContent = ms.ToArray();
             UpLoadFile.IsFileChanged = true;
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, "Load file bị lỗi");
+            Snackbar.Add(MyMessage.Error_LoadFile, Severity.Error);
         }
     }
 
@@ -280,7 +280,7 @@ else
         }
         if (dataRow.FileContent == null || dataRow.FileContent.Length == 0)
         {
-            toastService.ShowError("", "Download file thất bại !!");
+            Snackbar.Add(MyMessage.Error_DownloadFile, Severity.Error);
             return;
         }
 

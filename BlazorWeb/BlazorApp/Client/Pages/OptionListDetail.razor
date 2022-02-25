@@ -3,7 +3,7 @@
 @using System.Collections.ObjectModel;
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
 @inject IJSRuntime JsRuntime;
-@inject IToastService toastService
+@inject ISnackbar Snackbar
 
 <br />
 <div style="width:15rem">
@@ -169,9 +169,9 @@
                 }
             }
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, MyMessage.Error_LoadDataFailed);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Error);
         }
     }
 
@@ -208,9 +208,9 @@
                 }
             }
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, MyMessage.Error_LoadDataFailed);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Error);
         }
     }
     #endregion
@@ -252,7 +252,7 @@
             // Success
             if (response == null || response.ReturnCode != GrpcReturnCode.OK)
             {
-                toastService.ShowError("", MyMessage.Error_SaveFailed);
+                Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
             }
             else
             {
@@ -262,9 +262,9 @@
             //OK
             return true;
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, MyMessage.Error_SaveFailed);
+            Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
         }
         //
         return false;
@@ -370,7 +370,7 @@
         if (SelectedListCode == "")
         {
             await grid.CancelRowEdit();
-            toastService.ShowWarning("", "Chọn hạng mục trước");
+            Snackbar.Add("Bắt buột nhập: Chọn hạng mục trước", Severity.Warning);
         }
 
         // Insert row

@@ -1,5 +1,4 @@
-﻿using Blazored.LocalStorage;
-using Microsoft.AspNetCore.Components.Authorization;
+﻿using Microsoft.AspNetCore.Components.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,15 +14,12 @@ namespace Cores.GrpcClient.Authentication
     public class AuthenticationService : IAuthenticationService
     {
         private readonly AuthenticationStateProvider _autStateProvider;
-        private readonly ILocalStorageService _localStorage;
         private readonly grpcAdminService.grpcAdminServiceClient _adminServiceClient;
 
         public AuthenticationService(AuthenticationStateProvider autStateProvider,
-                                     ILocalStorageService localStorage,
                                      grpcAdminService.grpcAdminServiceClient adminServiceClient)
         {
             _autStateProvider = autStateProvider;
-            _localStorage = localStorage;
             _adminServiceClient = adminServiceClient;
         }
 

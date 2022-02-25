@@ -6,7 +6,7 @@
 @inject grpcClaimService.grpcClaimServiceClient ClaimServiceClient;
 @inject MasterService masterService;
 @inject IJSRuntime JsRuntime;
-@inject IToastService toastService
+@inject ISnackbar Snackbar
 
 <br />
 <div style="width:100%">
@@ -180,9 +180,9 @@
                 }
             }
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, MyMessage.Error_LoadDataFailed);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Error);
         }
     }
 
@@ -225,7 +225,7 @@
             // Success
             if (response == null || response.ReturnCode != GrpcReturnCode.OK)
             {
-                toastService.ShowError("", MyMessage.Error_SaveFailed);
+                Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
             }
             else
             {
@@ -235,9 +235,9 @@
             //OK
             return true;
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, MyMessage.Error_SaveFailed);
+            Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
         }
         //
         return false;

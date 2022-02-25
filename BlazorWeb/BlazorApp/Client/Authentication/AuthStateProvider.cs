@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
-using Blazored.LocalStorage;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 
@@ -12,12 +11,10 @@ namespace Cores.GrpcClient.Authentication
 {
     public class AuthStateProvider : AuthenticationStateProvider
     {
-        private readonly ILocalStorageService localStorage;
         private readonly AuthenticationState anonymous;
 
-        public AuthStateProvider(HttpClient httpClient, ILocalStorageService localStorage)
+        public AuthStateProvider(HttpClient httpClient)
         {
-            this.localStorage = localStorage;
             this.anonymous = new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
         }
 

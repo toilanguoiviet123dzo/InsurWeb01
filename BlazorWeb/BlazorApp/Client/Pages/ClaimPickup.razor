@@ -8,7 +8,7 @@
 @inject grpcClaimService.grpcClaimServiceClient ClaimServiceClient;
 @inject MasterService masterService;
 @inject IJSRuntime JsRuntime;
-@inject IToastService toastService
+@inject ISnackbar Snackbar
 @using System.Collections.Concurrent
 @using System.Threading
 
@@ -248,13 +248,13 @@
             }
             if (DetailData.Count == 0)
             {
-                toastService.ShowInfo("", MyMessage.Error_NoData);
+                Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Warning);
             }
             await grid.Refresh();
         }
         catch
         {
-            toastService.ShowError("", MyMessage.Error_LoadDataFailed);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Error);
         }
     }
 

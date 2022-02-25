@@ -3,7 +3,7 @@
 @using System.Collections.ObjectModel;
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
 @inject IJSRuntime JsRuntime;
-@inject IToastService toastService
+@inject ISnackbar Snackbar
 
 <div style="width:15rem">
         <label>Role</label>
@@ -199,9 +199,9 @@
                 }
             }
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, "Load role list thất bại.");
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Error);
         }
     }
     // Load RoleDetail
@@ -235,9 +235,9 @@
                 }
             }
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, "Load role detail thất bại.");
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Error);
         }
     }
 
@@ -275,7 +275,7 @@
         }
         catch
         {
-            toastService.ShowError("", "Load function list failed");
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Error);
         }
     }
 
@@ -347,9 +347,9 @@
             //refresh
             await Grid.Refresh();
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, MyMessage.Error_LoadDataFailed);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Error);
         }
     }
     #endregion
@@ -414,7 +414,7 @@
         if (!Check_Changed())
         {
             //Show message: Nothing changed!
-            toastService.ShowInfo("", MyMessage.Info_NothingChanged);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Info);
             return;
         }
         // Show popup confirm
@@ -440,7 +440,7 @@
         if (!Check_Changed())
         {
             //Show message: Nothing changed!
-            toastService.ShowInfo("", MyMessage.Info_NothingChanged);
+            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Info);
             return;
         }
         // Show popup confirm
@@ -543,7 +543,7 @@
             var responseDelete = await adminServiceClient.DeleteRoleDetailAsync(requestDelete);
             if (responseDelete == null || responseDelete.ReturnCode != GrpcReturnCode.OK)
             {
-                toastService.ShowError("", MyMessage.Error_SaveFailed);
+                Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
                 return;
             }
 
@@ -578,18 +578,18 @@
             var response = await adminServiceClient.SaveRoleDetailAsync(request);
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
-                toastService.ShowSuccess("", "Lưu dữ liệu thành công.");
+                Snackbar.Add(MyMessage.Info_SaveSucess, Severity.Info);
             }
             else
             {
-                toastService.ShowError("", MyMessage.Error_SaveFailed);
+                Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
             }
             // Reload data
             DisplayMain();
         }
-        catch (Exception ex)
+        catch
         {
-            toastService.ShowError(ex.Message, MyMessage.Error_SaveFailed);
+            Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
         }
     }
     // Cancel edit
