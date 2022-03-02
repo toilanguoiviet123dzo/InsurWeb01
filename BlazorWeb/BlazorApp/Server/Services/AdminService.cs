@@ -217,50 +217,51 @@ namespace BlazorApp.Server.Services
         //-------------------------------------------------------------------------------------------------------/
         // SaveFunctionList
         //-------------------------------------------------------------------------------------------------------/
-        public override async Task<Admin.Services.Empty_Response> SaveFunctionList(SaveFunctionList_Request request, ServerCallContext context)
+        public override async Task<Admin.Services.String_Response> SaveFunctionList(SaveFunctionList_Request request, ServerCallContext context)
         {
-            var response = new Admin.Services.Empty_Response();
+            var response = new Admin.Services.String_Response();
             response.ReturnCode = GrpcReturnCode.OK;  //OK                                        
             try
             {
-                foreach (var item in request.FunctionList)
+                response.StringValue = request.Record.ID;
+                //
+                switch (request.Record.UpdMode)
                 {
-                    switch (item.UpdMode)
-                    {
-                        //add new
-                        case 1:
-                            var newRecord = new mdFunctionList();
-                            ClassHelper.CopyPropertiesData(item, newRecord);
-                            newRecord.ID = "";
-                            newRecord.CreatedOn = DateTime.UtcNow;
-                            newRecord.ModifiedOn = DateTime.UtcNow;
-                            //
-                            await newRecord.SaveAsync();
-                            break;
+                    //add new
+                    case 1:
+                        var newRecord = new mdFunctionList();
+                        ClassHelper.CopyPropertiesData(request.Record, newRecord);
+                        newRecord.ID = newRecord.GenerateNewID();
+                        newRecord.CreatedOn = DateTime.UtcNow;
+                        newRecord.ModifiedOn = DateTime.UtcNow;
+                        //
+                        response.StringValue = newRecord.ID;
+                        //
+                        await newRecord.SaveAsync();
+                        break;
 
-                        //update
-                        case 2:
-                            var oldRecord = await DB.Find<mdFunctionList>().OneAsync(item.ID);
-                            if (oldRecord != null)
-                            {
-                                ClassHelper.CopyPropertiesData(item, oldRecord);
-                                oldRecord.ModifiedOn = DateTime.UtcNow;
-                                await oldRecord.SaveAsync();
-                            }
-                            else
-                            {
-                                response.ReturnCode = GrpcReturnCode.Error_201;
-                            }
-                            break;
+                    //update
+                    case 2:
+                        var oldRecord = await DB.Find<mdFunctionList>().OneAsync(request.Record.ID);
+                        if (oldRecord != null)
+                        {
+                            ClassHelper.CopyPropertiesData(request.Record, oldRecord);
+                            oldRecord.ModifiedOn = DateTime.UtcNow;
+                            await oldRecord.SaveAsync();
+                        }
+                        else
+                        {
+                            response.ReturnCode = GrpcReturnCode.Error_201;
+                        }
+                        break;
 
-                        //delete
-                        case 3:
-                            await DB.DeleteAsync<mdFunctionList>(item.ID);
-                            break;
-                        default:
-                            response.ReturnCode = GrpcReturnCode.Error_BadRequest; //UpdMode = blank
-                            break;
-                    }
+                    //delete
+                    case 3:
+                        await DB.DeleteAsync<mdFunctionList>(request.Record.ID);
+                        break;
+                    default:
+                        response.ReturnCode = GrpcReturnCode.Error_BadRequest; //UpdMode = blank
+                        break;
                 }
             }
             catch (Exception ex)
@@ -290,9 +291,9 @@ namespace BlazorApp.Server.Services
                 {
                     findRecords.ForEach(item =>
                     {
-                        var grpcItem = new grpcFunctionList();
+                        var grpcItem = new grpcFunctionListModel();
                         ClassHelper.CopyPropertiesData(item, grpcItem);
-                        response.FunctionList.Add(grpcItem);
+                        response.Records.Add(grpcItem);
                     });
                 }
 
@@ -310,50 +311,51 @@ namespace BlazorApp.Server.Services
         //-------------------------------------------------------------------------------------------------------/
         // SaveRoleList
         //-------------------------------------------------------------------------------------------------------/
-        public override async Task<Admin.Services.Empty_Response> SaveRoleList(SaveRoleList_Request request, ServerCallContext context)
+        public override async Task<Admin.Services.String_Response> SaveRoleList(SaveRoleList_Request request, ServerCallContext context)
         {
-            var response = new Admin.Services.Empty_Response();
+            var response = new Admin.Services.String_Response();
             response.ReturnCode = GrpcReturnCode.OK;
             try
             {
-                foreach (var item in request.RoleList)
+                response.StringValue = request.Record.ID;
+                //
+                switch (request.Record.UpdMode)
                 {
-                    switch (item.UpdMode)
-                    {
-                        //add new
-                        case 1:
-                            var newRecord = new mdRoleList();
-                            ClassHelper.CopyPropertiesData(item, newRecord);
-                            newRecord.ID = "";
-                            newRecord.CreatedOn = DateTime.UtcNow;
-                            newRecord.ModifiedOn = DateTime.UtcNow;
-                            //
-                            await newRecord.SaveAsync();
-                            break;
+                    //add new
+                    case 1:
+                        var newRecord = new mdRoleList();
+                        ClassHelper.CopyPropertiesData(request.Record, newRecord);
+                        newRecord.ID = newRecord.GenerateNewID();
+                        newRecord.CreatedOn = DateTime.UtcNow;
+                        newRecord.ModifiedOn = DateTime.UtcNow;
+                        //
+                        response.StringValue = newRecord.ID;
+                        //
+                        await newRecord.SaveAsync();
+                        break;
 
-                        //update
-                        case 2:
-                            var oldRecord = await DB.Find<mdRoleList>().OneAsync(item.ID);
-                            if (oldRecord != null)
-                            {
-                                ClassHelper.CopyPropertiesData(item, oldRecord);
-                                oldRecord.ModifiedOn = DateTime.UtcNow;
-                                await oldRecord.SaveAsync();
-                            }
-                            else
-                            {
-                                response.ReturnCode = GrpcReturnCode.Error_201;
-                            }
-                            break;
+                    //update
+                    case 2:
+                        var oldRecord = await DB.Find<mdRoleList>().OneAsync(request.Record.ID);
+                        if (oldRecord != null)
+                        {
+                            ClassHelper.CopyPropertiesData(request.Record, oldRecord);
+                            oldRecord.ModifiedOn = DateTime.UtcNow;
+                            await oldRecord.SaveAsync();
+                        }
+                        else
+                        {
+                            response.ReturnCode = GrpcReturnCode.Error_201;
+                        }
+                        break;
 
-                        //delete
-                        case 3:
-                            await DB.DeleteAsync<mdRoleList>(item.ID);
-                            break;
-                        default:
-                            response.ReturnCode = GrpcReturnCode.Error_BadRequest; //UpdMode = blank
-                            break;
-                    }
+                    //delete
+                    case 3:
+                        await DB.DeleteAsync<mdRoleList>(request.Record.ID);
+                        break;
+                    default:
+                        response.ReturnCode = GrpcReturnCode.Error_BadRequest; //UpdMode = blank
+                        break;
                 }
             }
             catch (Exception ex)
@@ -382,9 +384,9 @@ namespace BlazorApp.Server.Services
                 {
                     findRecords.ForEach(item =>
                     {
-                        var grpcItem = new grpcRoleList();
+                        var grpcItem = new grpcRoleListModel();
                         ClassHelper.CopyPropertiesData(item, grpcItem);
-                        response.RoleList.Add(grpcItem);
+                        response.Records.Add(grpcItem);
                     });
                 }
             }
@@ -780,50 +782,51 @@ namespace BlazorApp.Server.Services
         //-------------------------------------------------------------------------------------------------------/
         // SaveSettingMaster
         //-------------------------------------------------------------------------------------------------------/
-        public override async Task<Admin.Services.Empty_Response> SaveSettingMaster(SaveSettingMaster_Request request, ServerCallContext context)
+        public override async Task<Admin.Services.String_Response> SaveSettingMaster(SaveSettingMaster_Request request, ServerCallContext context)
         {
-            var response = new Admin.Services.Empty_Response();
+            var response = new Admin.Services.String_Response();
             response.ReturnCode = GrpcReturnCode.OK;
             try
             {
-                foreach (var item in request.SettingMasters)
+                response.StringValue = request.Record.ID;
+                //
+                switch (request.Record.UpdMode)
                 {
-                    switch (item.UpdMode)
-                    {
-                        //add new
-                        case 1:
-                            var newRecord = new mdSettingMaster();
-                            ClassHelper.CopyPropertiesData(item, newRecord);
-                            newRecord.ID = "";
-                            newRecord.ModifiedOn = DateTime.UtcNow;
+                    //add new
+                    case 1:
+                        var newRecord = new mdSettingMaster();
+                        ClassHelper.CopyPropertiesData(request.Record, newRecord);
+                        newRecord.ID = newRecord.GenerateNewID();
+                        newRecord.ModifiedOn = DateTime.UtcNow;
+                        //
+                        response.StringValue = newRecord.ID;
+                        //
+                        await newRecord.SaveAsync();
+                        break;
+
+                    //update
+                    case 2:
+                        var oldRecord = await DB.Find<mdSettingMaster>().OneAsync(request.Record.ID);
+                        if (oldRecord != null)
+                        {
+                            ClassHelper.CopyPropertiesData(request.Record, oldRecord);
+                            oldRecord.ModifiedOn = DateTime.UtcNow;
                             //
-                            await newRecord.SaveAsync();
-                            break;
+                            await oldRecord.SaveAsync();
+                        }
+                        else
+                        {
+                            response.ReturnCode = GrpcReturnCode.Error_201;
+                        }
+                        break;
 
-                        //update
-                        case 2:
-                            var oldRecord = await DB.Find<mdSettingMaster>().OneAsync(item.ID);
-                            if (oldRecord != null)
-                            {
-                                ClassHelper.CopyPropertiesData(item, oldRecord);
-                                oldRecord.ModifiedOn = DateTime.UtcNow;
-                                //
-                                await oldRecord.SaveAsync();
-                            }
-                            else
-                            {
-                                response.ReturnCode = GrpcReturnCode.Error_201;
-                            }
-                            break;
-
-                        //delete
-                        case 3:
-                            await DB.DeleteAsync<mdSettingMaster>(item.ID);
-                            break;
-                        default:
-                            response.ReturnCode = GrpcReturnCode.Error_BadRequest; //UpdMode = blank
-                            break;
-                    }
+                    //delete
+                    case 3:
+                        await DB.DeleteAsync<mdSettingMaster>(request.Record.ID);
+                        break;
+                    default:
+                        response.ReturnCode = GrpcReturnCode.Error_BadRequest; //UpdMode = blank
+                        break;
                 }
             }
             catch (Exception ex)
@@ -852,9 +855,9 @@ namespace BlazorApp.Server.Services
                 {
                     findRecords.ForEach(item =>
                     {
-                        var grpcItem = new grpcSettingMaster();
+                        var grpcItem = new grpcSettingMasterModel();
                         ClassHelper.CopyPropertiesData(item, grpcItem);
-                        response.SettingMasters.Add(grpcItem);
+                        response.Records.Add(grpcItem);
                     });
                 }
             }
@@ -945,7 +948,7 @@ namespace BlazorApp.Server.Services
                 {
                     findRecords.ForEach(item =>
                     {
-                        var grpcItem = new grpcUserAccount();
+                        var grpcItem = new grpcUserAccountModel();
                         ClassHelper.CopyPropertiesData(item, grpcItem);
                         //Clear password
                         grpcItem.Password = "";
@@ -976,7 +979,7 @@ namespace BlazorApp.Server.Services
             //
             try
             {
-                newVoucherNo =  await MyVoucher.GetVoucherNo(request.StringValue);
+                newVoucherNo = await MyVoucher.GetVoucherNo(request.StringValue);
             }
             catch (Exception ex)
             {

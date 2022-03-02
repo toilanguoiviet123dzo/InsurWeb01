@@ -141,7 +141,7 @@ namespace BlazorApp.Client.Services
                     {
                         foreach (var item in response.Records)
                         {
-                            if (item.Status == 1)
+                            if (item.Status)
                             {
                                 var dataRow = new RepairerMasterModel();
                                 ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);

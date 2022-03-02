@@ -237,19 +237,19 @@
                 <div class="row mt-2">
                     <!--Check: đã trả thiết bị-->
                     <div class="col-12 col-lg-3">
-                        <DxCheckBox @bind-Checked="@Model.ReturnStatus1"
+                        <MyCheckBox @bind-Checked="@Model.ReturnStatus1"
                                     Class="text-blue">
                             Đã lấy thiết bị
-                        </DxCheckBox>
+                        </MyCheckBox>
                     </div>
 
                     <!--Check: đã trả thiết bị-->
                     <div class="col-12 col-lg-3">
-                        <DxCheckBox @bind-Checked="@Model.ReturnStatus2"
+                        <MyCheckBox @bind-Checked="@Model.ReturnStatus2"
                                     Class="text-maroon"
-                                    Enabled="@Model.ReturnStatus1">
+                                    ReadOnly="@(!Model.ReturnStatus1)">
                             Đã nhập thiết bị
-                        </DxCheckBox>
+                        </MyCheckBox>
                     </div>
                 </div>
 

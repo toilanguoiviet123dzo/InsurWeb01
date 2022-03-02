@@ -4,98 +4,48 @@
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
 @inject IJSRuntime JsRuntime;
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
-<br />
-<div style="width:100%">
-    <DxDataGrid @ref="@grid"
-                Data="@DetailData"
-                EditMode="DevExpress.Blazor.DataGridEditMode.PopupEditForm"
-                PageSize="18"
-                ShowFilterRow="true"
-                HtmlRowDecoration="@OnHtmlRowDecoration"
-                HorizontalScrollBarMode="ScrollBarMode.Auto"
-                RowEditStart="@(dataRow => OnRowEditStarting(dataRow))"
-                RowInsertStart="@(() => OnRowEditStarting(null))">
-        <Columns>
-
-            <DxDataGridColumn Field="@nameof(RoleListModel.RoleID)"
-                              Caption="RoleID"
-                              Width="5rem" />
-            <DxDataGridColumn Field="@nameof(RoleListModel.RoleName)"
-                              Caption="RoleName"
-                              Width="15rem" />
-            <DxDataGridColumn Field="@nameof(RoleListModel.Discriptions)"
-                              Caption="Descriptions"
-                              Width="10rem%" />
-            <DxDataGridColumn Field="@nameof(RoleListModel.DspOrder)"
-                              Caption="Display order"
-                              Width="8rem" />
-            <DxDataGridDateEditColumn Field="@nameof(RoleListModel.CreatedOn)"
-                                      Caption="CreatedOn"
-                                      DisplayFormat="dd/MM/yyyy HH:mm"
-                                      Width="10rem" />
-            <DxDataGridDateEditColumn Field="@nameof(RoleListModel.ModifiedOn)"
-                                      Caption="ModifiedOn"
-                                      DisplayFormat="dd/MM/yyyy HH:mm"
-                                      Width="10rem%" />
-            <!--Command columns-->
-            <MyGridCommand Grid="grid"
-                           ShowAddnew="true"
-                           ShowEdit="true"
-                           ShowDelete="true"
-                           OnRowRemoving="@((context) => OnRowRemoving(context as RoleListModel))" />
-        </Columns>
-        <EditFormTemplate>
-            <EditForm Model="@EditContext" Context="EditFormContext" OnValidSubmit="@UpdateRow">
-                <DataAnnotationsValidator />
-                <DxFormLayout>
-                    <DxFormLayoutItem Caption="Role ID: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.RoleID" />
-                            <ValidationMessage For="@(() => EditContext.RoleID)" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Role Name: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.RoleName" />
-                            <ValidationMessage For="@(() => EditContext.RoleName)" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Descriptions: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.Discriptions" />
-                            <ValidationMessage For="@(() => EditContext.Discriptions)" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Display order: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.DspOrder" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <!--OK Cancel-->
-                    <MyGridEditFormOKCancel OnCancelClick="OnCancelButtonClick" />
-                </DxFormLayout>
-            </EditForm>
-        </EditFormTemplate>
-    </DxDataGrid>
-    <br />
-    <div class="text-center">
-        <MyButtonSave OnClick="ShowConfirm_SaveMain" />
-        <MyButtonCancel OnClick="ShowConfirm_CancelSaveMain" />
-    </div>
-</div>
-<MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
+<MyDataGrid @ref="@grid"
+            T="RoleListModel"
+            Title="Danh sách yêu cầu bồi thường"
+            Items="@DetailData"
+            IsAddNew="true"
+            IsDelete="true"
+            OnAddRow="@(() => OnAddRow_Handle())"
+            OnViewRow="@((RoleListModel row) => OnViewRow_Handle(row))"
+            OnDeleteRow="@((RoleListModel row) => OnDeleteRow_Handle(row))">
+    <ColGroup>
+        <col style="width: 2rem;" />
+        <col style="width: 6rem;" />
+        <col style="width: 8rem;" />
+        <col style="width: 10rem;" />
+        <col />
+        <col style="width: 10rem;" />
+        <col />
+        <col style="width: 5rem;" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<RoleListModel, object>(x => x.DspOrder)">No.</MudTableSortLabel></MudTh>
+        <MudTh>Mã</MudTh>
+        <MudTh>Tên</MudTh>
+        <MudTh>Ghi chú</MudTh>
+        <MudTh>Ngày giờ</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd Style="text-align:center;">@context.DspOrder</MudTd>
+        <MudTd>@context.RoleID</MudTd>
+        <MudTd>@context.RoleName</MudTd>
+        <MudTd>@context.Discriptions</MudTd>
+        <MudTd Style="text-align:center;">@context.ModifiedOn.ToString("dd/MM/yyyy HH:mm")</MudTd>
+    </RowTemplate>
+</MyDataGrid>
 
 @code{
-    [CascadingParameter]
-    protected ProgramInfo Program { get; set; }
-    FormEditContext EditContext = null;
+    [CascadingParameter] protected ProgramInfo Program { get; set; }
     // Detail data
-    readonly ObservableCollection<RoleListModel> DetailData = new ObservableCollection<RoleListModel>();
-    // Popup
-    private string ConfirmMessage = "";
-    private string ConfirmAction = "";
-    private bool ConfirmVisible = false;
+    MyDataGrid<RoleListModel> grid;
+    readonly List<RoleListModel> DetailData = new List<RoleListModel>();
     //
     protected override async Task OnInitializedAsync()
     {
@@ -127,7 +77,7 @@
             var response = await adminServiceClient.GetRoleListAsync(requestString);
             if (response != null && response.ReturnCode == 200)
             {
-                foreach (var item in response.RoleList)
+                foreach (var item in response.Records)
                 {
                     RoleListModel dataRow = new RoleListModel();
                     ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
@@ -147,257 +97,120 @@
 
     #region Save
 
-    void ConfirmHandler()
-    {
-        //Delete row
-        if (ConfirmAction == "DeleteRow")
-        {
-            DeleteRow();
-        }
-        //Save main
-        if (ConfirmAction == "SaveMain")
-        {
-            SaveMain();
-        }
-        //Cancel save main
-        if (ConfirmAction == "CancelSaveMain")
-        {
-            CancelSaveMain();
-        }
-        //Close confirm delete popup
-        ConfirmVisible = false;
-        StateHasChanged();
-    }
-
-    //Cancel changed
-    void ShowConfirm_CancelSaveMain()
-    {
-        if (!Check_Changed())
-        {
-            //Show message: Nothing changed!
-            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Info);
-            return;
-        }
-        //Show popup confirm
-        ConfirmMessage = "Cancel changed?";
-        ConfirmAction = "CancelSaveMain";
-        ConfirmVisible = true;
-        StateHasChanged();
-    }
-    async void CancelSaveMain()
-    {
-        //Reload data
-        await DisplayMain();
-    }
-
-    //Save main
-    void ShowConfirm_SaveMain()
-    {
-        if (!Check_Changed())
-        {
-            //Show message: Nothing changed!
-            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Info);
-            return;
-        }
-        //Show popup confirm
-        ConfirmMessage = "Save changed?";
-        ConfirmAction = "SaveMain";
-        ConfirmVisible = true;
-        StateHasChanged();
-    }
-
-    //Check changed
-    bool Check_Changed()
-    {
-        foreach (RoleListModel row in DetailData)
-        {
-            if (row.UpdMode != 0)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
+    
     //
-    async void SaveMain()
+    async Task<bool> SaveRow(RoleListModel saveRow)
     {
         try
         {
-            var hasChanged = false;
             //Request
-            SaveRoleList_Request request = new SaveRoleList_Request();
-            var Credential = new UserCredential()
-            {
-                Username = WebUserCredential.Username,
-                RoleID = WebUserCredential.RoleID,
-                AccessToken = WebUserCredential.AccessToken,
-                ApiKey = WebUserCredential.ApiKey
-            };
-            request.Credential = Credential;
-            //
-            foreach (RoleListModel row in DetailData)
-            {
-                if (row.UpdMode != 0)
+            var request = new Admin.Services.SaveRoleList_Request();
+            var Credential = new Admin.Services.UserCredential()
                 {
-                    //Convert to DB row
-                    var dbRow = new grpcRoleList();
-                    ClassHelper.CopyPropertiesDataDateConverted(row, dbRow);
-                    request.RoleList.Add(dbRow);
-                    //
-                    hasChanged = true;
-                }
-            }
-            //Check changed
-            if (!hasChanged)
-            {
-                //Message no change
-                Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Info);
-                return;
-            }
-            //Call api
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                };
+            request.Credential = Credential;
+            // Convert to DB row
+            request.Record = new grpcRoleListModel();
+            ClassHelper.CopyPropertiesDataDateConverted(saveRow, request.Record);
+            // Call api
             var response = await adminServiceClient.SaveRoleListAsync(request);
             // Success
-            if (response != null && response.ReturnCode == 200)
-            {
-                //Show success
-                Snackbar.Add(MyMessage.Info_SaveSucess, Severity.Info);
-            }
-            else
+            if (response == null || response.ReturnCode != GrpcReturnCode.OK)
             {
                 Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
             }
-
-            //Reload data
-            await DisplayMain();
+            else
+            {
+                //Update ID
+                saveRow.ID = response.StringValue;
+            }
+            //OK
+            return true;
         }
         catch
         {
             Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
-            throw;
         }
+        //
+        return false;
     }
 
     #endregion
 
     #region Grid main
-    //Confirm delete
-    RoleListModel DeletedRow = null;
-    void OnRowRemoving(RoleListModel dataRow)
-    {
-        DeletedRow = dataRow;
-
-        //Show popup confirm
-        ConfirmMessage = "Xóa dòng dữ liệu?";
-        ConfirmAction = "DeleteRow";
-        ConfirmVisible = true;
-        StateHasChanged();
-    }
-
-    //Cancel edit
-    async Task OnCancelButtonClick()
-    {
-        await grid.CancelRowEdit();
-        EditContext = null;
-    }
-
-    async void DeleteRow()
-    {
-        //Set to delete mode
-        if (DeletedRow.UpdMode == 1)
-        {
-            //Remove new row from data source
-            DetailData.Remove(DeletedRow);
-        }
-        else
-        {
-            //Mark to delete
-            DeletedRow.UpdMode = 3;
-        }
-
-        //Refresh layout
-        await grid.Refresh();
-    }
-    //Update row
-    async Task UpdateRow()
-    {
-        //Update for edit field
-        var backupRow = new RoleListModel();
-        ClassHelper.CopyPropertiesData(EditContext.EditingRow, backupRow);
-        //
-        EditContext.EditingRow.SystemID = "";
-        EditContext.EditingRow.RoleID = EditContext.RoleID;
-        EditContext.EditingRow.RoleName = EditContext.RoleName;
-        EditContext.EditingRow.Discriptions = EditContext.Discriptions;
-        EditContext.EditingRow.DspOrder = EditContext.DspOrder;
-        EditContext.EditingRow.ModifiedOn = DateTime.Now;
-
-        //Update mode
-        if (EditContext.EditingRow.UpdMode == 0 || EditContext.EditingRow.UpdMode == 3)
-        {
-            EditContext.EditingRow.UpdMode = 2;
-        }
-
-        //Insert to datasource
-        if (EditContext.EditingRow.UpdMode == -1)
-        {
-            EditContext.EditingRow.UpdMode = 1;
-            DetailData.Add(EditContext.EditingRow);
-        }
-
-        //Close popup & refresh data
-        await grid.CancelRowEdit();
-        await grid.Refresh();
-    }
-    // Edit row model
-    DxDataGrid<RoleListModel> grid;
-    class FormEditContext : RoleListModel
-    {
-        public FormEditContext(RoleListModel roleListModel)
-        {
-            //Saved data
-            EditingRow = roleListModel;
-
-            //Editable data only
-            SystemID = EditingRow.SystemID;
-            RoleID = EditingRow.RoleID;
-            RoleName = EditingRow.RoleName;
-            Discriptions = EditingRow.Discriptions;
-            DspOrder = EditingRow.DspOrder;
-        }
-        public RoleListModel EditingRow { get; set; }
-        public Action StateHasChanged { get; set; }
-    }
-
-    //Get data for edit/insert
-    void OnRowEditStarting(RoleListModel editingRow)
+    //Add row
+    async void OnAddRow_Handle()
     {
         //Init new row
-        if (editingRow == null)
+        var newRow = new RoleListModel();
+        newRow.UpdMode = 1;
+        newRow.ModifiedOn = DateTime.Now;
+        //
+        var parameters = new DialogParameters();
+        parameters.Add("Model", newRow);
+        //
+        var result = await DialogService.Show<BrancheMasterEdit>("", parameters, MyOptions.GetEditFormOptions()).Result;
+        if (!result.Cancelled && result.Data != null)
         {
-            editingRow = new RoleListModel();
-            //
-            //editingRow.SystemID = SelectedListCode;
-            editingRow.CreatedOn = DateTime.Now;
-            editingRow.ModifiedOn = DateTime.Now;
-            editingRow.UpdMode = -1;
+            var retModel = (RoleListModel)result.Data;
+
+            //Save to DB
+            var saveRet = await SaveRow(retModel);
+            if (true)
+            {
+                //Add to grid
+                DetailData.Add(retModel);
+                grid.Refresh();
+            }
         }
-        EditContext = new FormEditContext(editingRow);
     }
-    // Color of edit data
-    void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<RoleListModel> eventArgs)
+    //Update row
+    async void OnViewRow_Handle(RoleListModel row)
     {
-        
-        if (eventArgs.DataItem.UpdMode == 1)
-            eventArgs.Style += MyColor.NewRowColor;
-        else if (eventArgs.DataItem.UpdMode == 2)
-            eventArgs.Style += MyColor.EditRowColor;
-        else if (eventArgs.DataItem.UpdMode == 3)
-            eventArgs.Style += MyColor.DeleteRowColor;
+        //UpdMode
+        row.UpdMode = 2;
+        //
+        var parameters = new DialogParameters();
+        parameters.Add("Model", row);
+        //
+        var result = await DialogService.Show<BrancheMasterEdit>("", parameters, MyOptions.GetEditFormOptions()).Result;
+        if (!result.Cancelled && result.Data != null)
+        {
+            var retModel = (RoleListModel)result.Data;
+            var updateReccord = DetailData.Find(x => x.ID == retModel.ID);
+            if (updateReccord != null)
+            {
+                //Update to Grid
+                ClassHelper.CopyPropertiesData(retModel, updateReccord);
+
+                //Save to DB
+                var saveRet = await SaveRow(retModel);
+                if (true)
+                {
+                    grid.Refresh();
+                }
+            }
+        }
+    }
+
+    //Delete row
+    async void OnDeleteRow_Handle(RoleListModel row)
+    {
+        //UpdMode
+        row.UpdMode = 3;
+
+        //Save to DB
+        var saveRet = await SaveRow(row);
+        if (true)
+        {
+            DetailData.Remove(row);
+            grid.Refresh();
+        }
     }
     #endregion
 
-    #region Screen items
-
-    #endregion
-    //
 }

@@ -19,6 +19,7 @@
               HelperTextOnFocus="true"
               Disabled="@Disabled"
               ReadOnly="@ReadOnly"
+              InputType="@InputType"
               UserAttributes="@Attributes" />
 
 
@@ -26,6 +27,7 @@
     [Parameter] public bool TabStop { get; set; } = true;
     [Parameter] public string Literal { get; set; } = "";
     [Parameter] public Variant Variant { get; set; } = Variant.Text;
+    [Parameter] public InputType InputType { get; set; } = InputType.Text;
     [Parameter] public int Rows { get; set; } = 3;
     [Parameter] public bool AutoFocus { get; set; } = false;
     [Parameter] public bool Clearable { get; set; } = false;

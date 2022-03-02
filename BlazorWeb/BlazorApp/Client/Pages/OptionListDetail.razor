@@ -4,122 +4,68 @@
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
 @inject IJSRuntime JsRuntime;
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <br />
 <div style="width:15rem">
-    <label>Loại danh sách</label>
-    <MyComboBox Data="@ListCodeData"
-                ValueChanged="@((OptionListHeaderModel Value) => ListCode_ValueChanged(Value))"
+    <MyComboBox @ref="RefListCode"
+                Value="SelectedListCode"
+                ValueChanged="@((OptionListHeaderModel value) => ListCode_Changed(value))"
+                Data="@ListCodeData"
+                Literal="Loại danh sách"
                 TextFieldName="@nameof(OptionListHeaderModel.ListName)">
     </MyComboBox>
 </div>
 <br />
-<div style="width:100%">
-    <DxDataGrid @ref="@grid"
-                Data="@DetailData"
-                EditMode="DevExpress.Blazor.DataGridEditMode.PopupEditForm"
-                PageSize="18"
-                ShowFilterRow="true"
-                HtmlRowDecoration="@OnHtmlRowDecoration"
-                HorizontalScrollBarMode="ScrollBarMode.Auto"
-                RowEditStart="@(dataRow => OnRowEditStarting(dataRow))"
-                RowInsertStart="@(() => OnRowEditStarting(null))"
-                PopupEditFormHeaderText="@PopupEditFormHeaderText">
-        <Columns>
-            <DxDataGridColumn Field="@nameof(OptionListModel.ItemName)"
-                              Caption="Tên hạng mục"
-                              Width="20rem" />
-            <DxDataGridColumn Field="@nameof(OptionListModel.ItemCode)"
-                              Caption="Trị (chữ)"
-                              Width="10rem" />
-            <DxDataGridSpinEditColumn Field="@nameof(OptionListModel.IntCode)"
-                                      Caption="Trị (số nguyên)"
-                                      DisplayFormat="N0"
-                                      Width="8rem" />
-            <DxDataGridSpinEditColumn Field="@nameof(OptionListModel.DoubleCode)"
-                                      Caption="Trị (số thập phân)"
-                                      DisplayFormat="N2"
-                                      Width="8rem" />
-            <DxDataGridColumn Field="@nameof(OptionListModel.Description)"
-                              Caption="Ghi chú"
-                              Width="20rem" />
-            <DxDataGridColumn Field="@nameof(OptionListModel.DspOrder)"
-                              Caption="Thứ tự"
-                              Width="8rem" />
-            <DxDataGridDateEditColumn Field="@nameof(OptionListModel.ModifiedOn)"
-                                      Caption="Ngày giờ cập nhật"
-                                      DisplayFormat="dd/MM/yyyy HH:mm"
-                                      Width="12rem" />
-            <!--Command columns-->
-            <MyGridCommand Grid="grid"
-                           ShowAddnew="true"
-                           ShowEdit="true"
-                           ShowDelete="true"
-                           OnRowRemoving="@((context) => OnRowRemoving(context as OptionListModel))" />
-        </Columns>
-        <EditFormTemplate>
-            <EditForm Model="@EditContext" Context="EditFormContext" OnValidSubmit="@UpdateRow">
-                <DataAnnotationsValidator />
-                <DxFormLayout>
-                    <DxFormLayoutItem Caption="Tên hạng mục: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.ItemName" />
-                            <ValidationMessage For="@(() => EditContext.ItemName)" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Trị (chữ): " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.ItemCode" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Trị (số nguyên): " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxMaskedInput @bind-Value="@EditContext.IntCode"
-                                           Format="N0" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Trị (số thập phân): " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxMaskedInput @bind-Value="@EditContext.DoubleCode"
-                                           Mask="N2" />
-                        </Template>
-                    </DxFormLayoutItem>
+<MyDataGrid @ref="@grid"
+            T="OptionListModel"
+            Title="Danh sách tùy chọn"
+            Items="@DetailData"
+            IsAddNew="true"
+            IsDelete="true"
+            OnAddRow="@(() => OnAddRow_Handle())"
+            OnViewRow="@((OptionListModel row) => OnViewRow_Handle(row))"
+            OnDeleteRow="@((OptionListModel row) => OnDeleteRow_Handle(row))">
+    <ColGroup>
+        <col style="width: 2rem;" />
+        <col style="width: 10rem;" />
+        <col style="width: 6rem;" />
+        <col style="width: 6rem;" />
+        <col style="width: 6rem;" />
+        <col />
+        <col style="width: 8rem;" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<OptionListModel, object>(x => x.DspOrder)">STT</MudTableSortLabel></MudTh>
+        <MudTh>Tên hạng mục</MudTh>
+        <MudTh>Trị chữ</MudTh>
+        <MudTh>Trị số nguyên</MudTh>
+        <MudTh>Trị số thực</MudTh>
+        <MudTh>Ghi chú</MudTh>
+        <MudTh>Ngày giờ</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd Style="text-align:center;">@context.DspOrder</MudTd>
+        <MudTd>@context.ItemName</MudTd>
+        <MudTd>@context.ItemCode</MudTd>
+        <MudTd Style="color:blue; text-align:right;">@context.IntCode</MudTd>
+        <MudTd Style="color:blue; text-align:right;">@context.DoubleCode</MudTd>
+        <MudTd>@context.Description</MudTd>
+        <MudTd Style="text-align:center;">@context.ModifiedOn.ToString("dd/MM/yyyy HH:mm")</MudTd>
+    </RowTemplate>
+</MyDataGrid>
 
-                    <DxFormLayoutItem Caption="Ghi chú: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.Description" />
-                            <ValidationMessage For="@(() => EditContext.Description)" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Thứ tự: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.DspOrder" />
-                            <ValidationMessage For="@(() => EditContext.DspOrder)" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <!--OK Cancel-->
-                    <MyGridEditFormOKCancel OnCancelClick="OnCancelEditRow" />
-                </DxFormLayout>
-            </EditForm>
-        </EditFormTemplate>
-    </DxDataGrid>
-</div>
-
-<MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
 
 @code {
-    [CascadingParameter]
-    protected ProgramInfo Program { get; set; }
-    FormEditContext EditContext = null;
+    [CascadingParameter] protected ProgramInfo Program { get; set; }
     // ListCode
     private readonly List<OptionListHeaderModel> ListCodeData = new List<OptionListHeaderModel>();
     // Detail data
-    readonly ObservableCollection<OptionListModel> DetailData = new ObservableCollection<OptionListModel>();
-    // Popup
-    private string ConfirmMessage = "";
-    private string ConfirmAction = "";
-    private bool ConfirmVisible = false;
-    private string PopupEditFormHeaderText = "";
+    MyDataGrid<OptionListModel> grid;
+    readonly List<OptionListModel> DetailData = new List<OptionListModel>();
+    //
+    OptionListHeaderModel SelectedListCode;
+    MyComboBox<OptionListHeaderModel> RefListCode;
     //
     protected override async Task OnInitializedAsync()
     {
@@ -127,8 +73,6 @@
 
         //Load master
         await LoadMaster();
-
-        //Display data ..
     }
 
     #region Load data
@@ -156,7 +100,7 @@
                 };
             ListCodeData.Clear();
             var response = await adminServiceClient.GetOptionListHeaderAsync(request);
-            if (response != null && response.ReturnCode == 200)
+            if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
                 foreach (var item in response.OptionListHeader)
                 {
@@ -180,16 +124,16 @@
         try
         {
             //Filter
-            var requestString = new String_Request()
+            var requestString = new Admin.Services.String_Request()
                 {
-                    Credential = new UserCredential()
+                    Credential = new Admin.Services.UserCredential()
                     {
                         Username = WebUserCredential.Username,
                         RoleID = WebUserCredential.RoleID,
                         AccessToken = WebUserCredential.AccessToken,
                         ApiKey = WebUserCredential.ApiKey
                     },
-                    StringValue = SelectedListCode
+                    StringValue = ListCode
                 };
 
             //Get data from DB
@@ -206,6 +150,7 @@
                     //
                     DetailData.Add(dataRow);
                 }
+                grid.Refresh();
             }
         }
         catch
@@ -216,18 +161,6 @@
     #endregion
 
     #region Save
-
-    void ConfirmHandler()
-    {
-        //Delete row
-        if (ConfirmAction == "DeleteRow")
-        {
-            DeleteRow();
-        }
-        //Close confirm delete popup
-        ConfirmVisible = false;
-        StateHasChanged();
-    }
 
     //Save Row
     async Task<bool> SaveRow(OptionListModel saveRow)
@@ -272,157 +205,93 @@
 
     #endregion
 
-    #region Grid main
-    //Confirm delete
-    OptionListModel DeletedRow = null;
-    void OnRowRemoving(OptionListModel dataRow)
+    #region Grid
+    //Add row
+    async void OnAddRow_Handle()
     {
-        DeletedRow = dataRow;
-
-        //Show popup confirm
-        ConfirmMessage = "Xóa dòng dữ liệu?";
-        ConfirmAction = "DeleteRow";
-        ConfirmVisible = true;
-        StateHasChanged();
-    }
-
-    //Cancel edit
-    async Task OnCancelEditRow()
-    {
-        await grid.CancelRowEdit();
-        EditContext = null;
-    }
-
-    async void DeleteRow()
-    {
-        // Mark to delete on grid
-        DeletedRow.UpdMode = 3;
-
-        var saveResult = await SaveRow(DeletedRow);
-
-        // Refresh layout
-        if (saveResult)
+        if (SelectedListCode == null)
         {
-            await grid.Refresh();
+            Snackbar.Add("Hãy chọn loại danh sách trước!", Severity.Warning);
+            RefListCode.Focus();
+        }
+        //Init new row
+        var newRow = new OptionListModel();
+        newRow.UpdMode = 1;
+        newRow.ListCode = SelectedListCode.ListCode;
+        newRow.ModifiedOn = DateTime.Now;
+        //
+        var parameters = new DialogParameters();
+        parameters.Add("Model", newRow);
+        //
+        var result = await DialogService.Show<OptionListDetailEdit>("", parameters, MyOptions.GetEditFormOptions()).Result;
+        if (!result.Cancelled && result.Data != null)
+        {
+            var retModel = (OptionListModel)result.Data;
+
+            //Save to DB
+            var saveRet = await SaveRow(retModel);
+            if (true)
+            {
+                //Add to grid
+                DetailData.Add(retModel);
+                grid.Refresh();
+            }
         }
     }
     //Update row
-    async Task UpdateRow()
+    async void OnViewRow_Handle(OptionListModel row)
     {
-        // Update for edit field
-        EditContext.EditingRow.ListCode = SelectedListCode;
-        EditContext.EditingRow.ItemCode = EditContext.ItemCode;
-        EditContext.EditingRow.IntCode = EditContext.IntCode;
-        EditContext.EditingRow.DoubleCode = EditContext.DoubleCode;
-        EditContext.EditingRow.ItemName = EditContext.ItemName;
-        EditContext.EditingRow.DspOrder = EditContext.DspOrder;
-        EditContext.EditingRow.Description = EditContext.Description;
-        EditContext.EditingRow.ModifiedOn = DateTime.Now;
+        //UpdMode
+        row.UpdMode = 2;
+        //
+        var parameters = new DialogParameters();
+        parameters.Add("Model", row);
+        //
+        var result = await DialogService.Show<OptionListDetailEdit>("", parameters, MyOptions.GetEditFormOptions()).Result;
+        if (!result.Cancelled && result.Data != null)
+        {
+            var retModel = (OptionListModel)result.Data;
+            var updateReccord = DetailData.Find(x => x.ID == retModel.ID);
+            if (updateReccord != null)
+            {
+                //Update to Grid
+                ClassHelper.CopyPropertiesData(retModel, updateReccord);
 
-        // Insert
-        if (EditContext.UpdMode == 1)
-        {
-            EditContext.EditingRow.UpdMode = 1;
-            DetailData.Add(EditContext.EditingRow);
-        }
-        else
-        {
-            //Update or update to restore delete record
-            EditContext.EditingRow.UpdMode = 2;
-        }
-
-        //Save row to DB
-        var saveResult = await SaveRow(EditContext.EditingRow);
-        if (saveResult)
-        {
-            // Close popup & refresh data
-            await grid.CancelRowEdit();
-            await grid.Refresh();
+                //Save to DB
+                var saveRet = await SaveRow(retModel);
+                if (true)
+                {
+                    grid.Refresh();
+                }
+            }
         }
     }
-    // Edit row model
-    DxDataGrid<OptionListModel> grid;
-    class FormEditContext : OptionListModel
+
+    //Delete row
+    async void OnDeleteRow_Handle(OptionListModel row)
     {
-        public FormEditContext(OptionListModel targetRow, int updMode)
+        //UpdMode
+        row.UpdMode = 3;
+
+        //Save to DB
+        var saveRet = await SaveRow(row);
+        if (true)
         {
-            //Backup editting row
-            EditingRow = targetRow;
-
-            //UpdMode
-            UpdMode = updMode;
-
-            //Edit context -> Editable data only
-            ListCode = EditingRow.ListCode;
-            ItemCode = EditingRow.ItemCode;
-            IntCode = EditingRow.IntCode;
-            DoubleCode = EditingRow.DoubleCode;
-            ItemName = EditingRow.ItemName;
-            DspOrder = EditingRow.DspOrder;
-            Description = EditingRow.Description;
+            DetailData.Remove(row);
+            grid.Refresh();
         }
-        public OptionListModel EditingRow { get; set; }
     }
-
-    //Get data for edit/insert
-    async void OnRowEditStarting(OptionListModel editingRow)
+    string ListCode = "";
+    void ListCode_Changed(OptionListHeaderModel filter)
     {
-        if (SelectedListCode == "")
-        {
-            await grid.CancelRowEdit();
-            Snackbar.Add("Bắt buột nhập: Chọn hạng mục trước", Severity.Warning);
-        }
-
-        // Insert row
-        if (editingRow == null)
-        {
-            PopupEditFormHeaderText = "Tạo mới";
-            editingRow = new OptionListModel();
-            editingRow.UpdMode = -1;
-            //Init row here
-            editingRow.CreatedOn = DateTime.Now;
-            editingRow.ModifiedOn = DateTime.Now;
-            //
-            EditContext = new FormEditContext(editingRow, 1);
-        }
-        else
-        {
-            //Update row
-            PopupEditFormHeaderText = "Cập nhật";
-            editingRow.UpdMode = 2;
-            EditContext = new FormEditContext(editingRow, 2);
-        }
-        this.StateHasChanged();
-    }
-
-    // Color of edit data
-    void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<OptionListModel> eventArgs)
-    {
-        
-        if (eventArgs.DataItem.UpdMode == 1)
-            eventArgs.Style += MyColor.NewRowColor;
-        else if (eventArgs.DataItem.UpdMode == 2)
-            eventArgs.Style += MyColor.EditRowColor;
-        else if (eventArgs.DataItem.UpdMode == 3)
-            eventArgs.Style += MyColor.DeleteRowColor;
-    }
-    #endregion
-
-    #region Screen items
-    // Select ListCode
-    string SelectedListCode = "";
-    string SelectedListName = "";
-    void ListCode_ValueChanged(OptionListHeaderModel item)
-    {
-        SelectedListCode = "";
-        if (item != null)
-        {
-            SelectedListCode = item.ListCode ?? "";
-            SelectedListName = item.ListName ?? "";
-        }
-        //Display data
+        if (filter == null) return;
+        SelectedListCode = filter;
+        ListCode = filter.ListCode;
+        //
         DisplayMain();
     }
     #endregion
     //
+
+
 }

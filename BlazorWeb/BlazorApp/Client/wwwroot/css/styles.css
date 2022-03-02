@@ -120,215 +120,35 @@
     }
 }
 
-/*For toast*/
-.blazored-toast-container {
+/*splash-screen*/
+.splash-screen {
     display: flex;
-    flex-direction: column;
-    position: fixed;
-    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+    flex-flow: column nowrap;
+    height: 100vh;
+    font-family: "Segoe UI",Roboto,"Helvetica Neue","-apple-system",BlinkMacSystemFont,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    font-size: .88rem;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: center;
 }
 
-/*For devExpress custom control*/
-.custom-control {
-    position: relative;
-    z-index: 1;
-    display: block;
-    min-height: 1.3125rem;
-    padding-left: 1.75rem;
-    -webkit-print-color-adjust: exact;
-    color-adjust: exact;
-}
-
-.custom-control-inline {
-    display: -webkit-inline-box;
-    display: -webkit-inline-flex;
-    display: -ms-inline-flexbox;
-    display: inline-flex;
-    margin-right: 1rem;
-}
-
-.custom-control-input {
-    position: absolute;
-    left: 0;
-    z-index: -1;
-    width: 1.25rem;
-    height: 1.28125rem;
-    opacity: 0;
-}
-
-    .custom-control-input:checked ~ .custom-control-label::before {
-        color: #fff;
-        border-color: #5f368d;
-        background-color: #5f368d;
+    .splash-screen .spinner-border {
+        border: .2em solid;
+        border-color: #5f368d #bfbfbf #bfbfbf;
+        width: 120px;
+        height: 120px;
     }
 
-    .custom-control-input:focus ~ .custom-control-label::before {
-        -webkit-box-shadow: 0 0 0 0.25rem rgba(95, 54, 141, 0.25);
-        box-shadow: 0 0 0 0.25rem rgba(95, 54, 141, 0.25);
-    }
-
-    .custom-control-input:focus:not(:checked) ~ .custom-control-label::before {
-        border-color: #af9bc6;
-    }
-
-    .custom-control-input:not(:disabled):active ~ .custom-control-label::before {
-        color: #fff;
-        background-color: #b99cd9;
-        border-color: #b99cd9;
-    }
-
-    .custom-control-input[disabled] ~ .custom-control-label, .custom-control-input:disabled ~ .custom-control-label {
-        color: #888;
-    }
-
-        .custom-control-input[disabled] ~ .custom-control-label::before, .custom-control-input:disabled ~ .custom-control-label::before {
-            background-color: #e9ecef;
-        }
-
-.custom-control-label {
-    position: relative;
-    margin-bottom: 0;
-    vertical-align: top;
+.splash-screen-caption {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
 }
 
-    .custom-control-label.dx-blazor-custom-control-label {
-        display: inline-block;
-    }
-
-    .custom-control-label::before {
-        position: absolute;
-        top: 0.03125rem;
-        left: -1.75rem;
-        display: block;
-        width: 1.25rem;
-        height: 1.25rem;
-        pointer-events: none;
-        content: "";
-        background-color: #fff;
-        border: #adb5bd solid 1px;
-    }
-
-    .custom-control-label::after {
-        position: absolute;
-        top: 0.03125rem;
-        left: -1.75rem;
-        display: block;
-        width: 1.25rem;
-        height: 1.25rem;
-        content: "";
-        background: 50% / 100% 100% no-repeat;
-    }
-
-.custom-checkbox .custom-control-label::before {
-    border-radius: 0.2rem;
+.splash-screen-text {
+    color: #a1a1a1;
+    margin-top: .5rem;
 }
 
-.custom-checkbox .custom-control-input:checked ~ .custom-control-label::after {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-2 -2 12 12'%3e%3cpath fill='%23fff' d='M7,1L3,5L1,3L0,4l3,3l5-5L7,1z'/%3e%3c/svg%3e");
-}
-
-.custom-checkbox .custom-control-input:indeterminate ~ .custom-control-label::before {
-    border-color: #5f368d;
-    background-color: #5f368d;
-}
-
-.custom-checkbox .custom-control-input:indeterminate ~ .custom-control-label::after {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3crect x='2' y='2' width='4' height='4' fill='%23fff'/%3e%3c/svg%3e");
-}
-
-.custom-checkbox .custom-control-input:disabled:checked ~ .custom-control-label::before {
-    background-color: rgba(95, 54, 141, 0.5);
-}
-
-.custom-checkbox .custom-control-input:disabled:indeterminate ~ .custom-control-label::before {
-    background-color: rgba(95, 54, 141, 0.5);
-}
-
-.custom-radio .custom-control-label::before {
-    border-radius: 50%;
-}
-
-.custom-radio .custom-control-input:checked ~ .custom-control-label::after {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%%3ccircle r='2.3' fill='%23fff'/%3e%3c/svg%3e");
-}
-
-.custom-radio .custom-control-input:disabled:checked ~ .custom-control-label::before {
-    background-color: rgba(95, 54, 141, 0.5);
-}
-
-.custom-switch {
-    padding-left: 2.375rem;
-}
-
-    .custom-switch .custom-control-label::before {
-        left: -2.375rem;
-        width: 1.875rem;
-        pointer-events: all;
-        border-radius: 0.625rem;
-    }
-
-    .custom-switch .custom-control-label::after {
-        top: calc(0.03125rem + 2px);
-        left: calc(-2.375rem + 2px);
-        width: 1.25rem;
-        height: 1.25rem;
-        background-color: #adb5bd;
-        border-radius: 0.625rem;
-        -webkit-transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-transform 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
-        transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-transform 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
-        -o-transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -o-transform 0.15s ease-in-out;
-        transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-transform 0.15s ease-in-out, -o-transform 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
-    }
-
-@media (prefers-reduced-motion: reduce) {
-    .custom-switch .custom-control-label::after {
-        -webkit-transition: none;
-        -o-transition: none;
-        transition: none;
-    }
-}
-
-.custom-switch .custom-control-input:checked ~ .custom-control-label::after {
-    background-color: #fff;
-    -webkit-transform: translateX(0.625rem);
-    -o-transform: translateX(0.625rem);
-    transform: translateX(0.625rem);
-}
-
-.custom-switch .custom-control-input:disabled:checked ~ .custom-control-label::before {
-    background-color: rgba(95, 54, 141, 0.5);
-}
-
-.custom-control-label::before {
-    -webkit-transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
-    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
-    -o-transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .custom-control-label::before {
-        -webkit-transition: none;
-        -o-transition: none;
-        transition: none;
-    }
-}
-
-@media (min-width: 576px) {
-    .form-inline .custom-control {
-        -webkit-box-align: center;
-        -webkit-align-items: center;
-        -ms-flex-align: center;
-        align-items: center;
-        -webkit-box-pack: center;
-        -webkit-justify-content: center;
-        -ms-flex-pack: center;
-        justify-content: center;
-    }
-
-    .form-inline .custom-control-label {
-        margin-bottom: 0;
-    }
-}

@@ -91,13 +91,13 @@
                         </div>
                         <div class="col-4">
                             <!--Check Chưa/Xong-->
-                            <DxCheckBox Checked="@StatusCheck"
+                            <MyCheckBox Checked="@StatusCheck"
                                         CheckedChanged="@((bool newValue) => {
                                                       StatusCheck = newValue;
                                                       CheckName = newValue? "Xong" : "Chưa";
                                                   })">
                                 <label> @CheckName </label>
-                            </DxCheckBox>
+                            </MyCheckBox>
                         </div>
                     </div>
                 </div>

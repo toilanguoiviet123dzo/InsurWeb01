@@ -1,136 +1,65 @@
 ﻿@page "/FunctionList"
 @using Admin.Services
+@using Claim.Services
 @using System.Collections.ObjectModel;
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
+@inject MasterService masterService;
 @inject IJSRuntime JsRuntime;
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
-<br />
-<div style="width:100%">
-    <DxDataGrid @ref="@grid"
-                Data="@DetailData"
-                EditMode="DevExpress.Blazor.DataGridEditMode.PopupEditForm"
-                PageSize="18"
-                ShowFilterRow="true"
-                HtmlRowDecoration="@OnHtmlRowDecoration"
-                HorizontalScrollBarMode="ScrollBarMode.Auto"
-                RowEditStart="@(dataRow => OnRowEditStarting(dataRow))"
-                RowInsertStart="@(() => OnRowEditStarting(null))">
-        <Columns>
-            <DxDataGridColumn Field="@nameof(FunctionListModel.PageID)"
-                              Width="8rem" />
-            <DxDataGridColumn Field="@nameof(FunctionListModel.PageName)"
-                              Width="15rem" />
-            <DxDataGridColumn Field="@nameof(FunctionListModel.Discriptions)"
-                              Caption="Descriptions"
-                              Width="10rem" />
-            <DxDataGridColumn Field="@nameof(FunctionListModel.F1)"
-                              Width="8rem" />
-            <DxDataGridColumn Field="@nameof(FunctionListModel.F2)"
-                              Width="8rem" />
-            <DxDataGridColumn Field="@nameof(FunctionListModel.F3)"
-                              Width="8rem" />
-            <DxDataGridColumn Field="@nameof(FunctionListModel.F4)"
-                              Width="8rem" />
-            <DxDataGridColumn Field="@nameof(FunctionListModel.F5)"
-                              Width="8rem" />
-            <DxDataGridDateEditColumn Field="@nameof(FunctionListModel.CreatedOn)"
-                                      Caption="CreatedOn"
-                                      DisplayFormat="dd/MM/yyyy HH:mm"
-                                      Width="10rem" />
-            <DxDataGridDateEditColumn Field="@nameof(FunctionListModel.ModifiedOn)"
-                                      Caption="ModifiedOn"
-                                      DisplayFormat="dd/MM/yyyy HH:mm"
-                                      Width="10rem" />
-            <!--Command columns-->
-            <MyGridCommand Grid="grid"
-                           ShowAddnew="true"
-                           ShowEdit="true"
-                           ShowDelete="true"
-                           OnRowRemoving="@((context) => OnRowRemoving(context as FunctionListModel))" />
-        </Columns>
-        <EditFormTemplate>
-            <EditForm Model="@EditContext" Context="EditFormContext" OnValidSubmit="@UpdateRow">
-                <DataAnnotationsValidator />
-                <DxFormLayout>
-                    <DxFormLayoutItem Caption="Page ID: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.PageID" />
-                            <ValidationMessage For="@(() => EditContext.PageID)" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Page Name: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.PageName" />
-                            <ValidationMessage For="@(() => EditContext.PageName)" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Descriptions: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.Discriptions" />
-                            <ValidationMessage For="@(() => EditContext.Discriptions)" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="F1: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.F1" />
-                            <ValidationMessage For="@(() => EditContext.F1)" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="F2: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.F2" />
-                            <ValidationMessage For="@(() => EditContext.F2)" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="F3: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.F3" />
-                            <ValidationMessage For="@(() => EditContext.F3)" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="F4: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.F4" />
-                            <ValidationMessage For="@(() => EditContext.F4)" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="F5: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.F5" />
-                            <ValidationMessage For="@(() => EditContext.F5)" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <!--OK Cancel-->
-                    <MyGridEditFormOKCancel OnCancelClick="OnCancelButtonClick" />
-                </DxFormLayout>
-            </EditForm>
-        </EditFormTemplate>
-    </DxDataGrid>
-    <br />
-    <div class="text-center">
-        <MyButtonSave OnClick="ShowConfirm_SaveMain" />
-        <MyButtonCancel OnClick="ShowConfirm_CancelSaveMain" />
-    </div>
-</div>
-
-<MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
+<MyDataGrid @ref="@grid"
+            T="FunctionListModel"
+            Title="Danh sách yêu cầu bồi thường"
+            Items="@DetailData"
+            IsAddNew="true"
+            IsDelete="true"
+            OnAddRow="@(() => OnAddRow_Handle())"
+            OnViewRow="@((FunctionListModel row) => OnViewRow_Handle(row))"
+            OnDeleteRow="@((FunctionListModel row) => OnDeleteRow_Handle(row))">
+    <ColGroup>
+        <col style="width: 2rem;" />
+        <col style="width: 6rem;" />
+        <col style="width: 8rem;" />
+        <col style="width: 10rem;" />
+        <col />
+        <col style="width: 10rem;" />
+        <col />
+        <col style="width: 5rem;" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<FunctionListModel, object>(x => x.PageID)">Page ID</MudTableSortLabel></MudTh>
+        <MudTh>Page name</MudTh>
+        <MudTh>Discriptions</MudTh>
+        <MudTh>F1</MudTh>
+        <MudTh>F2</MudTh>
+        <MudTh>F3</MudTh>
+        <MudTh>F4</MudTh>
+        <MudTh>F5</MudTh>
+        <MudTh>ModifiedOn</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd Style="color:blue; font-weight:bold">@context.PageID</MudTd>
+        <MudTd>@context.PageID</MudTd>
+        <MudTd>@context.Discriptions</MudTd>
+        <MudTd Style="text-align:center;">@context.F1</MudTd>
+        <MudTd Style="text-align:center;">@context.F2</MudTd>
+        <MudTd Style="text-align:center;">@context.F3</MudTd>
+        <MudTd Style="text-align:center;">@context.F4</MudTd>
+        <MudTd Style="text-align:center;">@context.F5</MudTd>
+        <MudTd Style="text-align:center;">@context.ModifiedOn.ToString("dd/MM/yyyy HH:mm")</MudTd>
+    </RowTemplate>
+</MyDataGrid>
 
 @code {
-    [CascadingParameter]
-    protected ProgramInfo Program { get; set; }
-    FormEditContext EditContext = null;
+    [CascadingParameter] protected ProgramInfo Program { get; set; }
     // Detail data
-    readonly ObservableCollection<FunctionListModel> DetailData = new ObservableCollection<FunctionListModel>();
-    // Popup
-    private string ConfirmMessage = "";
-    private string ConfirmAction = "";
-    private bool ConfirmVisible = false;
+    MyDataGrid<FunctionListModel> grid;
+    readonly List<FunctionListModel> DetailData = new List<FunctionListModel>();
     //
     protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
-
 
         //Display data ..
         await DisplayMain();
@@ -142,9 +71,9 @@
         try
         {
             //Filter
-            var requestString = new Empty_Request()
+            var requestString = new Admin.Services.Empty_Request()
                 {
-                    Credential = new UserCredential()
+                    Credential = new Admin.Services.UserCredential()
                     {
                         Username = WebUserCredential.Username,
                         RoleID = WebUserCredential.RoleID,
@@ -158,7 +87,7 @@
             var response = await adminServiceClient.GetFunctionListAsync(requestString);
             if (response != null && response.ReturnCode == 200)
             {
-                foreach (var item in response.FunctionList)
+                foreach (var item in response.Records)
                 {
                     FunctionListModel dataRow = new FunctionListModel();
                     ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
@@ -167,6 +96,7 @@
                     //
                     DetailData.Add(dataRow);
                 }
+                grid.Refresh();
             }
         }
         catch
@@ -174,90 +104,19 @@
             Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Error);
         }
     }
+
     #endregion
 
     #region Save
 
-    void ConfirmHandler()
-    {
-        //Delete row
-        if (ConfirmAction == "DeleteRow")
-        {
-            DeleteRow();
-        }
-        //Save main
-        if (ConfirmAction == "SaveMain")
-        {
-            SaveMain();
-        }
-        //Cancel save main
-        if (ConfirmAction == "CancelSaveMain")
-        {
-            CancelSaveMain();
-        }
-        //Close confirm delete popup
-        ConfirmVisible = false;
-        StateHasChanged();
-    }
-
-    //Cancel changed
-    void ShowConfirm_CancelSaveMain()
-    {
-        if (!Check_Changed())
-        {
-            //Show message: Nothing changed!
-            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Info);
-            return;
-        }
-        //Show popup confirm
-        ConfirmMessage = "Cancel changed?";
-        ConfirmAction = "CancelSaveMain";
-        ConfirmVisible = true;
-        StateHasChanged();
-    }
-    async void CancelSaveMain()
-    {
-        //Reload data
-        await DisplayMain();
-    }
-
-    //Save main
-    void ShowConfirm_SaveMain()
-    {
-        if (!Check_Changed())
-        {
-            //Show message: Nothing changed!
-            Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Info);
-            return;
-        }
-        //Show popup confirm
-        ConfirmMessage = "Save changed?";
-        ConfirmAction = "SaveMain";
-        ConfirmVisible = true;
-        StateHasChanged();
-    }
-
-    //Check changed
-    bool Check_Changed()
-    {
-        foreach (FunctionListModel row in DetailData)
-        {
-            if (row.UpdMode != 0)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-    //
-    async void SaveMain()
+    //Save Row
+    async Task<bool> SaveRow(FunctionListModel saveRow)
     {
         try
         {
-            var hasChanged = false;
             //Request
-            SaveFunctionList_Request request = new SaveFunctionList_Request();
-            var Credential = new UserCredential()
+            var request = new SaveFunctionList_Request();
+            var Credential = new Admin.Services.UserCredential()
                 {
                     Username = WebUserCredential.Username,
                     RoleID = WebUserCredential.RoleID,
@@ -265,174 +124,107 @@
                     ApiKey = WebUserCredential.ApiKey
                 };
             request.Credential = Credential;
-            //
-            foreach (FunctionListModel row in DetailData)
-            {
-                if (row.UpdMode != 0)
-                {
-                    //Convert to DB row
-                    var dbRow = new grpcFunctionList();
-                    ClassHelper.CopyPropertiesDataDateConverted(row, dbRow);
-                    request.FunctionList.Add(dbRow);
-                    //
-                    hasChanged = true;
-                }
-            }
-            //Check changed
-            if (!hasChanged)
-            {
-                //Message no change
-                Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Info);
-                return;
-            }
-
-            //Call api
+            // Convert to DB row
+            request.Record = new grpcFunctionListModel();
+            ClassHelper.CopyPropertiesDataDateConverted(saveRow, request.Record);
+            // Call api
             var response = await adminServiceClient.SaveFunctionListAsync(request);
             // Success
-            if (response != null && response.ReturnCode == GrpcReturnCode.OK)
-            {
-                //Show success
-                Snackbar.Add(MyMessage.Info_SaveSucess, Severity.Info);
-                //Reload data
-                await DisplayMain();
-            }
-            else
+            if (response == null || response.ReturnCode != GrpcReturnCode.OK)
             {
                 Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
             }
+            else
+            {
+                //Update ID
+                saveRow.ID = response.StringValue;
+            }
+            //OK
+            return true;
         }
         catch
         {
             Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
         }
+        //
+        return false;
     }
-
     #endregion
 
     #region Grid main
-    //Confirm delete
-    FunctionListModel DeletedRow = null;
-    void OnRowRemoving(FunctionListModel dataRow)
-    {
-        DeletedRow = dataRow;
 
-        //Show popup confirm
-        ConfirmMessage = "Xóa dòng dữ liệu?";
-        ConfirmAction = "DeleteRow";
-        ConfirmVisible = true;
-        StateHasChanged();
-    }
 
-    //Cancel edit
-    async Task OnCancelButtonClick()
-    {
-        await grid.CancelRowEdit();
-        EditContext = null;
-    }
-
-    async void DeleteRow()
-    {
-        //Set to delete mode
-        if (DeletedRow.UpdMode == 1)
-        {
-            //Remove new row from data source
-            DetailData.Remove(DeletedRow);
-        }
-        else
-        {
-            //Mark to delete
-            DeletedRow.UpdMode = 3;
-        }
-
-        //Refresh layout
-        await grid.Refresh();
-    }
-    //Update row
-    async Task UpdateRow()
-    {
-        //Update for edit field
-        var backupRow = new FunctionListModel();
-        ClassHelper.CopyPropertiesData(EditContext.EditingRow, backupRow);
-        //
-        EditContext.EditingRow.PageID = EditContext.PageID;
-        EditContext.EditingRow.PageName = EditContext.PageName;
-        EditContext.EditingRow.Discriptions = EditContext.Discriptions;
-        EditContext.EditingRow.F1 = EditContext.F1;
-        EditContext.EditingRow.F2 = EditContext.F2;
-        EditContext.EditingRow.F3 = EditContext.F3;
-        EditContext.EditingRow.F4 = EditContext.F4;
-        EditContext.EditingRow.F5 = EditContext.F5;
-        EditContext.EditingRow.ModifiedOn = DateTime.Now;
-
-        //Update mode
-        if (EditContext.EditingRow.UpdMode == 0 || EditContext.EditingRow.UpdMode == 3)
-        {
-            EditContext.EditingRow.UpdMode = 2;
-        }
-
-        //Insert to datasource
-        if (EditContext.EditingRow.UpdMode == -1)
-        {
-            EditContext.EditingRow.UpdMode = 1;
-            DetailData.Add(EditContext.EditingRow);
-        }
-
-        //Close popup & refresh data
-        await grid.CancelRowEdit();
-        await grid.Refresh();
-    }
-    // Edit row model
-    DxDataGrid<FunctionListModel> grid;
-    class FormEditContext : FunctionListModel
-    {
-        public FormEditContext(FunctionListModel functionListModel)
-        {
-            //Saved data
-            EditingRow = functionListModel;
-
-            //Editable data only
-            PageID = EditingRow.PageID;
-            PageName = EditingRow.PageName;
-            Discriptions = EditingRow.Discriptions;
-            F1 = EditingRow.F1;
-            F2 = EditingRow.F2;
-            F3 = EditingRow.F3;
-            F4 = EditingRow.F4;
-            F5 = EditingRow.F5;
-        }
-        public FunctionListModel EditingRow { get; set; }
-        public Action StateHasChanged { get; set; }
-    }
-
-    //Get data for edit/insert
-    void OnRowEditStarting(FunctionListModel editingRow)
+    //Add row
+    async void OnAddRow_Handle()
     {
         //Init new row
-        if (editingRow == null)
+        var newRow = new FunctionListModel();
+        newRow.UpdMode = 1;
+        newRow.ModifiedOn = DateTime.Now;
+        //
+        var parameters = new DialogParameters();
+        parameters.Add("Model", newRow);
+        //
+        var result = await DialogService.Show<FunctionListEdit>("", parameters, MyOptions.GetEditFormOptions()).Result;
+        if (!result.Cancelled && result.Data != null)
         {
-            editingRow = new FunctionListModel();
-            //
-            //editingRow.SystemID = SelectedListCode;
-            editingRow.CreatedOn = DateTime.Now;
-            editingRow.ModifiedOn = DateTime.Now;
-            editingRow.UpdMode = -1;
+            var retModel = (FunctionListModel)result.Data;
+
+            //Save to DB
+            var saveRet = await SaveRow(retModel);
+            if (true)
+            {
+                //Add to grid
+                DetailData.Add(retModel);
+                grid.Refresh();
+            }
         }
-        EditContext = new FormEditContext(editingRow);
     }
-    // Color of edit data
-    void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<FunctionListModel> eventArgs)
+    //Update row
+    async void OnViewRow_Handle(FunctionListModel row)
     {
+        //UpdMode
+        row.UpdMode = 2;
+        //
+        var parameters = new DialogParameters();
+        parameters.Add("Model", row);
+        //
+        var result = await DialogService.Show<FunctionListEdit>("", parameters, MyOptions.GetEditFormOptions()).Result;
+        if (!result.Cancelled && result.Data != null)
+        {
+            var retModel = (FunctionListModel)result.Data;
+            var updateReccord = DetailData.Find(x => x.ID == retModel.ID);
+            if (updateReccord != null)
+            {
+                //Update to Grid
+                ClassHelper.CopyPropertiesData(retModel, updateReccord);
 
-        if (eventArgs.DataItem.UpdMode == 1)
-            eventArgs.Style += MyColor.NewRowColor;
-        else if (eventArgs.DataItem.UpdMode == 2)
-            eventArgs.Style += MyColor.EditRowColor;
-        else if (eventArgs.DataItem.UpdMode == 3)
-            eventArgs.Style += MyColor.DeleteRowColor;
+                //Save to DB
+                var saveRet = await SaveRow(retModel);
+                if (true)
+                {
+                    grid.Refresh();
+                }
+            }
+        }
     }
+
+    //Delete row
+    async void OnDeleteRow_Handle(FunctionListModel row)
+    {
+        //UpdMode
+        row.UpdMode = 3;
+
+        //Save to DB
+        var saveRet = await SaveRow(row);
+        if (true)
+        {
+            DetailData.Remove(row);
+            grid.Refresh();
+        }
+    }
+
     #endregion
 
-    #region Screen items
 
-    #endregion
 }

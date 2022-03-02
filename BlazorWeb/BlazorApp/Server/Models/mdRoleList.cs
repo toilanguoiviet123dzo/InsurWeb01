@@ -16,6 +16,6 @@ namespace BlazorApp.Server.Models
         public DateTime CreatedOn { get; set; }
         public DateTime ModifiedOn { get; set; }
         public int UpdMode { get; set; }
-        public string DspOrder { get; set; } = "";
+        public int DspOrder { get; set; }
     }
 }

@@ -4,13 +4,12 @@
 <style>
     .mud-table-cell {
         padding: 4px !important;
-        font-size: .8rem !important;
     }
 
 </style>
 
 
-<MudTable @ref="@Ref"
+<MudTable @ref="@_table"
           Items="@Items"
           Dense="@Dense"
           Hover="true"
@@ -30,6 +29,7 @@
           ReadOnly="@ReadOnly"
           LoadingProgressColor="Color.Info"
           RowsPerPage="@RowsPerPage"
+          Breakpoint="Breakpoint.None"
           NoRecordsContent="@NoRecordsContent">
     <ToolBarContent>
         <MudText Typo="Typo.h6">@Title</MudText>
@@ -83,7 +83,7 @@
         @RowTemplate(context)
     </RowTemplate>
     <PagerContent>
-        <MudTablePager />
+        <MudPagination SelectedChanged="PageChanged" Count="@((_table.GetFilteredItemsCount() + _table.RowsPerPage - 1) / _table.RowsPerPage)" Class="pa-4"/>
     </PagerContent>
 </MudTable>
 
@@ -110,7 +110,7 @@
     [Parameter] public bool IsAddNew { get; set; } = false;
     [Parameter] public bool IsDelete { get; set; } = false;
     [Parameter] public bool Dense { get; set; } = false;
-    [Parameter] public bool Bordered { get; set; } = true;
+    [Parameter] public bool Bordered { get; set; } = false;
     [Parameter] public bool Striped { get; set; } = true;
     [Parameter] public bool Loading { get; set; } = false;
     [Parameter] public bool HorizontalScrollbar { get; set; } = false;
@@ -184,12 +184,17 @@
     //Data
     string SearchString = "";
     MudMessageBox mbox { get; set; }
-
+    private MudTable<T> _table;
     //
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
         //Width
+    }
+
+    private void PageChanged(int i)
+    {
+        _table.NavigateTo(i - 1);
     }
 
     //Filter
@@ -212,14 +217,11 @@
         return false;
     }
 
-
-    //Ref
-    public MudTable<T> Ref { get; set; }
     //Methods
-    public void SetSelectedItem(object item) => Ref.SetSelectedItem(item);
-    public void SetEditingItem(object item) => Ref.SetEditingItem(item);
-    public void SetRowsPerPage(int size) => Ref.SetRowsPerPage(size);
-    public void NavigateTo(int pageIndex) => Ref.NavigateTo(pageIndex);
+    public void SetSelectedItem(object item) => _table.SetSelectedItem(item);
+    public void SetEditingItem(object item) => _table.SetEditingItem(item);
+    public void SetRowsPerPage(int size) => _table.SetRowsPerPage(size);
+    public void NavigateTo(int pageIndex) => _table.NavigateTo(pageIndex);
     public void BeginLoadData()
     {
         Loading = true;
@@ -234,7 +236,7 @@
     }
     public int CurrentPage()
     {
-        return Ref.CurrentPage;
+        return _table.CurrentPage;
     }
     //View
     bool IsViewMode(T element)

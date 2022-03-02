@@ -298,28 +298,28 @@
                 <div class="row mt-2">
                     <!--Check: yêu cầu lấy thiết bị-->
                     <div class="col-12 col-lg-3">
-                        <DxCheckBox @bind-Checked="@Model.PickupReqStatus"
+                        <MyCheckBox @bind-Checked="@Model.PickupReqStatus"
                                     Class="text-green"
-                                    Enabled="@(!Model.PickupStatus1)">
+                                    ReadOnly="@(Model.PickupStatus1)">
                             Yêu cầu lấy thiết bị
-                        </DxCheckBox>
+                        </MyCheckBox>
                     </div>
                     <!--Check: đã lấy thiết bị-->
                     <div class="col-12 col-lg-3">
-                        <DxCheckBox @bind-Checked="@Model.PickupStatus1"
+                        <MyCheckBox @bind-Checked="@Model.PickupStatus1"
                                     Class="text-blue"
-                                    Enabled="false">
+                                    ReadOnly="true">
                             Đã lấy thiết bị
-                        </DxCheckBox>
+                        </MyCheckBox>
                     </div>
 
                     <!--Check: đã nhập thiết bị-->
                     <div class="col-12 col-lg-3">
-                        <DxCheckBox @bind-Checked="@Model.PickupStatus2"
+                        <MyCheckBox @bind-Checked="@Model.PickupStatus2"
                                     Class="text-maroon"
-                                    Enabled="false">
+                                    ReadOnly="true">
                             Đã nhập thiết bị
-                        </DxCheckBox>
+                        </MyCheckBox>
                     </div>
                 </div>
 
@@ -379,27 +379,27 @@
                 <div class="row mt-2">
                     <!--Check: kiểm tra-->
                     <div class="col-12 col-lg-3">
-                        <DxCheckBox @bind-Checked="@Model.CheckStatus" Class="text-green" Enabled="@(Model.PickupStatus2 && !Model.EstimationReqStatus)">Đã kiểm tra</DxCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.CheckStatus" Class="text-green" ReadOnly="@(!Model.PickupStatus2 || Model.EstimationReqStatus)">Đã kiểm tra</MyCheckBox>
                     </div>
                     <!--Check: chấp nhận bồi thường-->
                     <div class="col-12 col-lg-3">
-                        <DxCheckBox Checked="@Model.AcceptStatus"
+                        <MyCheckBox Checked="@Model.AcceptStatus"
                                     Class="text-blue"
                                     CheckedChanged="@((bool value) => {
                                     Model.AcceptStatus = value;
                                     if (value) Model.CancelStatus = false;
                                 })"
-                                    Enabled="@(Model.CheckStatus && !Model.EstimationReqStatus)">Chấp nhận bồi thường</DxCheckBox>
+                                    ReadOnly="@(!Model.CheckStatus || Model.EstimationReqStatus)">Chấp nhận bồi thường</MyCheckBox>
                     </div>
                     <!--Check: Từ chối yêu cầu-->
                     <div class="col-12 col-lg-3">
-                        <DxCheckBox Checked="@Model.CancelStatus"
+                        <MyCheckBox Checked="@Model.CancelStatus"
                                     CheckedChanged="@((bool value) => {
                                     Model.CancelStatus = value;
                                     if (value) Model.AcceptStatus = false;
                                 })"
                                     ReadOnly="@Model.EstimationReqStatus"
-                                    Class="text-red">Từ chối yêu cầu</DxCheckBox>
+                                    Class="text-red">Từ chối yêu cầu</MyCheckBox>
                     </div>
 
                 </div>
@@ -446,11 +446,11 @@
                 <div class="row mt-2">
                     <!--Check: yêu cầu báo giá-->
                     <div class="col-12 col-lg-3">
-                        <DxCheckBox @bind-Checked="@Model.EstimationReqStatus" Class="text-green" Enabled="@(Model.CheckStatus && !Model.EstimationStatus)">Yêu cầu báo giá</DxCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.EstimationReqStatus" Class="text-green" ReadOnly="@(!Model.CheckStatus || Model.EstimationStatus)">Yêu cầu báo giá</MyCheckBox>
                     </div>
                     <!--Check: Đã báo giá-->
                     <div class="col-12 col-lg-3">
-                        <DxCheckBox @bind-Checked="@Model.EstimationStatus" Enabled="false" Class="text-green">Đã báo giá</DxCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.EstimationStatus" ReadOnly="true" Class="text-green">Đã báo giá</MyCheckBox>
                     </div>
                 </div>
 
@@ -550,7 +550,7 @@
                     </div>
                     <!--Check: Đã sửa xong-->
                     <div class="col-12 col-lg-2">
-                        <DxCheckBox @bind-Checked="@Model.RepairStatus" Enabled="false" Class="text-green">Đã sửa xong</DxCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.RepairStatus" ReadOnly="true" Class="text-green">Đã sửa xong</MyCheckBox>
                     </div>
                     <!--Số IMEI thiết bị-->
                     <div class="col-12 col-lg-3">
@@ -601,7 +601,7 @@
                     </div>
                     <!--Check: yêu cầu duyệt-->
                     <div class="col-12 col-lg-2">
-                        <DxCheckBox @bind-Checked="@Model.ApproveReqStatus" Class="text-green" Enabled="@(Model.EstimationStatus &&!Model.ApproveStatus)">Yêu cầu duyệt</DxCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.ApproveReqStatus" Class="text-green" Enabled="@(Model.EstimationStatus &&!Model.ApproveStatus)">Yêu cầu duyệt</MyCheckBox>
                     </div>
                     <!--Ngày duyệt-->
                     <div class="col-12 col-lg-2">
@@ -613,7 +613,7 @@
                     </div>
                     <!--Check: đã duyệt-->
                     <div class="col-12 col-lg-2">
-                        <DxCheckBox @bind-Checked="@Model.ApproveStatus" Class="text-green" Enabled="false">Đã duyệt</DxCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.ApproveStatus" Class="text-green" ReadOnly="true">Đã duyệt</MyCheckBox>
                     </div>
                 </div>
 
@@ -662,7 +662,7 @@
                     </div>
                     <!--Check: yêu cầu trả hàng-->
                     <div class="col-12 col-lg-2">
-                        <DxCheckBox @bind-Checked="@Model.ReturnReqStatus" Class="text-green" Enabled="@(Model.RepairStatus && !Model.ReturnStatus1)">YC trả thiết bị</DxCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.ReturnReqStatus" Class="text-green" ReadOnly="@(!Model.RepairStatus || Model.ReturnStatus1)">YC trả thiết bị</MyCheckBox>
                     </div>
                     <!--Ngày xuất hàng-->
                     <div class="col-12 col-lg-2">
@@ -674,7 +674,7 @@
                     </div>
                     <!--Check: Đã xuất hàng-->
                     <div class="col-12 col-lg-2">
-                        <DxCheckBox @bind-Checked="@Model.ReturnStatus1" Class="text-blue" Enabled="false">Đã xuất thiết bị</DxCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.ReturnStatus1" Class="text-blue" ReadOnly="true">Đã xuất thiết bị</MyCheckBox>
                     </div>
                     <!--Ngày trả hàng-->
                     <div class="col-12 col-lg-2">
@@ -686,7 +686,7 @@
                     </div>
                     <!--Check: Đã trả hàng-->
                     <div class="col-12 col-lg-2">
-                        <DxCheckBox @bind-Checked="@Model.ReturnStatus2" Class="text-maroon" Enabled="false">Đã trả thiết bị</DxCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.ReturnStatus2" Class="text-maroon" ReadOnly="true">Đã trả thiết bị</MyCheckBox>
                     </div>
                 </div>
                 <!--Row 2-------------------------------------------------->
@@ -740,7 +740,7 @@
                     </div>
                     <!--Check: yêu cầu chi trả-->
                     <div class="col-12 col-lg-2">
-                        <DxCheckBox @bind-Checked="@Model.PayReqStatus" Class="text-green" Enabled="@(Model.RepairStatus && !Model.PayStatus)">YC chi trả</DxCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.PayReqStatus" Class="text-green" ReadOnly="@(!Model.RepairStatus || Model.PayStatus)">YC chi trả</MyCheckBox>
                     </div>
                     <!--Ngày chi trả-->
                     <div class="col-12 col-lg-2">
@@ -752,7 +752,7 @@
                     </div>
                     <!--Check: Đã chi trả-->
                     <div class="col-12 col-lg-2">
-                        <DxCheckBox @bind-Checked="@Model.PayStatus" Class="text-maroon" Enabled="false">Đã chi trả</DxCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.PayStatus" Class="text-maroon" ReadOnly="true">Đã chi trả</MyCheckBox>
                     </div>
                     <!--Người chi trả-->
                     <div class="col-12 col-lg-3">

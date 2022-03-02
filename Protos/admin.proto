@@ -18,10 +18,10 @@ service grpcAdminService {
     rpc SaveOptionList (SaveOptionList_Request) returns (String_Response);
     rpc GetOptionList (String_Request) returns (GetOptionList_Response);    
     //FunctionList
-    rpc SaveFunctionList (SaveFunctionList_Request) returns (Empty_Response);
+    rpc SaveFunctionList (SaveFunctionList_Request) returns (String_Response);
     rpc GetFunctionList (Empty_Request) returns (GetFunctionList_Response);     
     //RoleList
-    rpc SaveRoleList (SaveRoleList_Request) returns (Empty_Response);
+    rpc SaveRoleList (SaveRoleList_Request) returns (String_Response);
     rpc GetRoleList (Empty_Request) returns (GetRoleList_Response);
     //UserRole
     rpc SaveUserRole (SaveUserRole_Request) returns (Empty_Response);
@@ -40,7 +40,7 @@ service grpcAdminService {
     rpc SaveOptionListHeader (SaveOptionListHeader_Request) returns (String_Response);
     rpc GetOptionListHeader (Empty_Request) returns (GetOptionListHeader_Response);
     //SettingMaster
-    rpc SaveSettingMaster (SaveSettingMaster_Request) returns (Empty_Response);
+    rpc SaveSettingMaster (SaveSettingMaster_Request) returns (String_Response);
     rpc GetSettingMaster (Empty_Request) returns (GetSettingMaster_Response);
     //UserAccount
     rpc SaveUserAccount (SaveUserAccount_Request) returns (String_Response);
@@ -207,7 +207,7 @@ message SaveFunctionList_Request
 {
     UserCredential Credential = 1;
     //
-    repeated grpcFunctionList FunctionList = 2;
+    grpcFunctionListModel Record = 2;
 }
 //
 message GetFunctionList_Response
@@ -215,10 +215,10 @@ message GetFunctionList_Response
     int32 ReturnCode = 1;
     string MsgCode = 2;
     //
-    repeated grpcFunctionList FunctionList = 3;
+    repeated grpcFunctionListModel Records = 3;
 }
 //
-message grpcFunctionList
+message grpcFunctionListModel
 {
     string ID  = 1; 
     string PageID  = 3; 
@@ -238,7 +238,7 @@ message SaveRoleList_Request
 {
     UserCredential Credential = 1;
     //
-    repeated grpcRoleList RoleList = 2;
+    grpcRoleListModel Record = 2;
 }
 //
 message GetRoleList_Response
@@ -246,10 +246,10 @@ message GetRoleList_Response
     int32 ReturnCode = 1;
     string MsgCode = 2;
     //
-    repeated grpcRoleList RoleList = 3;
+    repeated grpcRoleListModel Records = 3;
 }
 //
-message grpcRoleList
+message grpcRoleListModel
 {
     string ID  = 1; 
     string RoleID  = 3; 
@@ -258,7 +258,7 @@ message grpcRoleList
     google.protobuf.Timestamp CreatedOn  = 6; 
     google.protobuf.Timestamp ModifiedOn  = 7;          
     int32 UpdMode  = 8;     
-    string DspOrder  = 9; 
+    int32 DspOrder  = 9; 
 }
 
 //
@@ -404,7 +404,7 @@ message SaveSettingMaster_Request
 {
     UserCredential Credential = 1;
     //
-    repeated grpcSettingMaster SettingMasters = 2;
+    grpcSettingMasterModel Record = 2;
 }
 
 message GetSettingMaster_Response
@@ -412,9 +412,9 @@ message GetSettingMaster_Response
     int32 ReturnCode = 1;
     string MsgCode = 2;
     //
-    repeated grpcSettingMaster SettingMasters = 3;
+    repeated grpcSettingMasterModel Records = 3;
 }
-message grpcSettingMaster
+message grpcSettingMasterModel
 {   
     string ID = 1;
     string Code = 2;
@@ -433,7 +433,7 @@ message SaveUserAccount_Request
 {
     UserCredential Credential = 1;
     //
-    grpcUserAccount Record = 2;
+    grpcUserAccountModel Record = 2;
 }
 
 message GetUserAccount_Response
@@ -441,26 +441,34 @@ message GetUserAccount_Response
     int32 ReturnCode = 1;
     string MsgCode = 2;
     //
-    repeated grpcUserAccount UserAccounts = 3;
+    repeated grpcUserAccountModel UserAccounts = 3;
 }
-message grpcUserAccount
+message grpcUserAccountModel
 {   
     string ID = 1;
     string UserID = 2;
     string UserName = 3;
-    string Fullname = 4;
-    string Phone = 5;
-    string Email = 6;
-    string Address = 7;
-    string RoleID = 8;
-    int32 ApproveLevel = 9;
-    string ApproveLevelName = 10;
-    int32 DocumentLevel = 11;
-    string DocumentLevelName = 12;
-    int32 Status = 13;
-    google.protobuf.Timestamp ModifiedOn = 14;
-    int32 UpdMode = 15;
-    string Password = 16;
+    string Password = 4;
+    string Fullname = 5;
+    string Phone = 6;
+    string Email = 7;
+    string Address = 8;
+    string RoleID = 9;
+    string RoleName = 10;
+    string BrancheID = 11;
+    string BrancheName = 12;
+    string LogisticCompanyID = 13;
+    string LogisticCompanyName = 14;
+    string RepairCompanyID = 15;
+    string RepairCompanyName = 16;
+    string ApproveAcountID = 17;
+    int32 ApproveLevel = 18;
+    string ApproveLevelName = 19;
+    int32 DocumentLevel = 20;
+    string DocumentLevelName = 21;
+    bool Status = 22;
+    google.protobuf.Timestamp ModifiedOn = 23;
+    int32 UpdMode = 24;
 }
 
 

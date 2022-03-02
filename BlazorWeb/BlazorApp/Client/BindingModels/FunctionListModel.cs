@@ -7,7 +7,9 @@ namespace BlazorApp.Client.BindingModels
     public class FunctionListModel
     {
         public string ID { get; set; } = "";
+        [Required(ErrorMessage = "Bắt buộc nhập.")]
         public string PageID { get; set; } = "";
+        [Required(ErrorMessage = "Bắt buộc nhập.")]
         public string PageName { get; set; } = "";
         public string Discriptions { get; set; } = "";
         public string F1 { get; set; } = "";

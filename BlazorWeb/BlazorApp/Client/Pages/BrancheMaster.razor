@@ -37,7 +37,7 @@
         <MudTh>Địa chỉ</MudTh>
         <MudTh>Người phụ trách</MudTh>
         <MudTh>Ghi chú</MudTh>
-        <MudTh>Trạng thái</MudTh>
+        <MudTh>Hữu hiệu</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd Style="text-align:center;">@context.DspOrder</MudTd>
@@ -48,7 +48,7 @@
         <MudTd>@context.Address</MudTd>
         <MudTd>@context.PicName</MudTd>
         <MudTd>@context.Notes</MudTd>
-        <MudTd><MudCheckBox Checked="@context.Status" Color="Color.Primary"></MudCheckBox></MudTd>
+        <MudTd><MudCheckBox Checked="@context.Status" Color="Color.Primary" ReadOnly="true"></MudCheckBox></MudTd>
     </RowTemplate>
 </MyDataGrid>
 
@@ -108,8 +108,8 @@
 
     #endregion
 
-    #region Save
 
+    #region Grid main
     //Save Row
     async Task<bool> SaveRow(BranchMasterModel saveRow)
     {
@@ -150,10 +150,6 @@
         //
         return false;
     }
-    #endregion
-
-    #region Grid main
-
 
     //Add row
     async void OnAddRow_Handle()

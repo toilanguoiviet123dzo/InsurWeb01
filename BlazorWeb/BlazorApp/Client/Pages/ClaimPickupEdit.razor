@@ -199,19 +199,19 @@
                 <div class="row mt-2">
                     <!--Check: đã lấy thiết bị-->
                     <div class="col-12 col-lg-3">
-                        <DxCheckBox @bind-Checked="@Model.PickupStatus1"
+                        <MyCheckBox @bind-Checked="@Model.PickupStatus1"
                                     Class="text-blue">
                             Đã lấy thiết bị
-                        </DxCheckBox>
+                        </MyCheckBox>
                     </div>
 
                     <!--Check: đã nhập thiết bị-->
                     <div class="col-12 col-lg-3">
-                        <DxCheckBox @bind-Checked="@Model.PickupStatus2"
+                        <MyCheckBox @bind-Checked="@Model.PickupStatus2"
                                     Class="text-maroon"
-                                    Enabled="@Model.PickupStatus1">
+                                    ReadOnly="@(!Model.PickupStatus1)">
                             Đã nhập thiết bị
-                        </DxCheckBox>
+                        </MyCheckBox>
                     </div>
                 </div>
 

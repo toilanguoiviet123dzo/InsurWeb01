@@ -7,133 +7,56 @@
 @inject MasterService masterService;
 @inject IJSRuntime JsRuntime;
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
-<br />
-<div style="width:100%">
-    <DxDataGrid @ref="@grid"
-                Data="@DetailData"
-                ColumnResizeMode="DataGridColumnResizeMode.Component"
-                EditMode="DevExpress.Blazor.DataGridEditMode.PopupEditForm"
-                PageSize="@PageRowCount"
-                ShowFilterRow="true"
-                HtmlRowDecoration="@OnHtmlRowDecoration"
-                HorizontalScrollBarMode="ScrollBarMode.Auto"
-                RowEditStart="@(dataRow => OnRowEditStarting(dataRow))"
-                RowInsertStart="@(() => OnRowEditStarting(null))">
-        <Columns>
-            <DxDataGridSpinEditColumn Field="@nameof(RepairerMasterModel.DspOrder)"
-                                      Caption="STT"
-                                      DisplayFormat="N0"
-                                      Width="3rem" />
-            <DxDataGridColumn Field="@nameof(RepairerMasterModel.RepairerID)"
-                              Caption="Mã"
-                              Width="6rem" />
-            <DxDataGridColumn Field="@nameof(RepairerMasterModel.RepairerName)"
-                              Caption="Tên"
-                              Width="12rem" />
-            <DxDataGridColumn Field="@nameof(RepairerMasterModel.PhoneNo)"
-                              Caption="Phone"
-                              Width="7rem" />
-            <DxDataGridColumn Field="@nameof(RepairerMasterModel.Email)"
-                              Caption="Email"
-                              Width="12rem" />
-            <DxDataGridColumn Field="@nameof(RepairerMasterModel.Address)"
-                              Caption="Địa chỉ"
-                              Width="17rem" />
-            <DxDataGridColumn Field="@nameof(RepairerMasterModel.PicName)"
-                              Caption="Người phụ trách"
-                              Width="10rem" />
-            <DxDataGridColumn Field="@nameof(RepairerMasterModel.Notes)"
-                              Caption="Ghi chú"
-                              Width="10rem" />
-            <DxDataGridColumn Field="@nameof(RepairerMasterModel.StatusName)"
-                              Caption="Trạng thái"
-                              Width="6rem" />
-            <DxDataGridDateEditColumn Field="@nameof(RepairerMasterModel.ModifiedOn)"
-                                      Caption="ModifiedOn"
-                                      DisplayFormat="dd/MM/yyyy HH:mm"
-                                      Width="9rem" />
-            <!--Command columns-->
-            <MyGridCommand Grid="grid"
-                           ShowAddnew="true"
-                           ShowEdit="true"
-                           ShowDelete="true"
-                           OnRowRemoving="@((context) => OnRowRemoving(context as RepairerMasterModel))" />
-        </Columns>
-        <EditFormTemplate>
-            <EditForm Model="@EditContext" Context="EditFormContext" OnValidSubmit="@UpdateRow">
-                <DataAnnotationsValidator />
-                <DxFormLayout>
-                    <DxFormLayoutItem Caption="Mã: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.RepairerID" Class="text-uppercase" />
-                            <ValidationMessage For="@(() => EditContext.RepairerID)" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Tên: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.RepairerName" />
-                            <ValidationMessage For="@(() => EditContext.RepairerName)" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Phone: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.PhoneNo" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Email: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.Email" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Địa chỉ: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.Address" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Người phụ trách: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.PicName" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Ghi chú: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.Notes" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Thứ tự" ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxMaskedInput @bind-Value="@EditContext.DspOrder"
-                                           Format="N0" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Hữu hiệu" ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxCheckBox @bind-Checked="@EditContext.BoolStatus" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <!--OK Cancel-->
-                    <MyGridEditFormOKCancel OnCancelClick="OnCancelEditRow" />
-                </DxFormLayout>
-            </EditForm>
-        </EditFormTemplate>
-    </DxDataGrid>
-</div>
-
-<MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
+<MyDataGrid @ref="@grid"
+            T="RepairerMasterModel"
+            Title="Danh sách yêu cầu bồi thường"
+            Items="@DetailData"
+            IsAddNew="true"
+            IsDelete="true"
+            OnAddRow="@(() => OnAddRow_Handle())"
+            OnViewRow="@((RepairerMasterModel row) => OnViewRow_Handle(row))"
+            OnDeleteRow="@((RepairerMasterModel row) => OnDeleteRow_Handle(row))">
+    <ColGroup>
+        <col style="width: 2rem;" />
+        <col style="width: 6rem;" />
+        <col style="width: 8rem;" />
+        <col style="width: 10rem;" />
+        <col />
+        <col style="width: 10rem;" />
+        <col />
+        <col style="width: 5rem;" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<RepairerMasterModel, object>(x => x.DspOrder)">No.</MudTableSortLabel></MudTh>
+        <MudTh>Mã</MudTh>
+        <MudTh>Tên</MudTh>
+        <MudTh>Phone</MudTh>
+        <MudTh>Email</MudTh>
+        <MudTh>Địa chỉ</MudTh>
+        <MudTh>Người phụ trách</MudTh>
+        <MudTh>Ghi chú</MudTh>
+        <MudTh>Hữu hiệu</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd Style="text-align:center;">@context.DspOrder</MudTd>
+        <MudTd Style="color:blue; font-weight:bold">@context.RepairerID</MudTd>
+        <MudTd>@context.RepairerName</MudTd>
+        <MudTd Style="text-align:center;">@context.PhoneNo</MudTd>
+        <MudTd>@context.Email</MudTd>
+        <MudTd>@context.Address</MudTd>
+        <MudTd>@context.PicName</MudTd>
+        <MudTd>@context.Notes</MudTd>
+        <MudTd><MudCheckBox Checked="@context.Status" Color="Color.Primary" ReadOnly="true"></MudCheckBox></MudTd>
+    </RowTemplate>
+</MyDataGrid>
 
 @code {
-    [CascadingParameter]
-    protected ProgramInfo Program { get; set; }
-    private int PageRowCount = MyConstant.Grid_PageRowCount;
-    FormEditContext EditContext = null;
+    [CascadingParameter] protected ProgramInfo Program { get; set; }
     // Detail data
-    readonly ObservableCollection<RepairerMasterModel> DetailData = new ObservableCollection<RepairerMasterModel>();
-    // RoleList
-    // Popup
-    private string ConfirmMessage = "";
-    private string ConfirmAction = "";
-    private bool ConfirmVisible = false;
+    MyDataGrid<RepairerMasterModel> grid;
+    readonly List<RepairerMasterModel> DetailData = new List<RepairerMasterModel>();
     //
     protected override async Task OnInitializedAsync()
     {
@@ -171,14 +94,10 @@
                     ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
                     //Upd mode
                     dataRow.UpdMode = 0;
-                    //StatusName
-                    if (dataRow.Status == 0)
-                    {
-                        dataRow.StatusName = "Vô hiệu";
-                    }
                     //
                     DetailData.Add(dataRow);
                 }
+                grid.Refresh();
             }
         }
         catch
@@ -190,18 +109,6 @@
     #endregion
 
     #region Save
-
-    void ConfirmHandler()
-    {
-        //Delete row
-        if (ConfirmAction == "DeleteRow")
-        {
-            DeleteRow();
-        }
-        //Close confirm delete popup
-        ConfirmVisible = false;
-        StateHasChanged();
-    }
 
     //Save Row
     async Task<bool> SaveRow(RepairerMasterModel saveRow)
@@ -246,155 +153,79 @@
     #endregion
 
     #region Grid main
-    //Confirm delete
-    RepairerMasterModel DeletedRow = null;
-    void OnRowRemoving(RepairerMasterModel dataRow)
+
+
+    //Add row
+    async void OnAddRow_Handle()
     {
-        DeletedRow = dataRow;
-
-        //Show popup confirm
-        ConfirmMessage = MyMessage.Confirm_DeleteRow;
-        ConfirmAction = "DeleteRow";
-        ConfirmVisible = true;
-        StateHasChanged();
-    }
-
-    //Cancel edit
-    async Task OnCancelEditRow()
-    {
-        await grid.CancelRowEdit();
-        EditContext = null;
-    }
-
-    async void DeleteRow()
-    {
-        // Mark to delete on grid
-        DeletedRow.UpdMode = 3;
-
-        var saveResult = await SaveRow(DeletedRow);
-
-        // Refresh layout
-        if (saveResult)
+        //Init new row
+        var newRow = new RepairerMasterModel();
+        newRow.UpdMode = 1;
+        newRow.ModifiedOn = DateTime.Now;
+        //
+        var parameters = new DialogParameters();
+        parameters.Add("Model", newRow);
+        //
+        var result = await DialogService.Show<RepairerMasterEdit>("", parameters, MyOptions.GetEditFormOptions()).Result;
+        if (!result.Cancelled && result.Data != null)
         {
-            await grid.Refresh();
+            var retModel = (RepairerMasterModel)result.Data;
+
+            //Save to DB
+            var saveRet = await SaveRow(retModel);
+            if (true)
+            {
+                //Add to grid
+                DetailData.Add(retModel);
+                grid.Refresh();
+            }
         }
     }
     //Update row
-    async Task UpdateRow()
+    async void OnViewRow_Handle(RepairerMasterModel row)
     {
-        // Update for edit field
-        EditContext.EditingRow.RepairerID = EditContext.RepairerID;
-        EditContext.EditingRow.RepairerName = EditContext.RepairerName;
-        EditContext.EditingRow.PhoneNo = EditContext.PhoneNo;
-        EditContext.EditingRow.Email = EditContext.Email;
-        EditContext.EditingRow.Address = EditContext.Address;
-        EditContext.EditingRow.Notes = EditContext.Notes;
-        EditContext.EditingRow.PicName = EditContext.PicName;
-        EditContext.EditingRow.DspOrder = EditContext.DspOrder;
+        //UpdMode
+        row.UpdMode = 2;
         //
-        EditContext.EditingRow.Status = 1;
-        EditContext.EditingRow.StatusName = "";
-        if (!EditContext.BoolStatus)
+        var parameters = new DialogParameters();
+        parameters.Add("Model", row);
+        //
+        var result = await DialogService.Show<RepairerMasterEdit>("", parameters, MyOptions.GetEditFormOptions()).Result;
+        if (!result.Cancelled && result.Data != null)
         {
-            EditContext.EditingRow.Status = 0;
-            EditContext.EditingRow.StatusName = "Vô hiệu";
-        }
-        EditContext.EditingRow.ModifiedOn = DateTime.Now;
-
-        // Insert
-        if (EditContext.UpdMode == 1)
-        {
-            EditContext.EditingRow.UpdMode = 1;
-            DetailData.Add(EditContext.EditingRow);
-        }
-        else
-        {
-            //Update or update to restore delete record
-            EditContext.EditingRow.UpdMode = 2;
-        }
-
-        //Save row to DB
-        var saveResult = await SaveRow(EditContext.EditingRow);
-        if (saveResult)
-        {
-            // Close popup & refresh data
-            await grid.CancelRowEdit();
-            await grid.Refresh();
-        }
-    }
-    // Edit row model
-    DxDataGrid<RepairerMasterModel> grid;
-    class FormEditContext : RepairerMasterModel
-    {
-        public FormEditContext(RepairerMasterModel targetRow, int updMode)
-        {
-            //Backup editting row
-            EditingRow = targetRow;
-
-            //UpdMode
-            UpdMode = updMode;
-
-            //Edit context -> Editable data only
-            RepairerID = EditingRow.RepairerID;
-            RepairerName = EditingRow.RepairerName;
-            PhoneNo = EditingRow.PhoneNo;
-            Email = EditingRow.Email;
-            Address = EditingRow.Address;
-            Notes = EditingRow.Notes;
-            PicName = EditingRow.PicName;
-            DspOrder = EditingRow.DspOrder;
-            Status = EditingRow.Status;
-            BoolStatus = false;
-            if (Status == 1)
+            var retModel = (RepairerMasterModel)result.Data;
+            var updateReccord = DetailData.Find(x => x.ID == retModel.ID);
+            if (updateReccord != null)
             {
-                BoolStatus = true;
+                //Update to Grid
+                ClassHelper.CopyPropertiesData(retModel, updateReccord);
+
+                //Save to DB
+                var saveRet = await SaveRow(retModel);
+                if (true)
+                {
+                    grid.Refresh();
+                }
             }
         }
-        public bool BoolStatus { get; set; }
-        public RepairerMasterModel EditingRow { get; set; }
     }
 
-    //Get data for edit/insert
-    void OnRowEditStarting(RepairerMasterModel editingRow)
+    //Delete row
+    async void OnDeleteRow_Handle(RepairerMasterModel row)
     {
-        // Insert row
-        if (editingRow == null)
+        //UpdMode
+        row.UpdMode = 3;
+
+        //Save to DB
+        var saveRet = await SaveRow(row);
+        if (true)
         {
-            editingRow = new RepairerMasterModel();
-            //
-            editingRow.UpdMode = -1;
-            //Init row here
-            editingRow.ModifiedOn = DateTime.Now;
-            editingRow.Status = 1;
-            //
-            EditContext = new FormEditContext(editingRow, 1);
-        }
-        else
-        {
-            //Update row
-            editingRow.UpdMode = 2;
-            EditContext = new FormEditContext(editingRow, 2);
+            DetailData.Remove(row);
+            grid.Refresh();
         }
     }
-    // Color of edit data
-    void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<RepairerMasterModel> eventArgs)
-    {
-        
-        if (eventArgs.DataItem.UpdMode == 1)
-            eventArgs.Style += MyColor.NewRowColor;
-        else if (eventArgs.DataItem.UpdMode == 2)
-            eventArgs.Style += MyColor.EditRowColor;
-        else if (eventArgs.DataItem.UpdMode == 3)
-            eventArgs.Style += MyColor.DeleteRowColor;
-
-        //Disable user
-        if (eventArgs.DataItem.Status == 0) eventArgs.Style += MyColor.DisabledRowColor;
-    }
-    #endregion
-
-    #region Screen items
-
 
     #endregion
-    //
+
+
 }

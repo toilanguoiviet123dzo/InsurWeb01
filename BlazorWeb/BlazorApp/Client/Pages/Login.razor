@@ -19,46 +19,45 @@
 <!--Show error message-->
 @if (showError)
 {
-        <div class="alert alert-danger" role="alert">
-            <p>@errorMessage</p>
-        </div>
+    <div class="alert alert-danger" role="alert">
+        <p>@errorMessage</p>
+    </div>
 }
 
 <!--Login form-->
 @if (!MaintennanceMode)
 {
-        <div class="center">
-            <div style="width:15rem">
-                <EditForm Model="@model" OnValidSubmit="@ExecuteLogin">
-                    <DataAnnotationsValidator />
-                    <ValidationSummary />
-                    <!--UserName-->
-            <label class="demo-text cw-320 mt-2 text-muted" style="padding: 0; margin: 0; font-size: small">User name</label>
-                    <DxTextBox @bind-Text="model.UserName"/>
-                    <ValidationMessage For="@(() => model.UserName)" />
+    <div class="center">
+        <div style="width:15rem">
+            <EditForm Model="@model" OnValidSubmit="@ExecuteLogin">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <!--UserName-->
+            <MyTextEdit @bind-Text="model.UserName" Literal="User name" />
+                <ValidationMessage For="@(() => model.UserName)" />
 
-                    <!--Password-->
-            <label class="demo-text cw-320 mt-2 text-muted" style="padding: 0; margin: 0; font-size: small">Password</label>
-                    <DxTextBox @bind-Text="model.Password"
-                       Password="true" />
-                    <ValidationMessage For="@(() => model.Password)" />
+                <!--Password-->
+            <MyTextEdit @bind-Text="model.Password" Literal="Password"
+                        InputType="InputType.Password" />
+                <ValidationMessage For="@(() => model.Password)" />
 
-                    <!--Submit-->
+                <!--Submit-->
             <div style="margin: 20px auto; width: 60%">
-                        <MyButton Literal="Login"
-                          ButtonColor="@Color.Primary"
-                          IconCss="@Icons.Material.Filled.Login"
-                          OnClick="ExecuteLogin" />
-                    </div>
-                </EditForm>
-            </div>
+                    <MudButton ButtonType="ButtonType.Submit"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Style="width:100px"
+                           IconClass="@Icons.Material.Filled.Login">Save</MudButton>
+                </div>
+            </EditForm>
         </div>
+    </div>
 }
 
 <!--Maintenance mode-->
 @if (MaintennanceMode)
 {
-        <h1 style="color:red; font-weight:bold">Hệ thống đang bảo trì</h1>
+    <h1 style="color:red; font-weight:bold">Hệ thống đang bảo trì</h1>
 }
 
 

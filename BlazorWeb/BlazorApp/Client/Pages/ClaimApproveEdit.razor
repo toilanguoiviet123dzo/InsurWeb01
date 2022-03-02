@@ -292,19 +292,19 @@
                 <div class="row mt-2">
                     <!--Check: kiểm tra-->
                     <div class="col-12 col-lg-3">
-                        <DxCheckBox @bind-Checked="@Model.CheckStatus" Class="text-green" Enabled="false">Đã kiểm tra</DxCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.CheckStatus" Class="text-green" ReadOnly="true">Đã kiểm tra</MyCheckBox>
                     </div>
                     <!--Check: chấp nhận bồi thường-->
                     <div class="col-12 col-lg-3">
-                        <DxCheckBox Checked="@Model.AcceptStatus"
+                        <MyCheckBox Checked="@Model.AcceptStatus"
                                     Class="text-blue"
-                                    Enabled="false">Chấp nhận bồi thường</DxCheckBox>
+                                    ReadOnly="true">Chấp nhận bồi thường</MyCheckBox>
                     </div>
                     <!--Check: Từ chối yêu cầu-->
                     <div class="col-12 col-lg-3">
-                        <DxCheckBox Checked="@Model.CancelStatus"
-                                    Enabled="false"
-                                    Class="text-red">Từ chối yêu cầu</DxCheckBox>
+                        <MyCheckBox Checked="@Model.CancelStatus"
+                                    ReadOnly="true"
+                                    Class="text-red">Từ chối yêu cầu</MyCheckBox>
                     </div>
 
                 </div>
@@ -343,11 +343,11 @@
                 <div class="row mt-2">
                     <!--Check: yêu cầu báo giá-->
                     <div class="col-12 col-lg-3">
-                        <DxCheckBox @bind-Checked="@Model.EstimationReqStatus" Class="text-green" Enabled="false">Yêu cầu báo giá</DxCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.EstimationReqStatus" Class="text-green" ReadOnly="true">Yêu cầu báo giá</MyCheckBox>
                     </div>
                     <!--Check: Đã báo giá-->
                     <div class="col-12 col-lg-3">
-                        <DxCheckBox @bind-Checked="@Model.EstimationStatus" Enabled="false" Class="text-green">Đã báo giá</DxCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.EstimationStatus" ReadOnly="true" Class="text-green">Đã báo giá</MyCheckBox>
                     </div>
 
                 </div>
@@ -450,7 +450,7 @@
                     </div>
                     <!--Check: Đã sửa xong-->
                     <div class="col-12 col-lg-2">
-                        <DxCheckBox @bind-Checked="@Model.RepairStatus" Enabled="false" Class="text-green">Đã sửa xong</DxCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.RepairStatus" ReadOnly="true" Class="text-green">Đã sửa xong</MyCheckBox>
                     </div>
                     <!--Số IMEI thiết bị-->
                     <div class="col-12 col-lg-3">
@@ -501,7 +501,7 @@
                     </div>
                     <!--Check: yêu cầu duyệt-->
                     <div class="col-12 col-lg-2">
-                        <DxCheckBox @bind-Checked="@Model.ApproveReqStatus" Class="text-green" Enabled="false">Yêu cầu duyệt</DxCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.ApproveReqStatus" Class="text-green" ReadOnly="true">Yêu cầu duyệt</MyCheckBox>
                     </div>
                     <!--Ngày duyệt-->
                     <div class="col-12 col-lg-2">
@@ -513,7 +513,7 @@
                     </div>
                     <!--Check: đã duyệt-->
                     <div class="col-12 col-lg-2">
-                        <DxCheckBox @bind-Checked="@Model.ApproveStatus" Class="text-green" Enabled="@(!Model.RepairStatus)">Đã duyệt</DxCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.ApproveStatus" Class="text-green" ReadOnly="@(Model.RepairStatus)">Đã duyệt</MyCheckBox>
                     </div>
                 </div>
 
