@@ -63,26 +63,12 @@ else
     </div>
 </div>
 
-<!--Image popup-->
-<MyPopup @ref="@AddImagePopup"
-         HeaderText="Thêm hình ảnh"
-         Width="1000px"
-         ZIndex="1002">
-    <BodyContentTemplate>
-        <MyUpLoadImage MyForm="@AddImagePopup"
-                       Model="@UpLoadFile"
-                       OnSubmit="@((uploadedFile) => Add_UploadFileToView(uploadedFile))" />
-    </BodyContentTemplate>
-</MyPopup>
-
 
 
 <!--Confirm dialog-->
 <MessageBox Title="Xóa anh đính kèm" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
 
 @code {
-    [Parameter]
-    public MyPopup MyForm { get; set; }
     [Parameter]
     public string VoucherNo { get; set; } = "21000001";
     //DetailData
@@ -93,7 +79,6 @@ else
     private string ConfirmMessage = "";
     private bool ConfirmVisible = false;
     //Popup
-    private MyPopup AddImagePopup;
     private UpLoadFileModel UpLoadFile = new UpLoadFileModel();
     //
     protected override async Task OnInitializedAsync()
@@ -212,7 +197,7 @@ else
         UpLoadFile.SecureLevel = 0;
         UpLoadFile.AccountID = WebUserCredential.Username;
         //
-        AddImagePopup.Show();
+        @*AddImagePopup.Show();*@
     }
     void Add_UploadFileToView(UpLoadFileModel uploadedFile)
     {

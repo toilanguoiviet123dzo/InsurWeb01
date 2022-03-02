@@ -20,6 +20,7 @@ namespace BlazorApp.Client.BindingModels
         public string PicAccountName { get; set; } = "";
         public string PayAccountName { get; set; } = "";
         public string ApproveAccountName { get; set; } = "";
+        public DateTime CheckReqDate { get; set; }
         public DateTime CheckDoneDate { get; set; }
         public DateTime PickupReqDate { get; set; }
         public DateTime EstReqDate { get; set; }
@@ -45,5 +46,9 @@ namespace BlazorApp.Client.BindingModels
         public bool PayStatus { get; set; }
         public bool CancelStatus { get; set; }
         public bool CloseStatus { get; set; }
+        //Row mode
+        public bool RowMode_View { get; set; } = false;
+        public bool RowMode_Edit { get; set; }
+        public bool RowMode_Delete { get; set; }
     }
 }

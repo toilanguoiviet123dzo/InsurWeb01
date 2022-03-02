@@ -145,6 +145,7 @@ namespace BlazorApp.Client.BindingModels
         [Range(0, 99999999999, ErrorMessage = "Số tiền duyệt không hợp lệ")]
         public double ApproveAmount { get; set; }
         public string Notes { get; set; } = "";
+        public string RecNo { get; set; } = "";
         public int UpdMode { get; set; }
     }
 

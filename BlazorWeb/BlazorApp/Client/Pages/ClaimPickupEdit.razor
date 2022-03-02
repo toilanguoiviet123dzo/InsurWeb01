@@ -8,247 +8,237 @@
 @inject IJSRuntime JsRuntime;
 @inject ISnackbar Snackbar
 
-<!--Thông tin chung-->
-<MyCard Title="Thông tin chung">
-    <CardBody>
-        <div class="container-fluid">
-            <!--Row 1-------------------------------------------------->
-            <div class="row">
-                <!--Số tiếp nhận-->
-                <div class="col-12 col-lg-2">
-                    <MyTextEdit @bind-Text="Model.ClaimNo"
-                                ReadOnly="true"
-                                Literal="Số tiếp nhận"
-                                Width="8rem"
-                                Class="text-blue font-weight-bold" />
-                </div>
-                <!--Ngày tiếp nhận-->
-                <div class="col-12 col-lg-2">
-                    <MyDateTimeEdit @bind-Date="Model.ClaimDate"
-                                    Literal="Ngày tiếp nhận"
+<MyForm Title="Yêu cầu bồi thường"
+        ReadOnly="@ReadOnly"
+        OnCancelClick="CloseMain"
+        OnSubmitClick="SaveMain">
+    <MyPanels>
+        <!--Thông tin chung-->
+        <MyPanel Title="Thông tin chung">
+            <div class="container-fluid">
+                <!--Row 1-------------------------------------------------->
+                <div class="row">
+                    <!--Số tiếp nhận-->
+                    <div class="col-12 col-lg-2">
+                        <MyTextEdit @bind-Text="Model.ClaimNo"
                                     ReadOnly="true"
-                                    Class="text-blue" />
-                </div>
-                <!--Phụ trách bồi thường-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.PicAccountName"
-                                ReadOnly="true"
-                                Literal="Phụ trách bồi thường" />
-                </div>
-                <!--Phone phụ trách bồi thường-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.PicPhone"
-                                ReadOnly="true"
-                                Literal="Phone" />
-                </div>
-                <!--Mức độ ưu tiên-->
-                <div class="col-12 col-lg-2">
-                    <MyComboBox @ref="RefPriority"
-                                @bind-Value="SelectedPriority"
-                                Data="PriorityList"
-                                ReadOnly="true"
-                                TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                SelectedItemChanged="@((OptionListModel selectedRow) => {
+                                    Literal="Số tiếp nhận"
+                                    Width="8rem"
+                                    Class="text-blue font-weight-bold" />
+                    </div>
+                    <!--Ngày tiếp nhận-->
+                    <div class="col-12 col-lg-2">
+                        <MyDateTimeEdit @bind-Date="Model.ClaimDate"
+                                        Literal="Ngày tiếp nhận"
+                                        ReadOnly="true"
+                                        Class="text-blue" />
+                    </div>
+                    <!--Phụ trách bồi thường-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit @bind-Text="Model.PicAccountName"
+                                    ReadOnly="true"
+                                    Literal="Phụ trách bồi thường" />
+                    </div>
+                    <!--Phone phụ trách bồi thường-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit @bind-Text="Model.PicPhone"
+                                    ReadOnly="true"
+                                    Literal="Phone" />
+                    </div>
+                    <!--Mức độ ưu tiên-->
+                    <div class="col-12 col-lg-2">
+                        <MyComboBox @ref="RefPriority"
+                                    @bind-Value="SelectedPriority"
+                                    Data="PriorityList"
+                                    ReadOnly="true"
+                                    TextFieldName="@(nameof(OptionListModel.ItemName))"
+                                    SelectedItemChanged="@((OptionListModel selectedRow) => {
                                                    Model.Priority = selectedRow.IntCode;
                                                    PriorityCss = "";
                                                    if (Model.Priority == 2) PriorityCss = "bg-warning";
                                                    if (Model.Priority == 3) PriorityCss = "bg-danger";
                                                    this.StateHasChanged();
                                              })"
-                                Class="@PriorityCss"
-                                Literal="Mức độ ưu tiên" />
-                </div>
-            </div>
-
-            <!--Row 2-------------------------------------------------->
-            <div class="row">
-                <!--Tên khách hàng-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.CusFullname"
-                                Literal="Tên khách hàng"
-                                ReadOnly="true"
-                                Class="cusfullname-focus" />
-                </div>
-                <!--Phone-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit Text="@Model.CusPhone"
-                                Literal="Điện thoại liên hệ"
-                                Class="text-blue font-weight-bold"
-                                ReadOnly="true"/>
-                </div>
-                <!--Email-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.CusEmail"
-                                ReadOnly="true"
-                                Literal="Email" />
-                </div>
-            </div>
-
-            <!--Row 3-------------------------------------------------->
-            <div class="row">
-                <!--Loại sản phẩm-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.TPAProductName"
-                                Literal="Loại sản phẩm"
-                                ReadOnly="true" />
-                </div>
-                <!--Số IMEI thiết bị-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.DeviceIMEI"
-                                Literal="Số IMEI thiết bị"
-                                ReadOnly="true"
-                                Class="text-purple font-weight-bold" />
-                </div>
-                <!--Model-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.DeviceModel"
-                                ReadOnly="true"
-                                Literal="Model" />
+                                    Class="@PriorityCss"
+                                    Literal="Mức độ ưu tiên" />
+                    </div>
                 </div>
 
-            </div>
-
-            <!--Row 4-------------------------------------------------->
-            <div class="row">
-                <!--Địa chỉ lấy thiết bị-->
-                <div class="col-12 col-lg-6">
-                    <MyTextEdit @bind-Text="Model.PickupAddress"
-                                Literal="Địa chỉ lấy thiết bị"
-                                ReadOnly="true"
-                                Class="pickupaddress-focus" />
-                </div>
-                <!--Địa chỉ trả thiết bị-->
-                <div class="col-12 col-lg-6">
-                    <MyTextEdit @bind-Text="DeliveryAddress"
-                                ReadOnly="true"
-                                Literal="Địa chỉ giao thiết bị" />
-                </div>
-            </div>
-        </div>
-    </CardBody>
-</MyCard>
-
-<!--Thông tin hư hỏng-->
-<MyCard @bind-IsCollapse="@DamageInfoCollapse" Title="Thông tin hư hỏng">
-    <CardBody>
-        <div class="container-fluid">
-            <!--Row 1-------------------------------------------------->
-            <div class="row">
-                <!--Ngày KH thông báo-->
-                <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.NotificationDate"
-                                    Literal="Ngày KH thông báo"
+                <!--Row 2-------------------------------------------------->
+                <div class="row">
+                    <!--Tên khách hàng-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit @bind-Text="Model.CusFullname"
+                                    Literal="Tên khách hàng"
                                     ReadOnly="true"
-                                    Class="text-green" />
-                </div>
-            </div>
-
-            <!--Row 2-------------------------------------------------->
-            <div class="row">
-                <!--Nguyên nhân hư hỏng-->
-                <div class="col-12 col-lg-7">
-                    <MyMemoEdit @ref="RefDamageCause"
-                                @bind-Text="Model.DamageCause"
-                                Rows="5"
-                                ReadOnly="true"
-                                Literal="Nguyên nhân hư hỏng" />
-                </div>
-                <!--Ghi chú-->
-                <div class="col-12 col-lg-5">
-                    <MyMemoEdit @bind-Text="Model.AcceptNotes"
-                                Rows="5"
-                                ReadOnly="true"
-                                Literal="Ghi chú" />
-                </div>
-            </div>
-
-        </div><!--End container-->
-    </CardBody>
-</MyCard>
-
-<!--Thông tin lấy thiết bị-->
-<MyCard Title="Thông tin lấy thiết bị">
-    <CardBody>
-        <div class="container-fluid">
-            <!--Row 1-------------------------------------------------->
-            <div class="row">
-                <!--Ngày yêu cầu lấy-->
-                <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.PickupReqDate"
-                                    Literal="Ngày yêu cầu lấy"
+                                    Class="cusfullname-focus" />
+                    </div>
+                    <!--Phone-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit Text="@Model.CusPhone"
+                                    Literal="Điện thoại liên hệ"
+                                    Class="text-blue font-weight-bold"
+                                    ReadOnly="true" />
+                    </div>
+                    <!--Email-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit @bind-Text="Model.CusEmail"
                                     ReadOnly="true"
-                                    Class="text-green" />
+                                    Literal="Email" />
+                    </div>
                 </div>
-                <!--Ngày lấy thiết bị-->
-                <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.PickupDoneDate1"
-                                    Literal="Ngày lấy thiết bị"
+
+                <!--Row 3-------------------------------------------------->
+                <div class="row">
+                    <!--Loại sản phẩm-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit @bind-Text="Model.TPAProductName"
+                                    Literal="Loại sản phẩm"
+                                    ReadOnly="true" />
+                    </div>
+                    <!--Số IMEI thiết bị-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit @bind-Text="Model.DeviceIMEI"
+                                    Literal="Số IMEI thiết bị"
                                     ReadOnly="true"
-                                    Class="text-blue" />
-                </div>
-                <!--Ngày nhập thiết bị-->
-                <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.PickupDoneDate1"
-                                    Literal="Ngày nhập thiết bị"
+                                    Class="text-purple font-weight-bold" />
+                    </div>
+                    <!--Model-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit @bind-Text="Model.DeviceModel"
                                     ReadOnly="true"
-                                    Class="text-maroon" />
+                                    Literal="Model" />
+                    </div>
+
+                </div>
+
+                <!--Row 4-------------------------------------------------->
+                <div class="row">
+                    <!--Địa chỉ lấy thiết bị-->
+                    <div class="col-12 col-lg-6">
+                        <MyTextEdit @bind-Text="Model.PickupAddress"
+                                    Literal="Địa chỉ lấy thiết bị"
+                                    ReadOnly="true"
+                                    Class="pickupaddress-focus" />
+                    </div>
+                    <!--Địa chỉ trả thiết bị-->
+                    <div class="col-12 col-lg-6">
+                        <MyTextEdit @bind-Text="DeliveryAddress"
+                                    ReadOnly="true"
+                                    Literal="Địa chỉ giao thiết bị" />
+                    </div>
                 </div>
             </div>
+        </MyPanel>
 
-            <!--Row 2-------------------------------------------------->
-            <div class="row mt-2">
-                <!--Check: đã lấy thiết bị-->
-                <div class="col-12 col-lg-3">
-                    <DxCheckBox @bind-Checked="@Model.PickupStatus1"
-                                Class="text-blue">
-                        Đã lấy thiết bị
-                    </DxCheckBox>
+        <!--Thông tin hư hỏng-->
+        <MyPanel Title="Thông tin hư hỏng">
+            <div class="container-fluid">
+                <!--Row 1-------------------------------------------------->
+                <div class="row">
+                    <!--Ngày KH thông báo-->
+                    <div class="col-12 col-lg-3">
+                        <MyDateTimeEdit @bind-Date="Model.NotificationDate"
+                                        Literal="Ngày KH thông báo"
+                                        ReadOnly="true"
+                                        Class="text-green" />
+                    </div>
                 </div>
 
-                <!--Check: đã nhập thiết bị-->
-                <div class="col-12 col-lg-3">
-                    <DxCheckBox @bind-Checked="@Model.PickupStatus2"
-                                Class="text-maroon"
-                                Enabled="@Model.PickupStatus1">
-                        Đã nhập thiết bị
-                    </DxCheckBox>
+                <!--Row 2-------------------------------------------------->
+                <div class="row">
+                    <!--Nguyên nhân hư hỏng-->
+                    <div class="col-12 col-lg-7">
+                        <MyMemoEdit @ref="RefDamageCause"
+                                    @bind-Text="Model.DamageCause"
+                                    Rows="5"
+                                    ReadOnly="true"
+                                    Literal="Nguyên nhân hư hỏng" />
+                    </div>
+                    <!--Ghi chú-->
+                    <div class="col-12 col-lg-5">
+                        <MyMemoEdit @bind-Text="Model.AcceptNotes"
+                                    Rows="5"
+                                    ReadOnly="true"
+                                    Literal="Ghi chú" />
+                    </div>
                 </div>
-            </div>
 
-            <!--Row 3-------------------------------------------------->
-            <div class="row mt-1">
-                <!--Ghi chú nhận thiết bị-->
-                <div class="col-12">
-                    <MyMemoEdit @bind-Text="Model.PickupNotes"
-                                Rows="3"
-                                Literal="Ghi chú lấy thiết bị" />
+            </div><!--End container-->
+        </MyPanel>
+
+        <!--Thông tin lấy thiết bị-->
+        <MyPanel Title="Thông tin lấy thiết bị">
+            <div class="container-fluid">
+                <!--Row 1-------------------------------------------------->
+                <div class="row">
+                    <!--Ngày yêu cầu lấy-->
+                    <div class="col-12 col-lg-3">
+                        <MyDateTimeEdit @bind-Date="Model.PickupReqDate"
+                                        Literal="Ngày yêu cầu lấy"
+                                        ReadOnly="true"
+                                        Class="text-green" />
+                    </div>
+                    <!--Ngày lấy thiết bị-->
+                    <div class="col-12 col-lg-3">
+                        <MyDateTimeEdit @bind-Date="Model.PickupDoneDate1"
+                                        Literal="Ngày lấy thiết bị"
+                                        ReadOnly="true"
+                                        Class="text-blue" />
+                    </div>
+                    <!--Ngày nhập thiết bị-->
+                    <div class="col-12 col-lg-3">
+                        <MyDateTimeEdit @bind-Date="Model.PickupDoneDate1"
+                                        Literal="Ngày nhập thiết bị"
+                                        ReadOnly="true"
+                                        Class="text-maroon" />
+                    </div>
                 </div>
-            </div>
 
-        </div><!--End container-->
-    </CardBody>
-</MyCard>
+                <!--Row 2-------------------------------------------------->
+                <div class="row mt-2">
+                    <!--Check: đã lấy thiết bị-->
+                    <div class="col-12 col-lg-3">
+                        <DxCheckBox @bind-Checked="@Model.PickupStatus1"
+                                    Class="text-blue">
+                            Đã lấy thiết bị
+                        </DxCheckBox>
+                    </div>
 
-<!--OK, Cancel-->
-<div class="container-fluid">
-    <div class="row justify-content-center mt-2">
-        <MyButtonSave OnClick="SaveMain" />
-        <MyButtonCancel OnClick="CloseMain" />
-    </div>
-</div>
+                    <!--Check: đã nhập thiết bị-->
+                    <div class="col-12 col-lg-3">
+                        <DxCheckBox @bind-Checked="@Model.PickupStatus2"
+                                    Class="text-maroon"
+                                    Enabled="@Model.PickupStatus1">
+                            Đã nhập thiết bị
+                        </DxCheckBox>
+                    </div>
+                </div>
+
+                <!--Row 3-------------------------------------------------->
+                <div class="row mt-1">
+                    <!--Ghi chú nhận thiết bị-->
+                    <div class="col-12">
+                        <MyMemoEdit @bind-Text="Model.PickupNotes"
+                                    Rows="3"
+                                    Literal="Ghi chú lấy thiết bị" />
+                    </div>
+                </div>
+
+            </div><!--End container-->
+        </MyPanel>
+    </MyPanels>
+</MyForm>
 
 @code {
-    [CascadingParameter]
-    protected ProgramInfo Program { get; set; }
-    [Parameter]
-    public MyPopup MyForm { get; set; }
+    [CascadingParameter] protected ProgramInfo Program { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     //Parameters and events
-    [Parameter]
-    public string ClaimNo { get; set; } = "";
-    [Parameter]
-    public EventCallback OnValidSumit { get; set; }
+    [Parameter] public string ClaimNo { get; set; } = "";
     //
-    private ClaimRequestModel Model = new ClaimRequestModel();
+    bool ReadOnly;
+    ClaimRequestModel Model = new ClaimRequestModel();
+    MyDataGrid<EstimationModel> grid;
     //Master
     private List<OptionListModel> PriorityList = new List<OptionListModel>();
     //Selected combo value
@@ -404,9 +394,8 @@
                 Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
             }
 
-            //Reload data
-            await OnValidSumit.InvokeAsync();
-            CloseMain();
+            //Submit
+            MudDialog.Close(DialogResult.Ok(Model));
         }
         catch
         {
@@ -415,7 +404,7 @@
     }
     void CloseMain()
     {
-        MyForm.Close();
+        MudDialog.Cancel();
     }
     #endregion
 

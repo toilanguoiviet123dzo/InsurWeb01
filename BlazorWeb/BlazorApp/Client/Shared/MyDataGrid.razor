@@ -1,6 +1,15 @@
 ﻿@using System.Reflection
 @typeparam T
 
+<style>
+    .mud-table-cell {
+        padding: 4px !important;
+        font-size: .8rem !important;
+    }
+
+</style>
+
+
 <MudTable @ref="@Ref"
           Items="@Items"
           Dense="@Dense"
@@ -14,6 +23,7 @@
           SelectedItemsChanged="@((HashSet<T> items) => OnSelectedItemsChanged(items))"
           OnRowClick="@((TableRowClickEventArgs<T> para) => OnRowClick_Handle(para))"
           OnCommitEditClick="@((MouseEventArgs para) => OnCommitEditClick_Handle(para))"
+          RowStyleFunc="@RowStyleFunc"
           Loading="@Loading"
           HorizontalScrollbar="@HorizontalScrollbar"
           Virtualize="@Virtualize"
@@ -26,12 +36,50 @@
         <MudSpacer />
         <MudTextField @bind-Value="@SearchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
+    <ColGroup>
+        <col style="width: 3rem;" />
+        @if (IsDelete)
+        {
+            <col style="width: 3rem;" />
+        }
+        @ColGroup
+    </ColGroup>
     <HeaderContent>
-        <MudTh><MyButton Icon="@Icons.Material.Filled.PlusOne" Color="Color.Primary"></MyButton></MudTh>
+        <MudTh>
+            @if (IsAddNew)
+            {
+                <MudFab Color="Color.Primary"
+                    StartIcon="@Icons.Material.Filled.Add"
+                    Size="Size.Medium"
+                    OnClick="@(() => OnAddRow_Handle())" />
+            }
+        </MudTh>
+        @if (IsDelete)
+        {
+            <MudTh></MudTh>
+        }
         @HeaderContent
     </HeaderContent>
     <RowTemplate>
-        <MudTd><MyButton Icon="@Icons.Material.Filled.Update" Color="Color.Secondary"></MyButton></MudTd>
+        <MudTd Style="text-align:center">
+            @if (IsViewMode(context))
+            {
+                <MudIconButton Icon="fa-solid fa-eye" Color="Color.Info" Size="Size.Medium" OnClick="@(() => OnViewRow_Handle(context))"></MudIconButton>
+            }
+            @if (IsEditMode(context))
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" Size="Size.Medium" OnClick="@(() => OnViewRow_Handle(context))"></MudIconButton>
+            }
+        </MudTd>
+        @if (IsDelete)
+        {
+            <MudTd Style="text-align:center">
+                @if (IsDeleteMode(context))
+                {
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Medium" OnClick="@(() => OnDeleteRow_Handle(context))"></MudIconButton>
+                }
+            </MudTd>
+        }
         @RowTemplate(context)
     </RowTemplate>
     <PagerContent>
@@ -39,10 +87,28 @@
     </PagerContent>
 </MudTable>
 
+<MudMessageBox @ref="mbox" Title="Cảnh báo" CancelText="Cancel">
+    <MessageContent>
+        <div Style="min-width:250px">
+            @MyMessage.Confirm_DeleteRow
+        </div>
+    </MessageContent>
+    <YesButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever">Delete!</MudButton>
+    </YesButton>
+</MudMessageBox>
+
 
 @code {
-    [Parameter] public IEnumerable<T> Items{ get; set; }
+    [Parameter] public IEnumerable<T> Items { get; set; }
     [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string AddRowTitle { get; set; } = "Thêm";
+    [Parameter] public string DeleteRowTitle { get; set; } = "Xóa";
+    [Parameter] public string UpdateRowTitle { get; set; } = "Cập nhật";
+    [Parameter] public string ViewRowTitle { get; set; } = "Xem";
+    [Parameter] public string DeleteRowConfirmMessage { get; set; } = MyMessage.Confirm_DeleteRow;
+    [Parameter] public bool IsAddNew { get; set; } = false;
+    [Parameter] public bool IsDelete { get; set; } = false;
     [Parameter] public bool Dense { get; set; } = false;
     [Parameter] public bool Bordered { get; set; } = true;
     [Parameter] public bool Striped { get; set; } = true;
@@ -50,10 +116,12 @@
     [Parameter] public bool HorizontalScrollbar { get; set; } = false;
     [Parameter] public bool Virtualize { get; set; } = false;
     [Parameter] public bool ReadOnly { get; set; } = true;
-    [Parameter] public int RowsPerPage { get; set; } = 20;
+    [Parameter] public int RowsPerPage { get; set; } = 10;
+    [Parameter] public RenderFragment ColGroup { get; set; }
     [Parameter] public RenderFragment HeaderContent { get; set; }
     [Parameter] public RenderFragment<T> RowTemplate { get; set; }
     [Parameter] public RenderFragment NoRecordsContent { get; set; }
+    [Parameter] public Func<T, int, string> RowStyleFunc { get; set; }
 
     //SelectedItem
     [Parameter] public T SelectedItem { get; set; }
@@ -83,11 +151,39 @@
         await OnCommitEditClick.InvokeAsync(para);
     }
 
+    //OnDeleteRow
+    [Parameter] public EventCallback<T> OnDeleteRow { get; set; }
+    private async void OnDeleteRow_Handle(T row)
+    {
+        bool? result = await mbox.Show();
+        StateHasChanged();
+        //OK
+        if (result != null && result == true)
+        {
+            await OnDeleteRow.InvokeAsync(row);
+        }
+    }
+
+    //OnViewRow
+    [Parameter] public EventCallback<T> OnViewRow { get; set; }
+    private async void OnViewRow_Handle(T row)
+    {
+        await OnViewRow.InvokeAsync(row);
+    }
+
+    //OnAddRow
+    [Parameter] public EventCallback OnAddRow { get; set; }
+    private async void OnAddRow_Handle()
+    {
+        await OnAddRow.InvokeAsync();
+    }
+
     //Attributes
     Dictionary<string, object> Attributes { get; set; }
 
     //Data
     string SearchString = "";
+    MudMessageBox mbox { get; set; }
 
     //
     protected override void OnParametersSet()
@@ -139,6 +235,42 @@
     public int CurrentPage()
     {
         return Ref.CurrentPage;
+    }
+    //View
+    bool IsViewMode(T element)
+    {
+        foreach (PropertyInfo property in element.GetType().GetProperties())
+        {
+            if (property.Name == "RowMode_View" && property.PropertyType.ToString() == "System.Boolean")
+            {
+                return (bool)property.GetValue(element);
+            }
+        }
+        return false;
+    }
+    //Edit
+    bool IsEditMode(T element)
+    {
+        foreach (PropertyInfo property in element.GetType().GetProperties())
+        {
+            if (property.Name == "RowMode_Edit" && property.PropertyType.ToString() == "System.Boolean")
+            {
+                return (bool)property.GetValue(element);
+            }
+        }
+        return false;
+    }
+    //Delete
+    bool IsDeleteMode(T element)
+    {
+        foreach (PropertyInfo property in element.GetType().GetProperties())
+        {
+            if (property.Name == "RowMode_Delete" && property.PropertyType.ToString() == "System.Boolean")
+            {
+                return (bool)property.GetValue(element);
+            }
+        }
+        return false;
     }
 
 }

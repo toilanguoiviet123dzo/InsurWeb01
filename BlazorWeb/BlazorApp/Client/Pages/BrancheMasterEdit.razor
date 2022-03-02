@@ -1,0 +1,32 @@
+﻿
+<MyPopupEdit Title="Nhập chi nhánh bồi thường"
+             T="BranchMasterModel"
+             Model="Model"
+             OnCancelClick="OnCancel"
+             OnSubmitClick="OnSubmit">
+    <MudNumericField Label="No." @bind-Value="Model.DspOrder" Format="N0" T="int" />
+    <MudTextField Label="Mã" @bind-Value="Model.BranchID" For="@(() => Model.BranchID)" />
+    <MudTextField Label="Tên" @bind-Value="Model.BranchName" For="@(() => Model.BranchName)" />
+    <MudTextField Label="Phone" @bind-Value="Model.PhoneNo" />
+    <MudTextField Label="Email" @bind-Value="Model.Email" />
+    <MudTextField Label="Địa chỉ" @bind-Value="Model.Address" />
+    <MudTextField Label="Người phụ trách" @bind-Value="Model.PicName" />
+    <MudTextField Label="Ghi chú" @bind-Value="Model.Notes" />
+    <MudTextField Label="Hữu hiệu" @bind-Value="Model.Status"> </MudTextField>
+    <MudSwitch @bind-Checked="@Model.Status" Color="Color.Primary"> </MudSwitch>
+</MyPopupEdit>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public BranchMasterModel Model { get; set; }
+    //Cancel
+    private void OnCancel()
+    {
+        MudDialog.Cancel();
+    }
+    //Submit
+    private void OnSubmit()
+    {
+        MudDialog.Close(DialogResult.Ok(Model));
+    }
+}

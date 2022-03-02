@@ -7,132 +7,56 @@
 @inject MasterService masterService;
 @inject IJSRuntime JsRuntime;
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
-<br />
-<div style="width:100%">
-    <DxDataGrid @ref="@grid"
-                Data="@DetailData"
-                ColumnResizeMode="DataGridColumnResizeMode.Component"
-                PageSize="@PageRowCount"
-                ShowFilterRow="true"
-                HtmlRowDecoration="@OnHtmlRowDecoration"
-                HorizontalScrollBarMode="ScrollBarMode.Auto"
-                RowEditStart="@(dataRow => OnRowEditStarting(dataRow))"
-                RowInsertStart="@(() => OnRowEditStarting(null))">
-        <Columns>
-            <DxDataGridSpinEditColumn Field="@nameof(RepairerMasterModel.DspOrder)"
-                                      Caption="STT"
-                                      DisplayFormat="N0"
-                                      Width="3rem" />
-            <DxDataGridColumn Field="@nameof(BranchMasterModel.BranchID)"
-                              Caption="Mã"
-                              Width="6rem" />
-            <DxDataGridColumn Field="@nameof(BranchMasterModel.BranchName)"
-                              Caption="Tên"
-                              Width="12rem" />
-            <DxDataGridColumn Field="@nameof(BranchMasterModel.PhoneNo)"
-                              Caption="Phone"
-                              Width="7rem" />
-            <DxDataGridColumn Field="@nameof(BranchMasterModel.Email)"
-                              Caption="Email"
-                              Width="12rem" />
-            <DxDataGridColumn Field="@nameof(BranchMasterModel.Address)"
-                              Caption="Địa chỉ"
-                              Width="17rem" />
-            <DxDataGridColumn Field="@nameof(BranchMasterModel.PicName)"
-                              Caption="Người phụ trách"
-                              Width="10rem" />
-            <DxDataGridColumn Field="@nameof(BranchMasterModel.Notes)"
-                              Caption="Ghi chú"
-                              Width="10rem" />
-            <DxDataGridColumn Field="@nameof(BranchMasterModel.StatusName)"
-                              Caption="Trạng thái"
-                              Width="6rem" />
-            <DxDataGridDateEditColumn Field="@nameof(BranchMasterModel.ModifiedOn)"
-                                      Caption="ModifiedOn"
-                                      DisplayFormat="dd/MM/yyyy HH:mm"
-                                      Width="9rem" />
-            <!--Command columns-->
-            <MyGridCommand Grid="grid"
-                           ShowAddnew="true"
-                           ShowEdit="true"
-                           ShowDelete="true"
-                           OnRowRemoving="@((context) => OnRowRemoving(context as BranchMasterModel))" />
-        </Columns>
-        <EditFormTemplate>
-            <EditForm Model="@EditContext" Context="EditFormContext" OnValidSubmit="@UpdateRow">
-                <DataAnnotationsValidator />
-                <DxFormLayout>
-                    <DxFormLayoutItem Caption="Mã: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.BranchID" Class="text-uppercase" />
-                            <ValidationMessage For="@(() => EditContext.BranchID)" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Tên: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.BranchName" />
-                            <ValidationMessage For="@(() => EditContext.BranchName)" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Phone: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.PhoneNo" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Email: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.Email" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Địa chỉ: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.Address" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Người phụ trách: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.PicName" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Ghi chú: " ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxTextBox @bind-Text="@EditContext.Notes" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Thứ tự" ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxMaskedInput @bind-Value="@EditContext.DspOrder"
-                                           Format="N0" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Hữu hiệu" ColSpanMd="12" Context="FormLayoutContext">
-                        <Template>
-                            <DxCheckBox @bind-Checked="@EditContext.BoolStatus" />
-                        </Template>
-                    </DxFormLayoutItem>
-                    <!--OK Cancel-->
-                    <MyGridEditFormOKCancel OnCancelClick="OnCancelEditRow" />
-                </DxFormLayout>
-            </EditForm>
-        </EditFormTemplate>
-    </DxDataGrid>
-</div>
-
-<MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
+<MyDataGrid @ref="@grid"
+            T="BranchMasterModel"
+            Title="Danh sách yêu cầu bồi thường"
+            Items="@DetailData"
+            IsAddNew="true"
+            IsDelete="true"
+            OnAddRow="@(() => OnAddRow_Handle())"
+            OnViewRow="@((BranchMasterModel row) => OnViewRow_Handle(row))"
+            OnDeleteRow="@((BranchMasterModel row) => OnDeleteRow_Handle(row))">
+    <ColGroup>
+        <col style="width: 2rem;" />
+        <col style="width: 6rem;" />
+        <col style="width: 8rem;" />
+        <col style="width: 10rem;" />
+        <col />
+        <col style="width: 10rem;" />
+        <col />
+        <col style="width: 5rem;" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<BranchMasterModel, object>(x => x.DspOrder)">No.</MudTableSortLabel></MudTh>
+        <MudTh>Mã</MudTh>
+        <MudTh>Tên</MudTh>
+        <MudTh>Phone</MudTh>
+        <MudTh>Email</MudTh>
+        <MudTh>Địa chỉ</MudTh>
+        <MudTh>Người phụ trách</MudTh>
+        <MudTh>Ghi chú</MudTh>
+        <MudTh>Trạng thái</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd Style="text-align:center;">@context.DspOrder</MudTd>
+        <MudTd Style="color:blue; font-weight:bold">@context.BranchID</MudTd>
+        <MudTd>@context.BranchName</MudTd>
+        <MudTd Style="text-align:center;">@context.PhoneNo</MudTd>
+        <MudTd>@context.Email</MudTd>
+        <MudTd>@context.Address</MudTd>
+        <MudTd>@context.PicName</MudTd>
+        <MudTd>@context.Notes</MudTd>
+        <MudTd><MudCheckBox Checked="@context.Status" Color="Color.Primary"></MudCheckBox></MudTd>
+    </RowTemplate>
+</MyDataGrid>
 
 @code {
-    [CascadingParameter]
-    protected ProgramInfo Program { get; set; }
-    private int PageRowCount = MyConstant.Grid_PageRowCount;
-    FormEditContext EditContext = null;
+    [CascadingParameter] protected ProgramInfo Program { get; set; }
     // Detail data
-    readonly ObservableCollection<BranchMasterModel> DetailData = new ObservableCollection<BranchMasterModel>();
-    // RoleList
-    // Popup
-    private string ConfirmMessage = "";
-    private string ConfirmAction = "";
-    private bool ConfirmVisible = false;
+    MyDataGrid<BranchMasterModel> grid;
+    readonly List<BranchMasterModel> DetailData = new List<BranchMasterModel>();
     //
     protected override async Task OnInitializedAsync()
     {
@@ -170,14 +94,10 @@
                     ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
                     //Upd mode
                     dataRow.UpdMode = 0;
-                    //StatusName
-                    if (dataRow.Status == 0)
-                    {
-                        dataRow.StatusName = "Vô hiệu";
-                    }
                     //
                     DetailData.Add(dataRow);
                 }
+                grid.Refresh();
             }
         }
         catch
@@ -189,18 +109,6 @@
     #endregion
 
     #region Save
-
-    void ConfirmHandler()
-    {
-        //Delete row
-        if (ConfirmAction == "DeleteRow")
-        {
-            DeleteRow();
-        }
-        //Close confirm delete popup
-        ConfirmVisible = false;
-        StateHasChanged();
-    }
 
     //Save Row
     async Task<bool> SaveRow(BranchMasterModel saveRow)
@@ -245,155 +153,79 @@
     #endregion
 
     #region Grid main
-    //Confirm delete
-    BranchMasterModel DeletedRow = null;
-    void OnRowRemoving(BranchMasterModel dataRow)
+
+
+    //Add row
+    async void OnAddRow_Handle()
     {
-        DeletedRow = dataRow;
-
-        //Show popup confirm
-        ConfirmMessage = MyMessage.Confirm_DeleteRow;
-        ConfirmAction = "DeleteRow";
-        ConfirmVisible = true;
-        StateHasChanged();
-    }
-
-    //Cancel edit
-    async Task OnCancelEditRow()
-    {
-        await grid.CancelRowEdit();
-        EditContext = null;
-    }
-
-    async void DeleteRow()
-    {
-        // Mark to delete on grid
-        DeletedRow.UpdMode = 3;
-
-        var saveResult = await SaveRow(DeletedRow);
-
-        // Refresh layout
-        if (saveResult)
+        //Init new row
+        var newRow = new BranchMasterModel();
+        newRow.UpdMode = 1;
+        newRow.ModifiedOn = DateTime.Now;
+        //
+        var parameters = new DialogParameters();
+        parameters.Add("Model", newRow);
+        //
+        var result = await DialogService.Show<BrancheMasterEdit>("", parameters, MyOptions.GetEditFormOptions()).Result;
+        if (!result.Cancelled && result.Data != null)
         {
-            await grid.Refresh();
+            var retModel = (BranchMasterModel)result.Data;
+
+            //Save to DB
+            var saveRet = await SaveRow(retModel);
+            if (true)
+            {
+                //Add to grid
+                DetailData.Add(retModel);
+                grid.Refresh();
+            }
         }
     }
     //Update row
-    async Task UpdateRow()
+    async void OnViewRow_Handle(BranchMasterModel row)
     {
-        // Update for edit field
-        EditContext.EditingRow.BranchID = EditContext.BranchID;
-        EditContext.EditingRow.BranchName = EditContext.BranchName;
-        EditContext.EditingRow.PhoneNo = EditContext.PhoneNo;
-        EditContext.EditingRow.Email = EditContext.Email;
-        EditContext.EditingRow.Address = EditContext.Address;
-        EditContext.EditingRow.Notes = EditContext.Notes;
-        EditContext.EditingRow.PicName = EditContext.PicName;
-        EditContext.EditingRow.DspOrder = EditContext.DspOrder;
+        //UpdMode
+        row.UpdMode = 2;
         //
-        EditContext.EditingRow.Status = 1;
-        EditContext.EditingRow.StatusName = "";
-        if (!EditContext.BoolStatus)
+        var parameters = new DialogParameters();
+        parameters.Add("Model", row);
+        //
+        var result = await DialogService.Show<BrancheMasterEdit>("", parameters, MyOptions.GetEditFormOptions()).Result;
+        if (!result.Cancelled && result.Data != null)
         {
-            EditContext.EditingRow.Status = 0;
-            EditContext.EditingRow.StatusName = "Vô hiệu";
-        }
-        EditContext.EditingRow.ModifiedOn = DateTime.Now;
-
-        // Insert
-        if (EditContext.UpdMode == 1)
-        {
-            EditContext.EditingRow.UpdMode = 1;
-            DetailData.Add(EditContext.EditingRow);
-        }
-        else
-        {
-            //Update or update to restore delete record
-            EditContext.EditingRow.UpdMode = 2;
-        }
-
-        //Save row to DB
-        var saveResult = await SaveRow(EditContext.EditingRow);
-        if (saveResult)
-        {
-            // Close popup & refresh data
-            await grid.CancelRowEdit();
-            await grid.Refresh();
-        }
-    }
-    // Edit row model
-    DxDataGrid<BranchMasterModel> grid;
-    class FormEditContext : BranchMasterModel
-    {
-        public FormEditContext(BranchMasterModel targetRow, int updMode)
-        {
-            //Backup editting row
-            EditingRow = targetRow;
-
-            //UpdMode
-            UpdMode = updMode;
-
-            //Edit context -> Editable data only
-            BranchID = EditingRow.BranchID;
-            BranchName = EditingRow.BranchName;
-            PhoneNo = EditingRow.PhoneNo;
-            Email = EditingRow.Email;
-            Address = EditingRow.Address;
-            Notes = EditingRow.Notes;
-            PicName = EditingRow.PicName;
-            DspOrder = EditingRow.DspOrder;
-            Status = EditingRow.Status;
-            BoolStatus = false;
-            if (Status == 1)
+            var retModel = (BranchMasterModel)result.Data;
+            var updateReccord = DetailData.Find(x => x.ID == retModel.ID);
+            if (updateReccord != null)
             {
-                BoolStatus = true;
+                //Update to Grid
+                ClassHelper.CopyPropertiesData(retModel, updateReccord);
+
+                //Save to DB
+                var saveRet = await SaveRow(retModel);
+                if (true)
+                {
+                    grid.Refresh();
+                }
             }
         }
-        public bool BoolStatus { get; set; }
-        public BranchMasterModel EditingRow { get; set; }
     }
 
-    //Get data for edit/insert
-    void OnRowEditStarting(BranchMasterModel editingRow)
+    //Delete row
+    async void OnDeleteRow_Handle(BranchMasterModel row)
     {
-        // Insert row
-        if (editingRow == null)
+        //UpdMode
+        row.UpdMode = 3;
+
+        //Save to DB
+        var saveRet = await SaveRow(row);
+        if (true)
         {
-            editingRow = new BranchMasterModel();
-            //
-            editingRow.UpdMode = -1;
-            //Init row here
-            editingRow.ModifiedOn = DateTime.Now;
-            editingRow.Status = 1;
-            //
-            EditContext = new FormEditContext(editingRow, 1);
-        }
-        else
-        {
-            //Update row
-            editingRow.UpdMode = 2;
-            EditContext = new FormEditContext(editingRow, 2);
+            DetailData.Remove(row);
+            grid.Refresh();
         }
     }
-    // Color of edit data
-    void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<BranchMasterModel> eventArgs)
-    {
-        
-        if (eventArgs.DataItem.UpdMode == 1)
-            eventArgs.Style += MyColor.NewRowColor;
-        else if (eventArgs.DataItem.UpdMode == 2)
-            eventArgs.Style += MyColor.EditRowColor;
-        else if (eventArgs.DataItem.UpdMode == 3)
-            eventArgs.Style += MyColor.DeleteRowColor;
-
-        //Disable user
-        if (eventArgs.DataItem.Status == 0) eventArgs.Style += MyColor.DisabledRowColor;
-    }
-    #endregion
-
-    #region Screen items
-
 
     #endregion
-    //
+
+
 }

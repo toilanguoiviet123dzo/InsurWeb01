@@ -1,0 +1,78 @@
+﻿
+<EditForm Model="@Model" OnValidSubmit="OnSubmit" style="@($"max-height: {MaxHeight}; overflow-y: scroll")">
+    <DataAnnotationsValidator />
+    <MudCard>
+        <MudCardHeader>
+            <CardHeaderContent>
+                <MudText Typo="Typo.h6">Nhập báo giá</MudText>
+            </CardHeaderContent>
+            <CardHeaderActions>
+                <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Error" OnClick="@(() => OnCancel())" />
+            </CardHeaderActions>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudTextField Label="No." @bind-Value="Model.LineNo" For="@(() => Model.LineNo)" />
+            <MudTextField Label="Mã hạng mục" @bind-Value="Model.ItemCode" />
+            <MudTextField Label="Tên hạng mục" @bind-Value="Model.ItemName" For="@(() => Model.ItemName)" />
+            <MudTextField Label="Thay thế" @bind-Value="Model.IsReplace" />
+            <MudNumericField Label="Số lượng" Value="Model.Quantity" ValueChanged="@((value) => Quantity_Changed(value))" For="@(() => Model.Quantity)" HideSpinButtons="true" Format="N0" T="double" />
+            <MudNumericField Label="Đơn giá" Value="Model.UnitPrice" ValueChanged="@((value) => UnitPrice_Changed(value))" For="@(() => Model.UnitPrice)" HideSpinButtons="true" Format="N0" T="double" />
+            <MudNumericField Label="Thành tiền" @bind-Value="Model.Amount" ReadOnly="true" Format="N0" T="double" />
+            <MudNumericField Label="Duyệt" @bind-Value="Model.ApproveAmount" ReadOnly="@(!IsApprover)" For="@(() => Model.ApproveAmount)" Format="N0" T="double" />
+            <MudTextField Label="Ghi chú" @bind-Value="Model.Notes" />
+        </MudCardContent>
+        <MudCardActions Class="d-flex justify-center gap-4">
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Default"
+                       IconClass="@Icons.Material.Filled.Cancel"
+                       OnClick="OnCancel">Cancel</MudButton>
+            <MudButton ButtonType="ButtonType.Submit"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       IconClass="@Icons.Material.Filled.Save">Save</MudButton>
+        </MudCardActions>
+    </MudCard>
+</EditForm>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public EstimationModel Model { get; set; }
+    [Parameter] public bool IsApprover { get; set; } = false;
+    //Cancel
+    private void OnCancel()
+    {
+        MudDialog.Cancel();
+    }
+    //Submit
+    private void OnSubmit()
+    {
+        MudDialog.Close(DialogResult.Ok(Model));
+    }
+
+    //Ref
+    string MaxHeight = "90%";
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        //Height
+        if (BrowserInfo.IsMobile) MaxHeight = "100%";
+    }
+
+    void UnitPrice_Changed(double newValue)
+    {
+        Model.UnitPrice = newValue;
+        //
+        Model.Amount = Model.Quantity * Model.UnitPrice;
+        //
+        this.StateHasChanged();
+    }
+    void Quantity_Changed(double newValue)
+    {
+        Model.Quantity = newValue;
+        //
+        Model.Amount = Model.Quantity * Model.UnitPrice;
+        //
+        this.StateHasChanged();
+    }
+}

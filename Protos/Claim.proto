@@ -132,7 +132,7 @@ message grpcBranchMasterModel {
     string Address = 6;
     string Notes = 7;
     string PicName = 8;
-    int32 Status = 9;
+    bool Status = 9;
     int32 DspOrder = 10;
     google.protobuf.Timestamp ModifiedOn = 11;
     int32 UpdMode = 12;
@@ -341,7 +341,8 @@ message grpcEstimationModel {
     double UnitPrice = 7;
     double Amount = 8;
     double ApproveAmount = 9;
-    string Notes = 10;
+    string RecNo = 10;
+    string Notes = 11;
 }
 message grpcUpdateHistoryModel {
     google.protobuf.Timestamp ChangedDate = 1;

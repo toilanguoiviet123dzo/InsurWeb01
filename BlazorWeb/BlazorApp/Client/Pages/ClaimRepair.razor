@@ -1,20 +1,18 @@
 ﻿@page "/ClaimRepair"
 @using Admin.Services
 @using Claim.Services
-@using Resource.Services
 @using System.Collections.ObjectModel;
 @using System.IO;
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
 @inject grpcClaimService.grpcClaimServiceClient ClaimServiceClient;
 @inject MasterService masterService;
+@inject IDialogService DialogService
 @inject IJSRuntime JsRuntime;
 @inject ISnackbar Snackbar
-@using System.Collections.Concurrent
-@using System.Threading
 
-<!--Filter-->
-<MyCard Title="Bộ lọc dữ liệu">
-    <CardBody>
+<!--Header-->
+<MyPanels>
+    <MyPanel Title="Bộ lọc">
         <div class="container-fluid">
             <!--Row 1-------------------------------------------------->
             <div class="row align-items-end">
@@ -82,87 +80,48 @@
             </div>
 
         </div><!--End container-->
-    </CardBody>
-</MyCard>
+    </MyPanel>
+</MyPanels>
 
 <!--Grid-->
-<div style="width:100%">
-    <DxDataGrid @ref="@grid"
-                Data="@DetailData"
-                ColumnResizeMode="DataGridColumnResizeMode.Component"
-                SelectionMode="DataGridSelectionMode.SingleSelectedDataRow"
-                PageSize="@PageRowCount"
-                HorizontalScrollBarMode="ScrollBarMode.Auto"
-                HtmlRowDecoration="@OnHtmlRowDecoration"
-                HtmlDataCellDecoration="@OnHtmlDataCellDecoration">
-        <Columns>
-            <!--Command columns-->
-            <DxDataGridCommandColumn Width="3rem" VisibleIndex="0">
-                <HeaderCellTemplate>
-                </HeaderCellTemplate>
-                <CellTemplate>
-                    <div style="display:flex;justify-content:center">
-                        @if (((ClaimRequestListModel)context).ReturnStatus1)
-                        {
-                            <!--View-->
-                            <div class="text-center" style="width:3rem">
-                                <a class="fas fa-eye fa-2x" @onclick="@(() => OnRowEditStarting(context as ClaimRequestListModel))"></a>
-                            </div>
-                        }
-                        else
-                        {
-                            <!--Edit-->
-                            <div class="text-center" style="width:2.5rem">
-                                <a class="fa fa-pencil fa-2x" @onclick="@(() => OnRowEditStarting(context as ClaimRequestListModel))"></a>
-                            </div>
-                        }
-                    </div>
-                </CellTemplate>
-            </DxDataGridCommandColumn>
-            <!--columns-->
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.DeviceModel)"
-                              Caption="Model thiết bị"
-                              Width="8rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.CusFullname)"
-                              Caption="Tên khách hàng"
-                              Width="10rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.CusPhone)"
-                              Caption="Điện thoại"
-                              Width="6rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.StatusName)"
-                              Caption="Trạng thái"
-                              Width="7rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.ClaimNo)"
-                              Caption="Số tiếp nhận"
-                              SortOrder="DataGridColumnSortOrder.Descending"
-                              Width="6rem" />
-            <DxDataGridDateEditColumn Field="@nameof(ClaimRequestListModel.EstReqDate)"
-                                      Caption="Ngày yêu cầu"
-                                      DisplayFormat="dd/MM/yyyy HH:mm"
-                                      Width="9rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.BrancheName)"
-                              Caption="Trung tâm bồi thường"
-                              Width="7rem" />
-            <DxDataGridColumn Field="@nameof(ClaimRequestListModel.PicAccountName)"
-                              Caption="Nhân viên bồi thường"
-                              Width="7rem" />
-        </Columns>
-    </DxDataGrid>
-</div>
-<!--Confirm dialog-->
-<MessageBox Title="@Program.ProgramName" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
-
-<!--Edit compen request-->
-<MyPopup @ref="@ClaimPopup"
-         HeaderText="Báo giá & sửa chửa thiết bị"
-         Width="1200px"
-         ZIndex="1001">
-    <BodyContentTemplate>
-        <ClaimRepairEdit ClaimNo="@ClaimNo"
-                         MyForm="@ClaimPopup"
-                         OnValidSumit="@(async() => await DisplayMain())" />
-    </BodyContentTemplate>
-</MyPopup>
+<MyDataGrid @ref="@grid"
+            T="ClaimRequestListModel"
+            Title="Danh sách yêu cầu bồi thường"
+            Items="@DetailData"
+            IsAddNew="true"
+            IsDelete="true"
+            OnViewRow="@((ClaimRequestListModel row) => OnViewRow_Handle(row))">
+    <ColGroup>
+        <col style="width: 10rem;" />
+        <col style="width: 10rem;" />
+        <col style="width: 6rem;" />
+        <col style="width: 5rem;" />
+        <col style="width: 6rem;" />
+        <col style="width: 8rem;" />
+        <col style="width: 8rem;" />
+        <col style="width: 8rem;" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh>Model thiết bị</MudTh>
+        <MudTh>Tên khách hàng</MudTh>
+        <MudTh>Điện thoại</MudTh>
+        <MudTh>Trạng thái</MudTh>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortBy="new Func<ClaimRequestListModel, object>(x=>x.ClaimNo)">Số tiếp nhận</MudTableSortLabel></MudTh>
+        <MudTh>Ngày YC báo giá</MudTh>
+        <MudTh>Trung tâm bồi thường</MudTh>
+        <MudTh>Nhân viên bồi thường</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>@context.DeviceModel</MudTd>
+        <MudTd>@context.CusFullname</MudTd>
+        <MudTd Style="text-align:center">@context.CusPhone</MudTd>
+        <MudTd Style="text-align:center; color:green; font-weight:bold">@context.StatusName</MudTd>
+        <MudTd Style="text-align:center; color:blue; font-weight:bold">@context.ClaimNo</MudTd>
+        <MudTd Style="text-align:center; color:green;">@context.EstReqDate.ToString("dd/MM/yyyy HH:mm")</MudTd>
+        <MudTd>@context.BrancheName</MudTd>
+        <MudTd>@context.PicAccountName</MudTd>
+    </RowTemplate>
+</MyDataGrid>
 
 
 @code {
@@ -170,19 +129,12 @@
     [CascadingParameter]
     protected ProgramInfo Program { get; set; }
 
-    // Detail data
-    private int PageRowCount = MyConstant.Grid_PageRowCount;
-    DxDataGrid<ClaimRequestListModel> grid;
+    MyDataGrid<ClaimRequestListModel> grid;
     readonly ObservableCollection<ClaimRequestListModel> DetailData = new ObservableCollection<ClaimRequestListModel>();
 
     // Master
     private List<CodeNameModel> StatusList = MyClaimStatus.Get_RepairStatusList();
     private List<CodeNameModel> TimeFlagList = MyDateTimeSelector.Get_TimeRangeList();
-    // Popup
-    private MyPopup ClaimPopup;
-    private string ConfirmMessage = "";
-    private int ConfirmAction = 0;
-    private bool ConfirmVisible = false;
 
     //Filter
     private CodeNameModel Filter_Status { get; set; } = new CodeNameModel { CodeInt = 8, Name = "Sửa chữa" };
@@ -241,6 +193,15 @@
                         ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
                         //Status name
                         dataRow.StatusName = MyClaimStatus.Get_RepairStatusName(dataRow);
+                        //Row mode
+                        dataRow.RowMode_View = false;
+                        dataRow.RowMode_Edit = true;
+                        dataRow.RowMode_Delete = false;
+                        if (dataRow.ReturnStatus1)
+                        {
+                            dataRow.RowMode_View = true;
+                            dataRow.RowMode_Edit = false;
+                        }
                         //
                         DetailData.Add(dataRow);
                     }
@@ -250,7 +211,7 @@
             {
                 Snackbar.Add(MyMessage.Error_NoData, Severity.Info);
             }
-            await grid.Refresh();
+            grid.Refresh();
         }
         catch
         {
@@ -260,77 +221,21 @@
 
     #endregion
 
-    #region Save
-
-    void ConfirmHandler()
-    {
-        //Delete row
-        if (ConfirmAction == MyConstant.ConfirmAction_DeleteRow)
-        {
-            //DeleteRow();
-        }
-        //Close confirm delete popup
-        ConfirmVisible = false;
-        StateHasChanged();
-    }
-    //
-    #endregion
-
     #region Grid main
-    void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<ClaimRequestListModel> eventArgs)
+    //
+    void OnViewRow_Handle(ClaimRequestListModel row)
     {
-        
-        //CloseStatus
-        if (eventArgs.DataItem.CloseStatus) eventArgs.Style += MyColor.DoneRowColor;
-    }
-    void OnHtmlDataCellDecoration(DataGridHtmlDataCellDecorationEventArgs<ClaimRequestListModel> eventArgs)
-    {
-        eventArgs.CssClass += " border-0";
-        //eventArgs.Style += " ;font-weight:bold;text-align: right";
-        //ClaimNo
-        if (eventArgs.FieldName == nameof(ClaimRequestListModel.ClaimNo))
-        {
-            eventArgs.Style += " ;font-weight:bold; color: blue";
-        }
-        //EstReqDate
-        if (eventArgs.FieldName == nameof(ClaimRequestListModel.EstReqDate))
-        {
-            eventArgs.Style += " ;color: green";
-        }
-        //StatusName
-        if (eventArgs.FieldName == nameof(ClaimRequestListModel.StatusName))
-        {
-            eventArgs.Style += " ;color: blue";
-        }
+        var parameters = new DialogParameters { ["ClaimNo"] = row.ClaimNo };
+        ShowDetailForm(parameters);
     }
 
-    //Cancel edit
-    async Task OnCancelButtonClick()
+    async void ShowDetailForm(DialogParameters parameters)
     {
-        await grid.CancelRowEdit();
-    }
-
-    //Get data for edit/insert
-    void OnRowEditStarting(ClaimRequestListModel editingRow)
-    {
-        if (editingRow == null)
+        var result = await DialogService.Show<ClaimRepairEdit>("", parameters, MyOptions.GetMyFormOptions(MaxWidth.Large)).Result;
+        if (!result.Cancelled)
         {
-            //Addnew
-            ClaimNo = "";
+            await DisplayMain();
         }
-        else
-        {
-            //ClaimNo
-            ClaimNo = editingRow.ClaimNo;
-        }
-        ClaimPopup.Show();
-    }
-    //Update row
-    async Task UpdateRow()
-    {
-        //Close popup & refresh data
-        await grid.CancelRowEdit();
-        await grid.Refresh();
     }
 
     #endregion

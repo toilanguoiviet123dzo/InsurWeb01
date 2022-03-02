@@ -1,7 +1,6 @@
 ﻿@page "/ClaimRequest"
 @using Admin.Services
 @using Claim.Services
-@using Resource.Services
 @using System.Collections.ObjectModel;
 @using System.IO;
 @inject grpcAdminService.grpcAdminServiceClient adminServiceClient;
@@ -10,8 +9,6 @@
 @inject IDialogService DialogService
 @inject IJSRuntime JsRuntime;
 @inject ISnackbar Snackbar
-@using System.Collections.Concurrent
-@using System.Threading
 
 <!--Header-->
 <MyPanels>
@@ -126,9 +123,28 @@
 <!--Grid-->
 <MyDataGrid @ref="@grid"
             T="ClaimRequestListModel"
-            Items="@DetailData">
+            Title="Danh sách yêu cầu bồi thường"
+            Items="@DetailData"
+            IsAddNew="true"
+            IsDelete="true"
+            OnAddRow="@(() => OnAddRow_Handle())"
+            OnViewRow="@((ClaimRequestListModel row) => OnViewRow_Handle(row))"
+            OnDeleteRow="@((ClaimRequestListModel row) => OnDeleteRow_Handle(row))">
+    <ColGroup>
+        <col style="width: 5rem;" />
+        <col style="width: 8rem;" />
+        <col style="width: 5rem;" />
+        <col style="width: 10rem;" />
+        <col style="width: 6rem;" />
+        <col style="width: 8rem;" />
+        <col style="width: 10rem;" />
+        <col style="width: 10rem;" />
+        <col />
+        <col style="width: 8rem;" />
+        <col style="width: 8rem;" />
+    </ColGroup>
     <HeaderContent>
-        <MudTh>Số tiếp nhận</MudTh>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortBy="new Func<ClaimRequestListModel, object>(x=>x.ClaimNo)">Số tiếp nhận</MudTableSortLabel></MudTh>
         <MudTh>Ngày tiếp nhận</MudTh>
         <MudTh>Trạng thái</MudTh>
         <MudTh>Tên khách hàng</MudTh>
@@ -141,12 +157,12 @@
         <MudTh>Chi nhánh bồi thường</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd>@context.ClaimNo</MudTd>
-        <MudTd>@context.ClaimDate.ToString("dd/MM/yyyy HH:mm")</MudTd>
-        <MudTd>@context.StatusName</MudTd>
+        <MudTd Style="text-align:center; color:blue; font-weight:bold">@context.ClaimNo</MudTd>
+        <MudTd Style="text-align:center">@context.ClaimDate.ToString("dd/MM/yyyy HH:mm")</MudTd>
+        <MudTd Style="text-align:center; color:green; font-weight:bold">@context.StatusName</MudTd>
         <MudTd>@context.CusFullname</MudTd>
-        <MudTd>@context.CusPhone</MudTd>
-        <MudTd>@context.IncidentDate</MudTd>
+        <MudTd Style="text-align:center">@context.CusPhone</MudTd>
+        <MudTd Style="text-align:center; color: maroon">@context.IncidentDate.ToString("dd/MM/yyyy HH:mm")</MudTd>
         <MudTd>@context.DeviceModel</MudTd>
         <MudTd>@context.DeviceIMEI</MudTd>
         <MudTd>@context.PickupAddress</MudTd>
@@ -161,8 +177,6 @@
     [CascadingParameter]
     protected ProgramInfo Program { get; set; }
 
-    // Detail data
-    private int PageRowCount = MyConstant.Grid_PageRowCount;
     MyDataGrid<ClaimRequestListModel> grid;
     readonly ObservableCollection<ClaimRequestListModel> DetailData = new ObservableCollection<ClaimRequestListModel>();
 
@@ -171,11 +185,6 @@
     private List<OptionListModel> InsureList = new List<OptionListModel>();
     private List<CodeNameModel> StatusList = MyClaimStatus.Get_StatusList();
     private List<CodeNameModel> TimeFlagList = MyDateTimeSelector.Get_TimeRangeList();
-    // Popup
-    private MyPopup ClaimPopup;
-    private string ConfirmMessage = "";
-    private int ConfirmAction = 0;
-    private bool ConfirmVisible = false;
 
     //Filter
     private string Filter_CusPhone = "";
@@ -187,7 +196,7 @@
     private DateTime Filter_EndDate { get; set; } = DateTime.Today.MaxDate().ToLocalTime();
     private BranchMasterModel Filter_Branch = null;
     private OptionListModel Filter_Insure = null;
-    //
+    //Status
     private string ClaimNo = "";
     private bool StatusCheck = false;
     private string CheckName = "Chưa";
@@ -257,6 +266,16 @@
                         ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
                         //Status name
                         dataRow.StatusName = MyClaimStatus.Get_StatusName(dataRow);
+                        //Row mode
+                        dataRow.RowMode_View = false;
+                        dataRow.RowMode_Edit = true;
+                        dataRow.RowMode_Delete = true;
+                        if (dataRow.ProcessStatus)
+                        {
+                            dataRow.RowMode_View = true;
+                            dataRow.RowMode_Edit = false;
+                            dataRow.RowMode_Delete = false;
+                        }
                         //
                         DetailData.Add(dataRow);
                     }
@@ -278,80 +297,9 @@
 
     #endregion
 
-    #region Save
-
-    void ConfirmHandler()
-    {
-        //Delete row
-        if (ConfirmAction == MyConstant.ConfirmAction_DeleteRow)
-        {
-            DeleteRow();
-        }
-        //Close confirm delete popup
-        ConfirmVisible = false;
-        StateHasChanged();
-    }
-    //
-    #endregion
-
     #region Grid main
-    void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<ClaimRequestListModel> eventArgs)
-    {
-        //AcceptStatus
-        if (eventArgs.DataItem.RepairStatus) eventArgs.Style += MyColor.DoneRowColor;
-    }
-    void OnHtmlDataCellDecoration(DataGridHtmlDataCellDecorationEventArgs<ClaimRequestListModel> eventArgs)
-    {
-        eventArgs.CssClass += " border-0";
-        //eventArgs.Style += " ;font-weight:bold;text-align: right";
-        //ClaimNo
-        if (eventArgs.FieldName == nameof(ClaimRequestListModel.ClaimNo))
-        {
-            eventArgs.Style += " ;font-weight:bold; color: blue";
-        }
-        //ClaimDate
-        if (eventArgs.FieldName == nameof(ClaimRequestListModel.ClaimDate))
-        {
-            eventArgs.Style += " ;color: green";
-        }
-        //StatusName
-        if (eventArgs.FieldName == nameof(ClaimRequestListModel.StatusName))
-        {
-            eventArgs.Style += " ;color: blue";
-        }
-        //DeviceIMEI
-        if (eventArgs.FieldName == nameof(ClaimRequestListModel.DeviceIMEI))
-        {
-            eventArgs.Style += " ;font-weight:bold";
-        }
-    }
-
-    //Cancel edit
-    async Task OnCancelButtonClick()
-    {
-        //await grid.CancelRowEdit();
-    }
-
-    //Confirm delete
-    ClaimRequestListModel DeletedRow = null;
-    void OnRowRemoving(ClaimRequestListModel dataRow)
-    {
-        //Validate skip if approved
-        if (dataRow.AcceptStatus)
-        {
-            Snackbar.Add(MyMessage.Error_DeleteReadOnlyData, Severity.Error);
-            return;
-        }
-        //
-        DeletedRow = dataRow;
-        //Show popup confirm
-        ConfirmMessage = MyMessage.Confirm_DeleteRow;
-        ConfirmAction = MyConstant.ConfirmAction_DeleteRow;
-        ConfirmVisible = true;
-        StateHasChanged();
-    }
     //
-    async void DeleteRow()
+    async void OnDeleteRow_Handle(ClaimRequestListModel row)
     {
         try
         {
@@ -365,13 +313,13 @@
                     ApiKey = WebUserCredential.ApiKey
                 };
             request.ClaimRequest = new grpcClaimRequestModel();
-            request.ClaimRequest.ClaimNo = DeletedRow.ClaimNo;
+            request.ClaimRequest.ClaimNo = row.ClaimNo;
             request.ClaimRequest.UpdMode = 3;
             //
             var response = await ClaimServiceClient.SaveClaimRequestAsync(request);
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
-                DetailData.Remove(DeletedRow);
+                DetailData.Remove(row);
                 //
                 Snackbar.Add(MyMessage.Info_DeleteSucess, Severity.Error);
                 //Refresh layout
@@ -384,22 +332,21 @@
         }
     }
 
-    //Get data for edit/insert
-    async void OnRowEditStarting(ClaimRequestListModel editingRow)
+    void OnAddRow_Handle()
     {
-        if (editingRow == null)
-        {
-            //Addnew
-            ClaimNo = "";
-        }
-        else
-        {
-            //ClaimNo
-            ClaimNo = editingRow.ClaimNo;
-        }
-        //Show edit form
-        var parameters = new DialogParameters { ["ClaimNo"] = ClaimNo };
-        var result = await DialogService.Show<ClaimRequestEdit>("", parameters, MyOptions.GetPopupEditFormOptions(MaxWidth.Large)).Result;
+        var parameters = new DialogParameters { ["ClaimNo"] = "" };
+        ShowDetailForm(parameters);
+    }
+
+    void OnViewRow_Handle(ClaimRequestListModel row)
+    {
+        var parameters = new DialogParameters { ["ClaimNo"] = row.ClaimNo };
+        ShowDetailForm(parameters);
+    }
+
+    async void ShowDetailForm(DialogParameters parameters)
+    {
+        var result = await DialogService.Show<ClaimRequestEdit>("", parameters, MyOptions.GetMyFormOptions(MaxWidth.Large)).Result;
         if (!result.Cancelled)
         {
             await DisplayMain();

@@ -8,7 +8,7 @@ namespace BlazorApp.Client.Common
 {
     public static class MyOptions
     {
-        public static DialogOptions GetPopupEditFormOptions(MaxWidth size = MaxWidth.Large)
+        public static DialogOptions GetMyFormOptions(MaxWidth size = MaxWidth.Large)
         {
             var options = new DialogOptions()
             {
@@ -17,6 +17,20 @@ namespace BlazorApp.Client.Common
                 CloseOnEscapeKey = true,
                 DisableBackdropClick = true,
                 CloseButton = true,
+                FullWidth = true
+            };
+            return options;
+        }
+
+        public static DialogOptions GetEditFormOptions(MaxWidth size = MaxWidth.Small)
+        {
+            var options = new DialogOptions()
+            {
+                MaxWidth = size,
+                Position = DialogPosition.Center,
+                CloseOnEscapeKey = true,
+                DisableBackdropClick = true,
+                CloseButton = false,
                 FullWidth = true
             };
             return options;

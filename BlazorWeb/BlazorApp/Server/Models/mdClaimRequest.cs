@@ -139,6 +139,7 @@ namespace BlazorApp.Server.Models
         public double UnitPrice { get; set; }
         public double Amount { get; set; }
         public double ApproveAmount { get; set; }
+        public string RecNo { get; set; } = "";
         public string Notes { get; set; } = "";
     }
     public class UpdateHistoryModel

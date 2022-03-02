@@ -23,6 +23,8 @@ namespace Cores.Helpers
 
         public static TResult GetPropertiesData<TResult>(dynamic fromObject, string propertyName)
         {
+            if (fromObject == null) return default(TResult);
+
             //initialising s with the same values as 
             foreach (PropertyInfo property in fromObject.GetType().GetProperties())
             {

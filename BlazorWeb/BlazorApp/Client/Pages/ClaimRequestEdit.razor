@@ -9,7 +9,7 @@
 @inject ISnackbar Snackbar
 
 <MyForm Title="Yêu cầu bồi thường"
-        UpdMode="@Model.UpdMode"
+        ReadOnly="@ReadOnly"
         OnCancelClick="CloseMain"
         OnSubmitClick="SaveMain">
     <MyPanels>
@@ -276,6 +276,7 @@
     //Parameters and events
     [Parameter] public string ClaimNo { get; set; } = "";
     //
+    bool ReadOnly;
     ClaimRequestModel Model = new ClaimRequestModel();
     //Master
     List<OptionListModel> ProductList = new List<OptionListModel>();
@@ -438,13 +439,13 @@
                     }
                 }
 
-
                 //CSS
                 PriorityCss = "";
                 if (Model.Priority == 2) PriorityCss = "bg-warning";
                 if (Model.Priority == 3) PriorityCss = "bg-danger";
-                //
-                Model.UpdMode = 2;
+
+                //ReadOnly
+                if (Model.ProcessStatus) ReadOnly = true;
             }
             else
             {
@@ -570,7 +571,7 @@
                 Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
             }
 
-            //Close
+            //Close & return
             MudDialog.Close(DialogResult.Ok(Model));
         }
         catch

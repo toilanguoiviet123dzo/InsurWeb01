@@ -17,7 +17,7 @@ namespace BlazorApp.Server.Models
         public string Address { get; set; } = "";
         public string Notes { get; set; } = "";
         public string PicName { get; set; } = "";
-        public int Status { get; set; }
+        public bool Status { get; set; }
         public int DspOrder { get; set; }
         public DateTime ModifiedOn { get; set; }
         public int UpdMode { get; set; }

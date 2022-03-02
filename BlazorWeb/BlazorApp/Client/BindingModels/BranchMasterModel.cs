@@ -15,10 +15,13 @@ namespace BlazorApp.Client.BindingModels
         public string Address { get; set; } = "";
         public string Notes { get; set; } = "";
         public string PicName { get; set; } = "";
-        public int Status { get; set; }
-        public string StatusName { get; set; } = "";
+        public bool Status { get; set; }
         public int DspOrder { get; set; }
         public DateTime ModifiedOn { get; set; }
         public int UpdMode { get; set; }
+        //Row mode
+        public bool RowMode_View { get; set; } = false;
+        public bool RowMode_Edit { get; set; } = true;
+        public bool RowMode_Delete { get; set; } = true;
     }
 }

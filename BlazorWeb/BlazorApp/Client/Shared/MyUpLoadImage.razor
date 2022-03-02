@@ -32,8 +32,6 @@
 
 @code {
     [Parameter]
-    public MyPopup MyForm { get; set; }
-    [Parameter]
     public UpLoadFileModel Model { get; set; } = new UpLoadFileModel();
     [Parameter]
     public EventCallback<UpLoadFileModel> OnSubmit { get; set; }
@@ -143,7 +141,7 @@
 
     void CloseMain()
     {
-        MyForm.Close();
+        
     }
 
 }

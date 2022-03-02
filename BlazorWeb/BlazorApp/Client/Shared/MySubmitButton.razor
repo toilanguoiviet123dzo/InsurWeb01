@@ -8,6 +8,11 @@
     @Literal
 </MudChip>
 
+<MudButton ButtonType="ButtonType.Submit" 
+           Variant="Variant.Filled" 
+           Color="Color.Primary" 
+           IconClass="@Icons.Material.Filled.Save">Register</MudButton>
+
 @code {
     [Parameter] public string Literal { get; set; } = "Click me";
     [Parameter] public string Icon { get; set; } = "";

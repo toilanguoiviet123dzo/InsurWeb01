@@ -7,662 +7,524 @@
 @inject VoucherService voucherService;
 @inject IJSRuntime JsRuntime;
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
-<!--Thông tin chung-->
-<MyCard Title="Thông tin chung">
-    <CardBody>
-        <div class="container-fluid">
-            <!--Row 1-------------------------------------------------->
-            <div class="row">
-                <!--Số tiếp nhận-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.ClaimNo"
-                                ReadOnly="true"
-                                Literal="Số tiếp nhận"
-                                Width="8rem"
-                                Class="text-blue font-weight-bold" />
-                </div>
-
-                <!--Ngày tiếp nhận-->
-                <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.ClaimDate"
-                                    Literal="Ngày tiếp nhận"
+<MyForm Title="Yêu cầu bồi thường"
+        ReadOnly="@ReadOnly"
+        OnCancelClick="CloseMain"
+        OnSubmitClick="SaveMain">
+    <MyPanels>
+        <!--Thông tin chung-->
+        <MyPanel Title="Thông tin chung">
+            <div class="container-fluid">
+                <!--Row 1-------------------------------------------------->
+                <div class="row">
+                    <!--Số tiếp nhận-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit @bind-Text="Model.ClaimNo"
                                     ReadOnly="true"
-                                    Class="text-blue" />
-                </div>
-                <!--Người tiếp nhận-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.ClaimAccountName"
-                                ReadOnly="true"
-                                Literal="Người tiếp nhận" />
-                </div>
-            </div>
+                                    Literal="Số tiếp nhận"
+                                    Width="8rem"
+                                    Class="text-blue font-weight-bold" />
+                    </div>
 
-            <!--Row 2-------------------------------------------------->
-            <div class="row">
-                <!--Phone-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit Text="@Model.CusPhone"
-                                Literal="Điện thoại liên hệ"
-                                Class="text-blue font-weight-bold"
-                                ReadOnly="true" />
+                    <!--Ngày tiếp nhận-->
+                    <div class="col-12 col-lg-3">
+                        <MyDateTimeEdit @bind-Date="Model.ClaimDate"
+                                        Literal="Ngày tiếp nhận"
+                                        ReadOnly="true"
+                                        Class="text-blue" />
+                    </div>
+                    <!--Người tiếp nhận-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit @bind-Text="Model.ClaimAccountName"
+                                    ReadOnly="true"
+                                    Literal="Người tiếp nhận" />
+                    </div>
                 </div>
-                <!--Tên khách hàng-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.CusFullname"
-                                Literal="Tên khách hàng"
-                                ReadOnly="true"
-                                Class="cusfullname-focus" />
-                </div>
-                <!--Email-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.CusEmail"
-                                ReadOnly="true"
-                                Literal="Email" />
-                </div>
-                <!--Số CMND/CCCD-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.CusCardID"
-                                ReadOnly="true"
-                                Literal="Số CMND/CCCD" />
-                </div>
-            </div>
 
-            <!--Row 3-------------------------------------------------->
-            <div class="row">
-                <!--Loại sản phẩm-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.TPAProductName"
-                                Literal="Loại sản phẩm"
-                                ReadOnly="true" />
+                <!--Row 2-------------------------------------------------->
+                <div class="row">
+                    <!--Phone-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit Text="@Model.CusPhone"
+                                    Literal="Điện thoại liên hệ"
+                                    Class="text-blue font-weight-bold"
+                                    ReadOnly="true" />
+                    </div>
+                    <!--Tên khách hàng-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit @bind-Text="Model.CusFullname"
+                                    Literal="Tên khách hàng"
+                                    ReadOnly="true"
+                                    Class="cusfullname-focus" />
+                    </div>
+                    <!--Email-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit @bind-Text="Model.CusEmail"
+                                    ReadOnly="true"
+                                    Literal="Email" />
+                    </div>
+                    <!--Số CMND/CCCD-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit @bind-Text="Model.CusCardID"
+                                    ReadOnly="true"
+                                    Literal="Số CMND/CCCD" />
+                    </div>
                 </div>
-                <!--Số IMEI thiết bị-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.DeviceIMEI"
-                                Literal="Số IMEI thiết bị"
-                                ReadOnly="true"
-                                Class="text-purple font-weight-bold" />
-                </div>
-                <!--Model-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.DeviceModel"
-                                ReadOnly="true"
-                                Literal="Model" />
-                </div>
-                <!--Mức độ ưu tiên-->
-                <div class="col-12 col-lg-3">
-                    <MyComboBox @ref="RefPriority"
-                                @bind-Value="SelectedPriority"
-                                Data="PriorityList"
-                                ReadOnly="true"
-                                TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                SelectedItemChanged="@((OptionListModel selectedRow) => {
+
+                <!--Row 3-------------------------------------------------->
+                <div class="row">
+                    <!--Loại sản phẩm-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit @bind-Text="Model.TPAProductName"
+                                    Literal="Loại sản phẩm"
+                                    ReadOnly="true" />
+                    </div>
+                    <!--Số IMEI thiết bị-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit @bind-Text="Model.DeviceIMEI"
+                                    Literal="Số IMEI thiết bị"
+                                    ReadOnly="true"
+                                    Class="text-purple font-weight-bold" />
+                    </div>
+                    <!--Model-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit @bind-Text="Model.DeviceModel"
+                                    ReadOnly="true"
+                                    Literal="Model" />
+                    </div>
+                    <!--Mức độ ưu tiên-->
+                    <div class="col-12 col-lg-3">
+                        <MyComboBox @ref="RefPriority"
+                                    @bind-Value="SelectedPriority"
+                                    Data="PriorityList"
+                                    ReadOnly="true"
+                                    TextFieldName="@(nameof(OptionListModel.ItemName))"
+                                    SelectedItemChanged="@((OptionListModel selectedRow) => {
                                                    Model.Priority = selectedRow.IntCode;
                                                    PriorityCss = "";
                                                    if (Model.Priority == 2) PriorityCss = "bg-warning";
                                                    if (Model.Priority == 3) PriorityCss = "bg-danger";
                                                    this.StateHasChanged();
                                              })"
-                                Class="@PriorityCss"
-                                Literal="Mức độ ưu tiên" />
+                                    Class="@PriorityCss"
+                                    Literal="Mức độ ưu tiên" />
+                    </div>
                 </div>
-            </div>
 
-            <!--Row 4-------------------------------------------------->
-            <div class="row">
-                <!--Địa chỉ nhận thiết bị-->
-                <div class="col-12 col-lg-6">
-                    <MyTextEdit @bind-Text="Model.PickupAddress"
-                                Literal="Địa chỉ nhận thiết bị"
-                                ReadOnly="true"
-                                Class="pickupaddress-focus" />
-                </div>
-                <!--Địa chỉ trả thiết bị-->
-                <div class="col-12 col-lg-6">
-                    <MyTextEdit @bind-Text="Model.ReturnAddress"
-                                ReadOnly="true"
-                                Literal="Địa chỉ trả thiết bị" />
-                </div>
-            </div>
-        </div>
-    </CardBody>
-</MyCard>
-
-<!--Thông tin hư hỏng-->
-<MyCard @bind-IsCollapse="@DamageInfoCollapse" Title="Thông tin hư hỏng">
-    <CardBody>
-        <div class="container-fluid">
-            <!--Row 1-------------------------------------------------->
-            <div class="row">
-                <!--Ngày KH thông báo-->
-                <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.NotificationDate"
-                                    Literal="Ngày KH thông báo"
+                <!--Row 4-------------------------------------------------->
+                <div class="row">
+                    <!--Địa chỉ nhận thiết bị-->
+                    <div class="col-12 col-lg-6">
+                        <MyTextEdit @bind-Text="Model.PickupAddress"
+                                    Literal="Địa chỉ nhận thiết bị"
                                     ReadOnly="true"
-                                    Class="text-green" />
-                </div>
-                <!--Ngày sự cố-->
-                <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.IncidentDate"
-                                    Literal="Ngày sự cố"
+                                    Class="pickupaddress-focus" />
+                    </div>
+                    <!--Địa chỉ trả thiết bị-->
+                    <div class="col-12 col-lg-6">
+                        <MyTextEdit @bind-Text="Model.ReturnAddress"
                                     ReadOnly="true"
-                                    Class="text-maroon" />
+                                    Literal="Địa chỉ trả thiết bị" />
+                    </div>
                 </div>
             </div>
-
-            <!--Row 2-------------------------------------------------->
-            <div class="row">
-                <!--Nguyên nhân hư hỏng-->
-                <div class="col-12 col-lg-7">
-                    <MyMemoEdit @bind-Text="Model.DamageCause"
-                                Rows="5"
-                                ReadOnly="true"
-                                Literal="Nguyên nhân hư hỏng" />
+        </MyPanel>
+        <!--Thông tin hư hỏng-->
+        <MyPanel Title="Thông tin hư hỏng">
+            <div class="container-fluid">
+                <!--Row 1-------------------------------------------------->
+                <div class="row">
+                    <!--Ngày KH thông báo-->
+                    <div class="col-12 col-lg-3">
+                        <MyDateTimeEdit @bind-Date="Model.NotificationDate"
+                                        Literal="Ngày KH thông báo"
+                                        ReadOnly="true"
+                                        Class="text-green" />
+                    </div>
+                    <!--Ngày sự cố-->
+                    <div class="col-12 col-lg-3">
+                        <MyDateTimeEdit @bind-Date="Model.IncidentDate"
+                                        Literal="Ngày sự cố"
+                                        ReadOnly="true"
+                                        Class="text-maroon" />
+                    </div>
                 </div>
-                <!--Ghi chú-->
-                <div class="col-12 col-lg-5">
-                    <MyMemoEdit @bind-Text="Model.AcceptNotes"
-                                Rows="5"
-                                ReadOnly="true"
-                                Literal="Ghi chú" />
-                </div>
-            </div>
-        </div><!--End container-->
-    </CardBody>
-</MyCard>
 
-<!--Thông tin kiểm tra-->
-<MyCard @bind-IsCollapse="@CheckInfoCollapse" Title="Thông tin kiểm tra">
-    <CardBody>
-        <div class="container-fluid">
-            <!--Row 1-------------------------------------------------->
-            <div class="row">
-                <!--Người kiểm tra-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.PicAccountName"
-                                ReadOnly="true"
-                                Literal="Người phụ trách" />
-                </div>
-            </div>
-
-            <!--Row 2-------------------------------------------------->
-            <div class="row">
-                <!--Ghi chú kiểm tra-->
-                <div class="col-12">
-                    <MyMemoEdit @bind-Text="Model.CheckNotes"
-                                Rows="5"
-                                Literal="Ghi chú kiểm tra" />
-                </div>
-            </div>
-        </div><!--End container-->
-    </CardBody>
-</MyCard>
-
-<!--Thông báo giá & sửa chữa-->
-<MyCard @bind-IsCollapse="@RepairInfoCollapse" Title="Thông báo giá & sửa chữa">
-    <CardBody>
-        <div class="container-fluid">
-            <!--Row 1-------------------------------------------------->
-            <div class="row">
-                <!--Ngày yêu cầu báo giá-->
-                <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.EstReqDate"
-                                    Literal="Ngày yêu cầu báo giá"
+                <!--Row 2-------------------------------------------------->
+                <div class="row">
+                    <!--Nguyên nhân hư hỏng-->
+                    <div class="col-12 col-lg-7">
+                        <MyMemoEdit @bind-Text="Model.DamageCause"
+                                    Rows="5"
                                     ReadOnly="true"
-                                    Class="text-green" />
-                </div>
-                <!--Ngày báo giá xong-->
-                <div class="col-12 col-lg-3">
-                    <MyDateTimeEdit @bind-Date="Model.EstDoneDate"
-                                    Literal="Ngày báo giá xong"
+                                    Literal="Nguyên nhân hư hỏng" />
+                    </div>
+                    <!--Ghi chú-->
+                    <div class="col-12 col-lg-5">
+                        <MyMemoEdit @bind-Text="Model.AcceptNotes"
+                                    Rows="5"
                                     ReadOnly="true"
-                                    Class="text-blue" />
+                                    Literal="Ghi chú" />
+                    </div>
                 </div>
-            </div>
-
-            <!--Row 2-------------------------------------------------->
-            <div class="row mt-2">
-                <!--Check: yêu cầu báo giá-->
-                <div class="col-12 col-lg-3">
-                    <DxCheckBox @bind-Checked="@Model.EstimationReqStatus" Class="text-green" Enabled="false">Yêu cầu báo giá</DxCheckBox>
-                </div>
-                <!--Check: Đã báo giá-->
-                <div class="col-12 col-lg-3">
-                    <DxCheckBox @bind-Checked="@Model.EstimationStatus" Class="text-green" Enabled="@(Model.EstimationReqStatus && !Model.ApproveStatus && Model.Estimations.Count > 0)">Đã báo giá</DxCheckBox>
-                </div>
-            </div>
-
-            <!--Row 3-------------noi dung bao gia------------------------------------->
-            <div class="row mt-1">
-                <DxDataGrid @ref="@gridEst"
-                            Data="@Model.Estimations"
-                            ColumnResizeMode="DataGridColumnResizeMode.Component"
-                            PageSize="@PageRowCount"
-                            HtmlRowDecoration="@OnHtmlRowDecoration"
-                            HtmlDataCellDecoration="@OnHtmlDataCellDecoration"
-                            HorizontalScrollBarMode="ScrollBarMode.Auto"
-                            RowRemoving="@((dataRow) => OnRowRemoving(dataRow))"
-                            RowEditStart="@(dataRow => OnRowEditStarting(dataRow))"
-                            RowInsertStart="@(() => OnRowEditStarting(null))">
-                    <Columns>
-                        <DxDataGridCommandColumn Width="@EstimationCommandWidth" VisibleIndex="0">
-                            <HeaderCellTemplate>
-                                @if (!@Model.ApproveStatus)
-                                {
-                                    <div class="text-center">
-                                        <a class="fa fa-plus fa-2x" @onclick="@(() => gridEst.StartRowEdit(null))" href="javascript:void(0);"></a>
-                                    </div>
-                                }
-                            </HeaderCellTemplate>
-                            <CellTemplate>
-                                @if (!@Model.ApproveStatus)
-                                {
-                                    <div style="display:flex">
-                                        <div class="text-center" style="width:2rem">
-                                            <a class="fa fa-pencil fa-2x" @onclick="@(() => gridEst.StartRowEdit(context))" href="javascript:void(0);"></a>
-                                        </div>
-                                        <div class="text-center" style="width:2rem">
-                                            <a class="fa fa-times fa-2x" style="color:red" @onclick="@(() => OnRowRemoving(context as EstimationModel))" href="javascript:void(0);"></a>
-                                        </div>
-                                    </div>
-                                }
-                            </CellTemplate>
-                        </DxDataGridCommandColumn>
-                        <DxDataGridSpinEditColumn Field="@nameof(EstimationModel.LineNo)"
-                                                  Caption="No."
-                                                  DisplayFormat="N0"
-                                                  Width="2rem" />
-                        <DxDataGridDateEditColumn Field="@nameof(EstimationModel.IssueDate)"
-                                                  Caption="Ngày giờ"
-                                                  DisplayFormat="dd/MM/yyyy HH:mm"
-                                                  Width="8rem" />
-                        <DxDataGridColumn Field="@nameof(EstimationModel.ItemCode)"
-                                          Caption="Mã hạng mục"
-                                          Width="7rem" />
-                        <DxDataGridColumn Field="@nameof(EstimationModel.ItemName)"
-                                          Caption="Tên hạng mục"
-                                          Width="12rem" />
-                        <DxDataGridCheckBoxColumn Field="@nameof(EstimationModel.IsReplace)"
-                                                  Caption="Thay thế"
-                                                  Width="3rem" />
-                        <DxDataGridSpinEditColumn Field="@nameof(EstimationModel.Quantity)"
-                                                  Caption="Số lượng"
-                                                  DisplayFormat="N0"
-                                                  Width="5rem" />
-                        <DxDataGridSpinEditColumn Field="@nameof(EstimationModel.UnitPrice)"
-                                                  Caption="Đơn giá"
-                                                  DisplayFormat="N0"
-                                                  Width="6rem" />
-                        <DxDataGridSpinEditColumn Field="@nameof(EstimationModel.Amount)"
-                                                  Caption="Thành tiền"
-                                                  DisplayFormat="N0"
-                                                  Width="7rem" />
-                        <DxDataGridSpinEditColumn Field="@nameof(EstimationModel.ApproveAmount)"
-                                                  Caption="Duyệt"
-                                                  DisplayFormat="N0"
-                                                  Width="7rem" />
-                        <DxDataGridColumn Field="@nameof(EstimationModel.Notes)"
-                                          Caption="Ghi chú"
-                                          Width="7rem" />
-                    </Columns>
-                    <!--Total summary-->
-                    <TotalSummary>
-                        <DxDataGridSummaryItem Field=@nameof(EstimationModel.Quantity)
-                                               SummaryType=SummaryItemType.Sum
-                                               DisplayFormat="{0:N0}" />
-                        <DxDataGridSummaryItem Field=@nameof(EstimationModel.Amount)
-                                               SummaryType=SummaryItemType.Sum
-                                               DisplayFormat="{0:N0}" />
-                        <DxDataGridSummaryItem Field=@nameof(EstimationModel.ApproveAmount)
-                                               SummaryType=SummaryItemType.Sum
-                                               DisplayFormat="{0:N0}" />
-                    </TotalSummary>
-                    <EditFormTemplate>
-                        <EditForm Model="@EditContext" Context="EditFormContext" OnValidSubmit="@UpdateRow">
-                            <DataAnnotationsValidator />
-                            <DxFormLayout>
-                                <!--Item code-->
-                                <DxFormLayoutItem Caption="Mã hạng mục" ColSpanMd="12" Context="FormLayoutContext">
-                                    <Template>
-                                        <DxTextBox @bind-Text="@EditContext.ItemCode" />
-                                    </Template>
-                                </DxFormLayoutItem>
-                                <!--Item name-->
-                                <DxFormLayoutItem Caption="Tên hạng mục" ColSpanMd="12" Context="FormLayoutContext">
-                                    <Template>
-                                        <DxTextBox @bind-Text="@EditContext.ItemName" />
-                                        <ValidationMessage For="@(() => EditContext.ItemName)" />
-                                    </Template>
-                                </DxFormLayoutItem>
-                                <!--IsReplace-->
-                                <DxFormLayoutItem Caption="Thay thế" ColSpanMd="12" Context="FormLayoutContext">
-                                    <Template>
-                                        <DxCheckBox @bind-Checked="@EditContext.IsReplace" />
-                                    </Template>
-                                </DxFormLayoutItem>
-                                <!--Quantity-->
-                                <DxFormLayoutItem Caption="Số lượng" ColSpanMd="12" Context="FormLayoutContext">
-                                    <Template>
-                                        <MyNumEdit Value="@EditContext.Quantity"
-                                                   ValueChanged="@((double newValue) => Quantity_Changed(newValue))"
-                                                   Format="N0" />
-                                        <ValidationMessage For="@(() => EditContext.Quantity)" />
-                                    </Template>
-                                </DxFormLayoutItem>
-                                <!--UnitPrice-->
-                                <DxFormLayoutItem Caption="Đơn giá" ColSpanMd="12" Context="FormLayoutContext">
-                                    <Template>
-                                        <MyNumEdit Value="@EditContext.UnitPrice"
-                                                   ValueChanged="@((double newValue) => UnitPrice_Changed(newValue))"
-                                                   Format="N0" />
-                                        <ValidationMessage For="@(() => EditContext.UnitPrice)" />
-                                    </Template>
-                                </DxFormLayoutItem>
-                                <!--Amount-->
-                                <DxFormLayoutItem Caption="Thành tiền" ColSpanMd="12" Context="FormLayoutContext">
-                                    <Template>
-                                        <MyNumEdit @bind-Value="@EditContext.Amount"
-                                                   ReadOnly="true"
-                                                   Format="N0" />
-                                    </Template>
-                                </DxFormLayoutItem>
-                                <!--ApproveAmount-->
-                                <DxFormLayoutItem Caption="Duyệt" ColSpanMd="12" Context="FormLayoutContext">
-                                    <Template>
-                                        <MyNumEdit @bind-Value="@EditContext.ApproveAmount"
-                                                   ReadOnly="@ApproveAmount_ReadOnly"
-                                                   Format="N0" />
-                                    </Template>
-                                </DxFormLayoutItem>
-                                <!--Notes-->
-                                <DxFormLayoutItem Caption="Ghi chú" ColSpanMd="12" Context="FormLayoutContext">
-                                    <Template>
-                                        <DxTextBox @bind-Text="@EditContext.Notes" />
-                                    </Template>
-                                </DxFormLayoutItem>
-                                <!--OK Cancel-->
-                                <DxFormLayoutItem ColSpanMd="12" Context="FormLayoutContext">
-                                    <Template>
-                                        <div class="text-center">
-                                            <DxButton RenderStyle="@ButtonRenderStyle.Success" style="width:100px; font-size:15px" SubmitFormOnClick="true" Text="OK" />
-                                            <DxButton RenderStyle="@ButtonRenderStyle.Danger" style="width:100px; font-size:15px" @onclick="@OnCancelEditRow" Text="Cancel" />
-                                        </div>
-                                    </Template>
-                                </DxFormLayoutItem>
-                            </DxFormLayout>
-                        </EditForm>
-                    </EditFormTemplate>
-                </DxDataGrid>
-            </div>
-
-            <!--Row 4------------------Thong tin sưa chữa-------------------------------->
-            <div class="row mt-2">
-                <!--Tiền bồi thường-->
-                <div class="col-12 col-lg-2">
-                    <MyNumEdit @bind-Value="Model.ClaimAmount"
-                               ReadOnly="true"
-                               Class="text-blue font-weight-bold"
-                               Literal="Tiền bồi thường" />
-                </div>
-                <!--Tiền duyệt-->
-                <div class="col-12 col-lg-2">
-                    <MyNumEdit @bind-Value="Model.ApproveAmount"
-                               ReadOnly="true"
-                               Class="text-maroon font-weight-bold"
-                               Literal="Tiền duyệt" />
-                </div>
-            </div>
-            <!--Row 5-------------------------------------------------->
-            <div class="row align-items-end">
-                <!--Ngày sửa chữa xong-->
-                <div class="col-12 col-lg-2">
-                    <MyDateTimeEdit @bind-Date="Model.RepairDoneDate"
-                                    Literal="Ngày sửa chữa xong"
+            </div><!--End container-->
+        </MyPanel>
+        <!--Thông tin kiểm tra-->
+        <MyPanel Title="Thông tin kiểm tra">
+            <div class="container-fluid">
+                <!--Row 1-------------------------------------------------->
+                <div class="row">
+                    <!--Người kiểm tra-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit @bind-Text="Model.PicAccountName"
                                     ReadOnly="true"
-                                    Class="text-maroon" />
+                                    Literal="Người phụ trách" />
+                    </div>
                 </div>
-                <!--Check: Đã sửa xong-->
-                <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.RepairStatus" Enabled="@(Model.EstimationStatus && !Model.ReturnStatus1)" Class="text-green">Đã sửa xong</DxCheckBox>
-                </div>
-                <!--Số IMEI thiết bị-->
-                <div class="col-12 col-lg-2">
-                    <MyTextEdit @bind-Text="Model.NewDeviceIMEI"
-                                Literal="Số IMEI thiết bị mới"
-                                ReadOnly="@Model.ReturnStatus1"
-                                Class="text-purple font-weight-bold" />
-                </div>
-                <!--Model-->
-                <div class="col-12 col-lg-2">
-                    <MyTextEdit @bind-Text="Model.NewDeviceModel"
-                                ReadOnly="@Model.ReturnStatus1"
-                                Literal="Model thiết bị mới" />
-                </div>
-            </div>
-            <!--Row 6-------------------------------------------------->
-            <div class="row">
-                <!--Nội dung yêu cầu sửa chữa-->
-                <div class="col-12 col-lg-6">
-                    <MyMemoEdit @bind-Text="Model.RepairReqNotes"
-                                Rows="3"
-                                ReadOnly="true"
-                                Literal="Nội dung yêu cầu sửa chữa" />
-                </div>
-                <!--Nội dung sửa chữa-->
-                <div class="col-12 col-lg-6">
-                    <MyMemoEdit @bind-Text="Model.RepairNotes"
-                                Rows="3"
-                                ReadOnly="@Model.ReturnStatus1"
-                                Literal="Nội dung sửa chữa" />
-                </div>
-            </div>
 
-        </div><!--End container-->
-    </CardBody>
-</MyCard>
+                <!--Row 2-------------------------------------------------->
+                <div class="row">
+                    <!--Ghi chú kiểm tra-->
+                    <div class="col-12">
+                        <MyMemoEdit @bind-Text="Model.CheckNotes"
+                                    Rows="5"
+                                    Literal="Ghi chú kiểm tra" />
+                    </div>
+                </div>
+            </div><!--End container-->
+        </MyPanel>
+        <!--Thông báo giá & sửa chữa-->
+        <MyPanel Title="Thông báo giá & sửa chữa">
+            <div class="container-fluid">
+                <!--Row 1-------------------------------------------------->
+                <div class="row">
+                    <!--Ngày yêu cầu báo giá-->
+                    <div class="col-12 col-lg-3">
+                        <MyDateTimeEdit @bind-Date="Model.EstReqDate"
+                                        Literal="Ngày yêu cầu báo giá"
+                                        ReadOnly="true"
+                                        Class="text-green" />
+                    </div>
+                    <!--Ngày báo giá xong-->
+                    <div class="col-12 col-lg-3">
+                        <MyDateTimeEdit @bind-Date="Model.EstDoneDate"
+                                        Literal="Ngày báo giá xong"
+                                        ReadOnly="true"
+                                        Class="text-blue" />
+                    </div>
+                </div>
 
-<!--Thông tin duyệt-->
-<MyCard @bind-IsCollapse="@ApproveInfoCollapse" Title="Thông tin duyệt">
-    <CardBody>
-        <div class="container-fluid">
-            <!--Row 1-------------------------------------------------->
-            <div class="row align-items-end mt-1">
-                <!--Ngày yêu cầu duyệt-->
-                <div class="col-12 col-lg-2">
-                    <MyDateTimeEdit @bind-Date="Model.ApproveReqDate"
-                                    Literal="Ngày yêu cầu duyệt"
+                <!--Row 2-------------------------------------------------->
+                <div class="row mt-2">
+                    <!--Check: yêu cầu báo giá-->
+                    <div class="col-12 col-lg-3">
+                        <DxCheckBox @bind-Checked="@Model.EstimationReqStatus" Class="text-green" Enabled="false">Yêu cầu báo giá</DxCheckBox>
+                    </div>
+                    <!--Check: Đã báo giá-->
+                    <div class="col-12 col-lg-3">
+                        <DxCheckBox @bind-Checked="@Model.EstimationStatus" Class="text-green" Enabled="@(Model.EstimationReqStatus && !Model.ApproveStatus && Model.Estimations.Count > 0)">Đã báo giá</DxCheckBox>
+                    </div>
+                </div>
+
+                <!--Row 3-------------noi dung bao gia------------------------------------->
+                <div class="row mt-1">
+                    <MyDataGrid @ref="@grid"
+                                T="EstimationModel"
+                                Title="Danh sách yêu cầu bồi thường"
+                                Items="@Model.Estimations"
+                                IsDelete="true"
+                                OnAddRow="@(() => OnAddRow_Handle())"
+                                OnViewRow="@((EstimationModel row) => OnViewRow_Handle(row))">
+                        <ColGroup>
+                            <col style="width: 2rem;" />
+                            <col style="width: 8rem;" />
+                            <col style="width: 8rem;" />
+                            <col style="width: 10rem;" />
+                            <col style="width: 2rem;" />
+                            <col style="width: 6rem;" />
+                            <col style="width: 6rem;" />
+                            <col style="width: 6rem;" />
+                            <col />
+                        </ColGroup>
+                        <HeaderContent>
+                            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<EstimationModel, object>(x=>x.LineNo)">No.</MudTableSortLabel></MudTh>
+                            <MudTh>Ngày giờ</MudTh>
+                            <MudTh>Mã hạng mục</MudTh>
+                            <MudTh>Tên hạng mục</MudTh>
+                            <MudTh>Thay thế</MudTh>
+                            <MudTh>Số lượng</MudTh>
+                            <MudTh>Đơn giá</MudTh>
+                            <MudTh>Thành tiền</MudTh>
+                            <MudTh>Duyệt</MudTh>
+                            <MudTh>Ghi chú</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd Style="text-align:center;">@context.LineNo</MudTd>
+                            <MudTd Style="text-align:center">@context.IssueDate.ToString("dd/MM/yyyy HH:mm")</MudTd>
+                            <MudTd Style="font-weight:bold; text-transform: uppercase;">@context.ItemCode</MudTd>
+                            <MudTd>@context.ItemName</MudTd>
+                            <MudTd><MudCheckBox Checked="@context.IsReplace" Color="Color.Primary"></MudCheckBox></MudTd>
+                            <MudTd Style="text-align:right; color:blue; font-weight:bold">@context.Quantity.ToString("N0")</MudTd>
+                            <MudTd Style="text-align:right; color:green; font-weight:bold">@context.UnitPrice.ToString("N0")</MudTd>
+                            <MudTd Style="text-align:right; color:navy; font-weight:bold">@context.Amount.ToString("N0")</MudTd>
+                            <MudTd Style="text-align:right; color:maroon; font-weight:bold">@context.ApproveAmount.ToString("N0")</MudTd>
+                            <MudTd>@context.Notes</MudTd>
+                        </RowTemplate>
+                    </MyDataGrid>
+                </div>
+
+                <!--Row 4------------------Thong tin sưa chữa-------------------------------->
+                <div class="row mt-2">
+                    <!--Tiền bồi thường-->
+                    <div class="col-12 col-lg-2">
+                        <MyNumEdit @bind-Value="Model.ClaimAmount"
+                                   ReadOnly="true"
+                                   Class="text-blue font-weight-bold"
+                                   Literal="Tiền bồi thường" />
+                    </div>
+                    <!--Tiền duyệt-->
+                    <div class="col-12 col-lg-2">
+                        <MyNumEdit @bind-Value="Model.ApproveAmount"
+                                   ReadOnly="true"
+                                   Class="text-maroon font-weight-bold"
+                                   Literal="Tiền duyệt" />
+                    </div>
+                </div>
+                <!--Row 5-------------------------------------------------->
+                <div class="row align-items-end">
+                    <!--Ngày sửa chữa xong-->
+                    <div class="col-12 col-lg-2">
+                        <MyDateTimeEdit @bind-Date="Model.RepairDoneDate"
+                                        Literal="Ngày sửa chữa xong"
+                                        ReadOnly="true"
+                                        Class="text-maroon" />
+                    </div>
+                    <!--Check: Đã sửa xong-->
+                    <div class="col-12 col-lg-2">
+                        <DxCheckBox @bind-Checked="@Model.RepairStatus" Enabled="@(Model.EstimationStatus && !Model.ReturnStatus1)" Class="text-green">Đã sửa xong</DxCheckBox>
+                    </div>
+                    <!--Số IMEI thiết bị-->
+                    <div class="col-12 col-lg-2">
+                        <MyTextEdit @bind-Text="Model.NewDeviceIMEI"
+                                    Literal="Số IMEI thiết bị mới"
+                                    ReadOnly="@Model.ReturnStatus1"
+                                    Class="text-purple font-weight-bold" />
+                    </div>
+                    <!--Model-->
+                    <div class="col-12 col-lg-2">
+                        <MyTextEdit @bind-Text="Model.NewDeviceModel"
+                                    ReadOnly="@Model.ReturnStatus1"
+                                    Literal="Model thiết bị mới" />
+                    </div>
+                </div>
+                <!--Row 6-------------------------------------------------->
+                <div class="row">
+                    <!--Nội dung yêu cầu sửa chữa-->
+                    <div class="col-12 col-lg-6">
+                        <MyMemoEdit @bind-Text="Model.RepairReqNotes"
+                                    Rows="3"
                                     ReadOnly="true"
-                                    Width="100%"
-                                    Class="text-green" />
+                                    Literal="Nội dung yêu cầu sửa chữa" />
+                    </div>
+                    <!--Nội dung sửa chữa-->
+                    <div class="col-12 col-lg-6">
+                        <MyMemoEdit @bind-Text="Model.RepairNotes"
+                                    Rows="3"
+                                    ReadOnly="@Model.ReturnStatus1"
+                                    Literal="Nội dung sửa chữa" />
+                    </div>
                 </div>
-                <!--Check: yêu cầu duyệt-->
-                <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.ApproveReqStatus" Class="text-green" Enabled="false">Yêu cầu duyệt</DxCheckBox>
+
+            </div><!--End container-->
+        </MyPanel>
+        <!--Thông tin duyệt-->
+        <MyPanel Title="Thông tin duyệt">
+            <div class="container-fluid">
+                <!--Row 1-------------------------------------------------->
+                <div class="row align-items-end mt-1">
+                    <!--Ngày yêu cầu duyệt-->
+                    <div class="col-12 col-lg-2">
+                        <MyDateTimeEdit @bind-Date="Model.ApproveReqDate"
+                                        Literal="Ngày yêu cầu duyệt"
+                                        ReadOnly="true"
+                                        Width="100%"
+                                        Class="text-green" />
+                    </div>
+                    <!--Check: yêu cầu duyệt-->
+                    <div class="col-12 col-lg-2">
+                        <DxCheckBox @bind-Checked="@Model.ApproveReqStatus" Class="text-green" Enabled="false">Yêu cầu duyệt</DxCheckBox>
+                    </div>
+                    <!--Ngày yêu cầu duyệt-->
+                    <div class="col-12 col-lg-2">
+                        <MyDateTimeEdit @bind-Date="Model.ApproveReqDate"
+                                        Literal="Ngày duyệt"
+                                        Width="100%"
+                                        ReadOnly="true"
+                                        Class="text-blue" />
+                    </div>
+                    <!--Check: yêu cầu duyệt-->
+                    <div class="col-12 col-lg-2">
+                        <DxCheckBox @bind-Checked="@Model.ApproveStatus" Class="text-green" Enabled="false">Đã duyệt</DxCheckBox>
+                    </div>
                 </div>
-                <!--Ngày yêu cầu duyệt-->
-                <div class="col-12 col-lg-2">
-                    <MyDateTimeEdit @bind-Date="Model.ApproveReqDate"
-                                    Literal="Ngày duyệt"
-                                    Width="100%"
+
+                <!--Row 2-------------------------------------------------->
+                <div class="row">
+                    <!--Người duyệt-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit @bind-Text="Model.ApproveAccountName"
                                     ReadOnly="true"
-                                    Class="text-blue" />
+                                    Literal="Người duyệt" />
+                    </div>
                 </div>
-                <!--Check: yêu cầu duyệt-->
-                <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.ApproveStatus" Class="text-green" Enabled="false">Đã duyệt</DxCheckBox>
-                </div>
-            </div>
-
-            <!--Row 2-------------------------------------------------->
-            <div class="row">
-                <!--Người duyệt-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.ApproveAccountName"
-                                ReadOnly="true"
-                                Literal="Người duyệt" />
-                </div>
-            </div>
-            <!--Row 3-------------------------------------------------->
-            <div class="row">
-                <!--Ghi chú duyệt-->
-                <div class="col-12">
-                    <MyMemoEdit @bind-Text="Model.ApproveNotes"
-                                Rows="3"
-                                ReadOnly="true"
-                                Literal="Ghi chú duyệt" />
-                </div>
-            </div>
-
-        </div><!--End container-->
-    </CardBody>
-</MyCard>
-
-<!--Thông tin trả hàng-->
-<MyCard @bind-IsCollapse="@ReturnInfoCollapse" Title="Thông tin trả hàng">
-    <CardBody>
-        <div class="container-fluid">
-            <!--Row 1-------------------------------------------------->
-            <div class="row align-items-end mt-1">
-                <!--Ngày yêu cầu trả hàng-->
-                <div class="col-12 col-lg-2">
-                    <MyDateTimeEdit @bind-Date="Model.ReturnReqDate"
-                                    Literal="Ngày YC trả thiết bị"
+                <!--Row 3-------------------------------------------------->
+                <div class="row">
+                    <!--Ghi chú duyệt-->
+                    <div class="col-12">
+                        <MyMemoEdit @bind-Text="Model.ApproveNotes"
+                                    Rows="3"
                                     ReadOnly="true"
-                                    Width="100%"
-                                    Class="text-green" />
+                                    Literal="Ghi chú duyệt" />
+                    </div>
                 </div>
-                <!--Check: yêu cầu trả hàng-->
-                <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.ReturnReqStatus" Class="text-green" Enabled="false">YC trả thiết bị</DxCheckBox>
-                </div>
-                <!--Ngày xuất hàng-->
-                <div class="col-12 col-lg-2">
-                    <MyDateTimeEdit @bind-Date="Model.ReturnDoneDate1"
-                                    Literal="Ngày xuất thiết bị"
-                                    Width="100%"
-                                    ReadOnly="true"
-                                    Class="text-blue" />
-                </div>
-                <!--Check: Đã xuất hàng-->
-                <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.ReturnStatus1" Class="text-blue" Enabled="false">Đã xuất thiết bị</DxCheckBox>
-                </div>
-                <!--Ngày trả hàng-->
-                <div class="col-12 col-lg-2">
-                    <MyDateTimeEdit @bind-Date="Model.ReturnDoneDate2"
-                                    Literal="Ngày trả thiết bị"
-                                    Width="100%"
-                                    ReadOnly="true"
-                                    Class="text-maroon" />
-                </div>
-                <!--Check: Đã trả hàng-->
-                <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.ReturnStatus2" Class="text-maroon" Enabled="false">Đã trả thiết bị</DxCheckBox>
-                </div>
-            </div>
-            <!--Row 2-------------------------------------------------->
-            <div class="row">
-                <!--Công ty trả thiết bị-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.ReturnCompanyName"
-                                ReadOnly="true"
-                                Literal="Công ty trả thiết bị" />
-                </div>
-                <!--Người trả thiết bị-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.ReturnAccountName"
-                                ReadOnly="true"
-                                Literal="Người trả thiết bị" />
-                </div>
-            </div>
-            <!--Row 3-------------------------------------------------->
-            <div class="row">
-                <!--Ghi chú duyệt-->
-                <div class="col-12">
-                    <MyMemoEdit @bind-Text="Model.ReturnNotes"
-                                Rows="3"
-                                ReadOnly="true"
-                                Literal="Ghi chú trả thiết bị" />
-                </div>
-            </div>
 
-        </div><!--End container-->
-    </CardBody>
-</MyCard>
-
-<!--Thông tin chi trả-->
-<MyCard @bind-IsCollapse="@PayInfoCollapse" Title="Thông tin chi trả">
-    <CardBody>
-        <div class="container-fluid">
-            <!--Row 1-------------------------------------------------->
-            <div class="row align-items-end mt-1">
-                <!--Ngày yêu cầu chi trả-->
-                <div class="col-12 col-lg-2">
-                    <MyDateTimeEdit @bind-Date="Model.PayReqDate"
-                                    Literal="Ngày yêu cầu chi trả"
+            </div><!--End container-->
+        </MyPanel>
+        <!--Thông tin trả hàng-->
+        <MyPanel Title="Thông tin trả hàng">
+            <div class="container-fluid">
+                <!--Row 1-------------------------------------------------->
+                <div class="row align-items-end mt-1">
+                    <!--Ngày yêu cầu trả hàng-->
+                    <div class="col-12 col-lg-2">
+                        <MyDateTimeEdit @bind-Date="Model.ReturnReqDate"
+                                        Literal="Ngày YC trả thiết bị"
+                                        ReadOnly="true"
+                                        Width="100%"
+                                        Class="text-green" />
+                    </div>
+                    <!--Check: yêu cầu trả hàng-->
+                    <div class="col-12 col-lg-2">
+                        <DxCheckBox @bind-Checked="@Model.ReturnReqStatus" Class="text-green" Enabled="false">YC trả thiết bị</DxCheckBox>
+                    </div>
+                    <!--Ngày xuất hàng-->
+                    <div class="col-12 col-lg-2">
+                        <MyDateTimeEdit @bind-Date="Model.ReturnDoneDate1"
+                                        Literal="Ngày xuất thiết bị"
+                                        Width="100%"
+                                        ReadOnly="true"
+                                        Class="text-blue" />
+                    </div>
+                    <!--Check: Đã xuất hàng-->
+                    <div class="col-12 col-lg-2">
+                        <DxCheckBox @bind-Checked="@Model.ReturnStatus1" Class="text-blue" Enabled="false">Đã xuất thiết bị</DxCheckBox>
+                    </div>
+                    <!--Ngày trả hàng-->
+                    <div class="col-12 col-lg-2">
+                        <MyDateTimeEdit @bind-Date="Model.ReturnDoneDate2"
+                                        Literal="Ngày trả thiết bị"
+                                        Width="100%"
+                                        ReadOnly="true"
+                                        Class="text-maroon" />
+                    </div>
+                    <!--Check: Đã trả hàng-->
+                    <div class="col-12 col-lg-2">
+                        <DxCheckBox @bind-Checked="@Model.ReturnStatus2" Class="text-maroon" Enabled="false">Đã trả thiết bị</DxCheckBox>
+                    </div>
+                </div>
+                <!--Row 2-------------------------------------------------->
+                <div class="row">
+                    <!--Công ty trả thiết bị-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit @bind-Text="Model.ReturnCompanyName"
                                     ReadOnly="true"
-                                    Width="100%"
-                                    Class="text-green" />
-                </div>
-                <!--Check: yêu cầu chi trả-->
-                <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.PayReqStatus" Class="text-green" Enabled="false">YC chi trả</DxCheckBox>
-                </div>
-                <!--Ngày chi trả-->
-                <div class="col-12 col-lg-2">
-                    <MyDateTimeEdit @bind-Date="Model.PayDoneDate"
-                                    Literal="Ngày chi trả"
-                                    Width="100%"
+                                    Literal="Công ty trả thiết bị" />
+                    </div>
+                    <!--Người trả thiết bị-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit @bind-Text="Model.ReturnAccountName"
                                     ReadOnly="true"
-                                    Class="text-maroon" />
+                                    Literal="Người trả thiết bị" />
+                    </div>
                 </div>
-                <!--Check: Đã chi trả-->
-                <div class="col-12 col-lg-2">
-                    <DxCheckBox @bind-Checked="@Model.PayStatus" Class="text-maroon" Enabled="false">Đã chi trả</DxCheckBox>
+                <!--Row 3-------------------------------------------------->
+                <div class="row">
+                    <!--Ghi chú duyệt-->
+                    <div class="col-12">
+                        <MyMemoEdit @bind-Text="Model.ReturnNotes"
+                                    Rows="3"
+                                    ReadOnly="true"
+                                    Literal="Ghi chú trả thiết bị" />
+                    </div>
                 </div>
-                <!--Người chi trả-->
-                <div class="col-12 col-lg-3">
-                    <MyTextEdit @bind-Text="Model.PayAccountName"
-                                ReadOnly="true"
-                                Literal="Người chi trả" />
-                </div>
-            </div>
-            <!--Row 2-------------------------------------------------->
-            <div class="row">
-                <!--Ghi chú chi trả-->
-                <div class="col-12">
-                    <MyMemoEdit @bind-Text="Model.PayNotes"
-                                Rows="3"
-                                ReadOnly="true"
-                                Literal="Ghi chú chi trả" />
-                </div>
-            </div>
 
-        </div><!--End container-->
-    </CardBody>
-</MyCard>
+            </div><!--End container-->
+        </MyPanel>
+        <!--Thông tin chi trả-->
+        <MyPanel Title="Thông tin chi trả">
+            <div class="container-fluid">
+                <!--Row 1-------------------------------------------------->
+                <div class="row align-items-end mt-1">
+                    <!--Ngày yêu cầu chi trả-->
+                    <div class="col-12 col-lg-2">
+                        <MyDateTimeEdit @bind-Date="Model.PayReqDate"
+                                        Literal="Ngày yêu cầu chi trả"
+                                        ReadOnly="true"
+                                        Width="100%"
+                                        Class="text-green" />
+                    </div>
+                    <!--Check: yêu cầu chi trả-->
+                    <div class="col-12 col-lg-2">
+                        <DxCheckBox @bind-Checked="@Model.PayReqStatus" Class="text-green" Enabled="false">YC chi trả</DxCheckBox>
+                    </div>
+                    <!--Ngày chi trả-->
+                    <div class="col-12 col-lg-2">
+                        <MyDateTimeEdit @bind-Date="Model.PayDoneDate"
+                                        Literal="Ngày chi trả"
+                                        Width="100%"
+                                        ReadOnly="true"
+                                        Class="text-maroon" />
+                    </div>
+                    <!--Check: Đã chi trả-->
+                    <div class="col-12 col-lg-2">
+                        <DxCheckBox @bind-Checked="@Model.PayStatus" Class="text-maroon" Enabled="false">Đã chi trả</DxCheckBox>
+                    </div>
+                    <!--Người chi trả-->
+                    <div class="col-12 col-lg-3">
+                        <MyTextEdit @bind-Text="Model.PayAccountName"
+                                    ReadOnly="true"
+                                    Literal="Người chi trả" />
+                    </div>
+                </div>
+                <!--Row 2-------------------------------------------------->
+                <div class="row">
+                    <!--Ghi chú chi trả-->
+                    <div class="col-12">
+                        <MyMemoEdit @bind-Text="Model.PayNotes"
+                                    Rows="3"
+                                    ReadOnly="true"
+                                    Literal="Ghi chú chi trả" />
+                    </div>
+                </div>
 
-<!--OK, Cancel-->
-<div class="container-fluid">
-    <div class="row justify-content-center mt-2">
-        <MyButtonSave OnClick="SaveMain" />
-        <MyButtonCancel OnClick="CloseMain" />
-    </div>
-</div>
+            </div><!--End container-->
+        </MyPanel>
+
+    </MyPanels>
+</MyForm>
+
 
 @code {
-    [CascadingParameter]
-    protected ProgramInfo Program { get; set; }
-    [Parameter]
-    public MyPopup MyForm { get; set; }
-    private const int PageRowCount = MyConstant.Grid_PageRowCount;
+    [CascadingParameter] protected ProgramInfo Program { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     //Parameters and events
-    [Parameter]
-    public string ClaimNo { get; set; } = "";
-    [Parameter]
-    public EventCallback OnValidSumit { get; set; }
+    [Parameter] public string ClaimNo { get; set; } = "";
     //
-    private ClaimRequestModel Model = new ClaimRequestModel();
+    bool ReadOnly;
+    ClaimRequestModel Model = new ClaimRequestModel();
+    MyDataGrid<EstimationModel> grid;
 
     //Master
     private List<OptionListModel> PriorityList = new List<OptionListModel>();
@@ -768,7 +630,7 @@
             }
 
             //Refresh layout
-            if (gridEst != null) await gridEst.Refresh();
+            if (grid != null) grid.Refresh();
             StateHasChanged();
         }
         catch
@@ -852,9 +714,8 @@
                 Snackbar.Add(MyMessage.Error_SaveFailed, Severity.Error);
             }
 
-            //Reload data
-            await OnValidSumit.InvokeAsync();
-            CloseMain();
+            //Submit
+            MudDialog.Close(DialogResult.Ok(Model));
         }
         catch
         {
@@ -863,163 +724,13 @@
     }
     void CloseMain()
     {
-        MyForm.Close();
+        MudDialog.Cancel();
     }
     #endregion
 
-    #region Items
-
-    #endregion
 
     #region Grid main
-    DxDataGrid<EstimationModel> gridEst;
-    FormEditContext EditContext = null;
-    //Confirm delete
-    EstimationModel DeletedRow = null;
-    void OnRowRemoving(EstimationModel dataRow)
-    {
-        DeletedRow = dataRow;
-        //Show popup confirm
-        ConfirmMessage = MyMessage.Confirm_DeleteRow;
-        ConfirmAction = "DeleteRow";
-        ConfirmVisible = true;
-        StateHasChanged();
-    }
 
-    //Cancel edit
-    async Task OnCancelEditRow()
-    {
-        await gridEst.CancelRowEdit();
-        EditContext = null;
-    }
-
-    async void DeleteRow()
-    {
-        //Remove new row from data source
-        Model.Estimations.Remove(DeletedRow);
-
-        // Update ClaimAmount
-        Update_ClaimAmount();
-
-        //Refresh layout
-        await gridEst.Refresh();
-        this.StateHasChanged();
-    }
-    //Update row
-    async Task UpdateRow()
-    {
-        //Update for edit field
-        var backupRow = new EstimationModel();
-        ClassHelper.CopyPropertiesData(EditContext.EditingRow, backupRow);
-        //
-        EditContext.EditingRow.LineNo = EditContext.LineNo;
-        EditContext.EditingRow.IssueDate = DateTime.Now;
-        EditContext.EditingRow.ItemCode = EditContext.ItemCode;
-        EditContext.EditingRow.ItemName = EditContext.ItemName;
-        EditContext.EditingRow.IsReplace = EditContext.IsReplace;
-        EditContext.EditingRow.Quantity = EditContext.Quantity;
-        EditContext.EditingRow.UnitPrice = EditContext.UnitPrice;
-        EditContext.EditingRow.Amount = EditContext.Amount;
-        EditContext.EditingRow.ApproveAmount = EditContext.ApproveAmount;
-        EditContext.EditingRow.Notes = EditContext.Notes;
-
-        //Update mode
-        if (EditContext.EditingRow.UpdMode == 0 || EditContext.EditingRow.UpdMode == 3)
-        {
-            EditContext.EditingRow.UpdMode = 2;
-        }
-
-        //Insert to datasource
-        if (EditContext.EditingRow.UpdMode == -1)
-        {
-            EditContext.EditingRow.UpdMode = 1;
-            Model.Estimations.Add(EditContext.EditingRow);
-        }
-        // Update ClaimAmount
-        Update_ClaimAmount();
-
-        //Close popup & refresh data
-        await gridEst.CancelRowEdit();
-        await gridEst.Refresh();
-        this.StateHasChanged();
-    }
-    // Edit row model
-    class FormEditContext : EstimationModel
-    {
-        public FormEditContext(EstimationModel editRow)
-        {
-            //Saved data
-            EditingRow = editRow;
-
-            //Editable data only
-            LineNo = EditingRow.LineNo;
-            IssueDate = EditingRow.IssueDate;
-            ItemCode = EditingRow.ItemCode;
-            ItemName = EditingRow.ItemName;
-            IsReplace = EditingRow.IsReplace;
-            Quantity = EditingRow.Quantity;
-            UnitPrice = EditingRow.UnitPrice;
-            Amount = EditingRow.Amount;
-            ApproveAmount = EditingRow.ApproveAmount;
-            Notes = EditingRow.Notes;
-        }
-        public EstimationModel EditingRow { get; set; }
-        public Action StateHasChanged { get; set; }
-    }
-
-    //Get data for edit/insert
-    void OnRowEditStarting(EstimationModel editingRow)
-    {
-        //Init new row
-        if (editingRow == null)
-        {
-            editingRow = new EstimationModel();
-            //
-            editingRow.IssueDate = DateTime.Now;
-            editingRow.LineNo = Get_MaxDetailLineNo();
-            //
-            editingRow.UpdMode = -1;
-        }
-        EditContext = new FormEditContext(editingRow);
-        //
-        StateHasChanged();
-    }
-    // Color of edit data
-    void OnHtmlRowDecoration(DataGridHtmlRowDecorationEventArgs<EstimationModel> eventArgs)
-    {
-        
-        if (eventArgs.DataItem.UpdMode == 1)
-            eventArgs.Style += MyColor.NewRowColor;
-        else if (eventArgs.DataItem.UpdMode == 2)
-            eventArgs.Style += MyColor.EditRowColor;
-        else if (eventArgs.DataItem.UpdMode == 3)
-            eventArgs.Style += MyColor.DeleteRowColor;
-    }
-    void OnHtmlDataCellDecoration(DataGridHtmlDataCellDecorationEventArgs<EstimationModel> eventArgs)
-    {
-        eventArgs.CssClass += " border-0";
-        //eventArgs.Style += " ;font-weight:bold;text-align: right";
-        //Quantity
-        if (eventArgs.FieldName == nameof(EstimationModel.Quantity))
-        {
-            eventArgs.Style += " ;font-weight:bold; color: blue; text-align: right";
-        }
-        //UnitPrice
-        if (eventArgs.FieldName == nameof(EstimationModel.UnitPrice))
-        {
-            eventArgs.Style += " ;color: green; text-align: right";
-        }
-        //Amount
-        if (eventArgs.FieldName == nameof(EstimationModel.Amount))
-        {
-            eventArgs.Style += " ;color: navy; text-align: right";
-        }
-        //ApproveAmount
-        if (eventArgs.FieldName == nameof(EstimationModel.ApproveAmount))
-        {
-            eventArgs.Style += " ;color: maroon; text-align: right";
-        }
-    }
     //
     private int Get_MaxDetailLineNo()
     {
@@ -1029,23 +740,58 @@
         }
         return 1;
     }
+    //Add row
+    async void OnAddRow_Handle()
+    {
+        //Init new row
+        var newRow = new EstimationModel();
+        newRow.IssueDate = DateTime.Now;
+        newRow.LineNo = Get_MaxDetailLineNo();
+        //
+        var parameters = new DialogParameters();
+        parameters.Add("Model", newRow);
+        parameters.Add("IsApprover", false);
+        //
+        var result = await DialogService.Show<EstimationEdit>("", parameters, MyOptions.GetMyFormOptions(MaxWidth.Small)).Result;
+        if (!result.Cancelled)
+        {
+            var retModel = result.Data;
+            if (retModel != null)
+            {
+                Model.Estimations.Add((EstimationModel)retModel);
+                //Update claim amount
+                grid.Refresh();
+
+                //Update claim amount
+                Update_ClaimAmount();
+                this.StateHasChanged();
+            }
+        }
+    }
+    //Update row
+    async void OnViewRow_Handle(EstimationModel row)
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("Model", row);
+        parameters.Add("IsApprover", false);
+        //
+        var result = await DialogService.Show<EstimationEdit>("", parameters, MyOptions.GetMyFormOptions(MaxWidth.Small)).Result;
+        if (!result.Cancelled)
+        {
+            var retModel = (EstimationModel)result.Data;
+            var updateReccord = Model.Estimations.Find(x => x.RecNo == retModel.RecNo);
+            if (updateReccord != null)
+            {
+                ClassHelper.CopyPropertiesData(retModel, updateReccord);
+                updateReccord.IssueDate = DateTime.Now;
+
+                //Update claim amount
+                Update_ClaimAmount();
+                this.StateHasChanged();
+            }
+        }
+    }
     //
-    void UnitPrice_Changed(double newValue)
-    {
-        EditContext.UnitPrice = newValue;
-        //
-        EditContext.Amount = EditContext.Quantity * EditContext.UnitPrice;
-        //
-        this.StateHasChanged();
-    }
-    void Quantity_Changed(double newValue)
-    {
-        EditContext.Quantity = newValue;
-        //
-        EditContext.Amount = EditContext.Quantity * EditContext.UnitPrice;
-        //
-        this.StateHasChanged();
-    }
     void Update_ClaimAmount()
     {
         //Update ClaimAmount
