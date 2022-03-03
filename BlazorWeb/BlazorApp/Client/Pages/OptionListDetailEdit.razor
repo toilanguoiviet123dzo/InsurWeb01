@@ -7,7 +7,7 @@
     <MudTextField Label="STT" @bind-Value="DspModel.DspOrder"/>
     <MudTextField Label="Tên hạng mục" @bind-Value="DspModel.ItemName" For="@(() => DspModel.ItemName)" />
     <MudTextField Label="Trị chữ" @bind-Value="DspModel.ItemCode"/>
-    <MudNumericField Label="Trị số nguyên" @bind-Value="DspModel.IntCode" ReadOnly="true" Format="N0" T="int" />
+    <MudNumericField Label="Trị số nguyên" @bind-Value="DspModel.IntCode" ReadOnly="true" Format="N0" T="Int32" />
     <MudNumericField Label="Trị số thực" @bind-Value="DspModel.DoubleCode" ReadOnly="true" Format="N2" T="Double" />
     <MudTextField Label="Ghi chú" @bind-Value="DspModel.Description" />
 </MyPopupEdit>

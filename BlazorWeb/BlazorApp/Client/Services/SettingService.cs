@@ -40,7 +40,7 @@ namespace BlazorApp.Client.Services
                     var response = await _adminServiceClient.GetSettingMasterAsync(request);
                     if (response != null && response.ReturnCode == GrpcReturnCode.OK)
                     {
-                        foreach (var item in response.SettingMasters)
+                        foreach (var item in response.Records)
                         {
                             var row = new SettingMasterModel();
                             ClassHelper.CopyPropertiesData(item, row);

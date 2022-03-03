@@ -4,7 +4,7 @@
              Model="DspModel"
              OnCancelClick="OnCancel"
              OnSubmitClick="OnSubmit">
-    <MudNumericField Label="No." @bind-Value="DspModel.DspOrder" Format="N0" T="int" />
+    <MudNumericField Label="No." @bind-Value="DspModel.DspOrder" Format="N0" T="Int32" />
     <MudTextField Label="Mã" @bind-Value="DspModel.RepairerID" For="@(() => DspModel.RepairerID)" />
     <MudTextField Label="Tên" @bind-Value="DspModel.RepairerName" For="@(() => DspModel.RepairerName)" />
     <MudTextField Label="Phone" @bind-Value="DspModel.PhoneNo" />

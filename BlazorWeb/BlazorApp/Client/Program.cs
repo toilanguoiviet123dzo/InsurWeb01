@@ -37,9 +37,6 @@ namespace BlazorApp.Client
             //gRpc
             builder.Services.AddMyServices();
 
-            //DevExpress blazor
-            builder.Services.AddDevExpressBlazor();
-
             //MudBlazor
             builder.Services.AddMudServices(config =>
             {

@@ -44,7 +44,7 @@
     </MudMainContent>
 
     <!--Bottom App bar-->
-    <MudAppBar id="bottomAppBar" Bottom="true" Elevation="1" Dense="true" Class="justify-center" Style="@($"color:white; background:{Colors.Grey.Darken3};")">
+    <MudAppBar id="bottomAppBar" Bottom="true" Fixed="true" Elevation="1" Dense="true" Class="justify-center" Style="@($"color:white; background:{Colors.Grey.Darken3};")">
         <!--Admin-->
         <MudMenu @ref="@adminMenu" FullWidth="false" ActivationEvent="@MouseEvent.LeftClick" OffsetY>
             <ActivatorContent>

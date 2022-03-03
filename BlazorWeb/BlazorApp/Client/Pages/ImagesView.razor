@@ -63,11 +63,6 @@ else
     </div>
 </div>
 
-
-
-<!--Confirm dialog-->
-<MessageBox Title="Xóa anh đính kèm" Message="@ConfirmMessage" IsDanger=true MessageBoxIcon="@MyConstant.MessageBoxIcon_Question" @bind-Visible="@ConfirmVisible" confirm="@ConfirmHandler" />
-
 @code {
     [Parameter]
     public string VoucherNo { get; set; } = "21000001";

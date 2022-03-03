@@ -28,5 +28,9 @@ namespace BlazorApp.Client.BindingModels
         public string RoleDetail_ID { get; set; } = "";
         public DateTime RoleDetail_CreatedOn { get; set; }
         public bool IsGranted { get; set; }
+        //Row mode
+        public bool RowMode_View { get; set; } = false;
+        public bool RowMode_Edit { get; set; } = true;
+        public bool RowMode_Delete { get; set; } = true;
     }
 }

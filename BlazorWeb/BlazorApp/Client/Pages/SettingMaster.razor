@@ -27,7 +27,7 @@
         <col style="width: 8rem;" />
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<SettingMasterModel, object>(x => x.Code)">No.</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<SettingMasterModel, object>(x => x.Code)">Code</MudTableSortLabel></MudTh>
         <MudTh>Description</MudTh>
         <MudTh>StringValue1</MudTh>
         <MudTh>StringValue2</MudTh>
@@ -118,7 +118,7 @@
         var parameters = new DialogParameters();
         parameters.Add("Model", newRow);
         //
-        var result = await DialogService.Show<BrancheMasterEdit>("", parameters, MyOptions.GetEditFormOptions()).Result;
+        var result = await DialogService.Show<SettingMasterEdit>("", parameters, MyOptions.GetEditFormOptions()).Result;
         if (!result.Cancelled && result.Data != null)
         {
             var retModel = (SettingMasterModel)result.Data;
@@ -142,7 +142,7 @@
         var parameters = new DialogParameters();
         parameters.Add("Model", row);
         //
-        var result = await DialogService.Show<BrancheMasterEdit>("", parameters, MyOptions.GetEditFormOptions()).Result;
+        var result = await DialogService.Show<SettingMasterEdit>("", parameters, MyOptions.GetEditFormOptions()).Result;
         if (!result.Cancelled && result.Data != null)
         {
             var retModel = (SettingMasterModel)result.Data;
