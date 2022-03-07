@@ -17,6 +17,7 @@ namespace BlazorApp.Server.Models
         public string Title { get; set; } = "";
         public string FileName { get; set; } = "";
         public string ServerFileName { get; set; } = "";
+        public string ServerThumbnailFileName { get; set; } = "";
         public byte[] FileContent { get; set; } = new byte[] { };
         public bool IsMakeThumbnail { get; set; }
         public byte[] Thumbnail { get; set; } = new byte[] { };

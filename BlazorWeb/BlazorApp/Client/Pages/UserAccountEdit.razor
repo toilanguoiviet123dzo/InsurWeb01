@@ -11,13 +11,13 @@
     <MudTextField Label="Phone" @bind-Value="DspModel.Phone" />
     <MudTextField Label="Email" @bind-Value="DspModel.Email" />
     <MudTextField Label="Address" @bind-Value="DspModel.Address" />
-    <MyComboBox Literal="Vai trò" @bind-Value="SelectedRole" Data="@RoleList" />
-    <MyComboBox Literal="Chi nhánh" @bind-Value="SelectedBranche" Data="@BrancheList" />
-    <MyComboBox Literal="Cty vận chuyển" @bind-Value="SelectedLogistic" Data="@LogisticList" />
-    <MyComboBox Literal="Nơi sửa chữa" @bind-Value="SelectedRepairer" Data="@RepairerList" />
-    <MudTextField Label="Account duyệt" @bind-Value="DspModel.ApproveAcountID" />
-    <MyComboBox Literal="Cấp duyệt" @bind-Value="SelectedApproveLevel" Data="@ApproveLevelList" />
-    <MyComboBox Literal="Bảo mật tài liệu" @bind-Value="SelectedDucumentLevel" Data="@DocumentLevelList" />
+    <MyComboBox Literal="Vai trò" @bind-Value="SelectedRole" Data="@RoleList" TextFieldName="@(nameof(RoleListModel.RoleName))" Clearable="true" />
+    <MyComboBox Literal="Chi nhánh" @bind-Value="SelectedBranche" Data="@BrancheList" TextFieldName="@(nameof(BranchMasterModel.BranchName))" Clearable="true" />
+    <MyComboBox Literal="Cty vận chuyển" @bind-Value="SelectedLogistic" Data="@LogisticList" TextFieldName="@(nameof(OptionListModel.ItemName))" Clearable="true" />
+    <MyComboBox Literal="Nơi sửa chữa" @bind-Value="SelectedRepairer" Data="@RepairerList" TextFieldName="@(nameof(RepairerMasterModel.RepairerName))" Clearable="true" />
+    <MyComboBox Literal="Người duyệt" @bind-Value="SelectedApprover" Data="@UserList" TextFieldName="@(nameof(UserAccountModel.Fullname))" Clearable="true" />
+    <MyComboBox Literal="Cấp duyệt" @bind-Value="SelectedApproveLevel" Data="@ApproveLevelList" TextFieldName="@(nameof(OptionListModel.ItemName))" Clearable="true" />
+    <MyComboBox Literal="Bảo mật tài liệu" @bind-Value="SelectedDucumentLevel" Data="@DocumentLevelList" TextFieldName="@(nameof(OptionListModel.ItemName))" Clearable="true" />
     <MudSwitch @bind-Checked="@DspModel.Status" Color="Color.Primary">Hữu hiệu</MudSwitch>
 </MyPopupEdit>
 
@@ -28,18 +28,20 @@
     UserAccountModel DspModel = new UserAccountModel();
     // Master
     private List<BranchMasterModel> BrancheList = new List<BranchMasterModel>();
-    private List<OptionListModel> RoleList = new List<OptionListModel>();
+    private List<RoleListModel> RoleList = new List<RoleListModel>();
     private List<OptionListModel> ApproveLevelList = new List<OptionListModel>();
     private List<OptionListModel> DocumentLevelList = new List<OptionListModel>();
     private List<OptionListModel> LogisticList = new List<OptionListModel>();
     private List<RepairerMasterModel> RepairerList = new List<RepairerMasterModel>();
+    private List<UserAccountModel> UserList = new List<UserAccountModel>();
     //Selected
-    OptionListModel SelectedRole;
+    RoleListModel SelectedRole;
     OptionListModel SelectedLogistic;
     OptionListModel SelectedApproveLevel;
     OptionListModel SelectedDucumentLevel;
     BranchMasterModel SelectedBranche;
     RepairerMasterModel SelectedRepairer;
+    UserAccountModel SelectedApprover;
     //
     protected override void OnParametersSet()
     {
@@ -56,6 +58,48 @@
     private void OnSubmit()
     {
         ClassHelper.CopyPropertiesData(DspModel, Model);
+        //SelectedRole
+        if(SelectedRole != null)
+        {
+            Model.RoleID = SelectedRole.RoleID;
+            Model.RoleName = SelectedRole.RoleName;
+        }
+        //SelectedLogistic
+        if(SelectedLogistic != null)
+        {
+            Model.LogisticCompanyID = SelectedLogistic.ItemCode;
+            Model.LogisticCompanyName = SelectedLogistic.ItemName;
+        }
+        //SelectedDucumentLevel
+        if(SelectedDucumentLevel != null)
+        {
+            Model.DocumentLevel = SelectedDucumentLevel.IntCode;
+            Model.DocumentLevelName = SelectedDucumentLevel.ItemName;
+        }
+        //SelectedApproveLevel
+        if(SelectedApproveLevel != null)
+        {
+            Model.ApproveLevel = SelectedApproveLevel.IntCode;
+            Model.ApproveLevelName = SelectedApproveLevel.ItemName;
+        }
+        //SelectedBranche
+        if(SelectedBranche != null)
+        {
+            Model.BrancheID = SelectedBranche.BranchID;
+            Model.BrancheName = SelectedBranche.BranchName;
+        }
+        //SelectedRepairer
+        if(SelectedRepairer != null)
+        {
+            Model.RepairCompanyID = SelectedRepairer.RepairerID;
+            Model.RepairCompanyName = SelectedRepairer.RepairerName;
+        }
+        //SelectedApprover
+        if(SelectedApprover != null)
+        {
+            Model.RepairCompanyID = SelectedApprover.ApproveAcountID;
+        }
+
         //Return changed
         MudDialog.Close(DialogResult.Ok(Model));
     }
@@ -66,6 +110,21 @@
 
         //Load master
         await LoadMaster();
+
+        //SelectedRole
+        if (string.IsNullOrWhiteSpace(DspModel.RoleID)) SelectedRole = RoleList.Find(x => x.RoleID == DspModel.RoleID);
+        //SelectedLogistic
+        if (string.IsNullOrWhiteSpace(DspModel.LogisticCompanyID)) SelectedLogistic = LogisticList.Find(x => x.ItemCode == DspModel.LogisticCompanyID);
+        //SelectedApproveLevel
+        if (DspModel.ApproveLevel != 0) SelectedApproveLevel = ApproveLevelList.Find(x => x.IntCode == DspModel.ApproveLevel);
+        //SelectedDucumentLevel
+        if (DspModel.DocumentLevel != 0) SelectedDucumentLevel = ApproveLevelList.Find(x => x.IntCode == DspModel.DocumentLevel);
+        //SelectedBranche
+        if (string.IsNullOrWhiteSpace(DspModel.RoleID)) SelectedBranche = BrancheList.Find(x => x.BranchID == DspModel.BrancheID);
+        //SelectedRepairer
+        if (string.IsNullOrWhiteSpace(DspModel.RepairCompanyID)) SelectedRepairer = RepairerList.Find(x => x.RepairerID == DspModel.RepairCompanyID);
+        //SelectedApprover
+        if (string.IsNullOrWhiteSpace(DspModel.ApproveAcountID)) SelectedApprover = UserList.Find(x => x.UserName == DspModel.ApproveAcountID);
     }
 
     async Task LoadMaster()
@@ -74,7 +133,8 @@
         BrancheList = await masterService.Load_BranchList();
         ApproveLevelList = await masterService.Load_OptionList("002");
         DocumentLevelList = await masterService.Load_OptionList("003");
-        LogisticList = await masterService.Load_OptionList("010");
-        RoleList = await masterService.Load_OptionList("009");
+        LogisticList = await masterService.Load_OptionList("009");
+        RoleList = await masterService.Load_RoleList();
+        UserList = await masterService.Load_UserList();
     }
 }

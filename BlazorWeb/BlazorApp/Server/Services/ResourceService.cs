@@ -192,7 +192,7 @@ namespace BlazorApp.Server.Services
         //-------------------------------------------------------------------------------------------------------/
         // GetResourceFile
         //-------------------------------------------------------------------------------------------------------/
-        public override async Task<GetResourceFile_Response> GetResourceFile(Resource.Services.String_Request request, ServerCallContext context)
+        public override async Task<GetResourceFile_Response> GetResourceFile(Resource.Services.GetResourceFile_Request request, ServerCallContext context)
         {
             var response = new GetResourceFile_Response();
             response.ReturnCode = GrpcReturnCode.OK;
@@ -201,7 +201,7 @@ namespace BlazorApp.Server.Services
             try
             {
                 var findRecord = await DB.Find<mdResourceFile>()
-                                          .Match(a => a.ResourceID == request.StringValue)
+                                          .Match(a => a.ResourceID == request.ResourceID)
                                           .ExecuteFirstAsync();
                 //
                 if (findRecord == null)
@@ -227,7 +227,7 @@ namespace BlazorApp.Server.Services
                     //Load file content
                     if (findRecord.ArchiveMode == 2 && !string.IsNullOrWhiteSpace(archiveFolder))
                     {
-                        string fileName = archiveFolder + findRecord.ServerFileName;
+                        string fileName = archiveFolder + (request.IsThumbnail ? findRecord.ServerThumbnailFileName : findRecord.ServerFileName);
                         //
                         if (File.Exists(fileName))
                         {
@@ -283,9 +283,9 @@ namespace BlazorApp.Server.Services
                         ClassHelper.CopyPropertiesData(item, record);
 
                         //Load file content
-                        if (record.ArchiveMode == 2 && !string.IsNullOrWhiteSpace(archiveFolder))
+                        if (item.ArchiveMode == 2 && !string.IsNullOrWhiteSpace(archiveFolder))
                         {
-                            string fileName = archiveFolder + record.ServerFileName;
+                            string fileName = archiveFolder + (request.IsThumbnail ? item.ServerThumbnailFileName : item.ServerFileName);
                             //
                             record.FileContent = ClassHelper.ByteString_FromByteArray(MyFile.Load_ToByteArray(fileName));
                         }

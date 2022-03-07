@@ -134,7 +134,7 @@
             Snackbar.Add(MyMessage.Error_LoadDataFailed, Severity.Error);
         }
     }
-   
+
     #endregion
 
 
@@ -186,6 +186,7 @@
         //Init new row
         var newRow = new UserAccountModel();
         newRow.UpdMode = 1;
+        newRow.Status = true;
         newRow.ModifiedOn = DateTime.Now;
         //
         var parameters = new DialogParameters();

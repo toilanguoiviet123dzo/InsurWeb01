@@ -6,7 +6,6 @@ namespace BlazorApp.Client.BindingModels
     public class UserAccountModel
     {
         public string ID { get; set; } = "";
-        [Required(ErrorMessage = "Bắt buộc nhập.")]
         public string UserID { get; set; } = "";
         [Required(ErrorMessage = "Bắt buộc nhập.")]
         public string UserName { get; set; } = "";

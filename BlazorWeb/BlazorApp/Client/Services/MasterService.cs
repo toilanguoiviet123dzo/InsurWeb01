@@ -78,6 +78,47 @@ namespace BlazorApp.Client.Services
             return result;
         }
 
+        //RoleList
+        private List<RoleListModel> RoleLists = new List<RoleListModel>();
+        public async Task<List<RoleListModel>> Load_RoleList()
+        {
+            try
+            {
+                if (RoleLists.Count == 0)
+                {
+                    var request = new Admin.Services.Empty_Request();
+                    request.Credential = new Admin.Services.UserCredential()
+                    {
+                        Username = WebUserCredential.Username,
+                        RoleID = WebUserCredential.RoleID,
+                        AccessToken = WebUserCredential.AccessToken,
+                        ApiKey = WebUserCredential.ApiKey
+                    };
+                    //
+                    var response = await _adminServiceClient.GetRoleListAsync(request);
+                    if (response != null && response.ReturnCode == GrpcReturnCode.OK)
+                    {
+                        foreach (var item in response.Records)
+                        {
+                            //Parrent grid
+                            var dataRow = new RoleListModel();
+                            ClassHelper.CopyPropertiesDataDateConverted(item, dataRow);
+                            //
+                            RoleLists.Add(dataRow);
+                        }
+                    }
+                    //Order
+                    if (RoleLists.Count > 0)
+                    {
+                        RoleLists = RoleLists.OrderBy(x => x.DspOrder).ToList();
+                    }
+                }
+            }
+            catch { }
+            //
+            return RoleLists;
+        }
+
         //UserList
         private List<UserAccountModel> UserLists = new List<UserAccountModel>();
         public async Task<List<UserAccountModel>> Load_UserList()

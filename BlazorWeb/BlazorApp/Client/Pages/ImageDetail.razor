@@ -1,0 +1,155 @@
+﻿@using Resource.Services
+@using System.Collections.ObjectModel;
+@using System.IO;
+@inject grpcResourceService.grpcResourceServiceClient resourceServiceClient;
+@inject IJSRuntime JsRuntime;
+@inject ISnackbar Snackbar
+
+<MudCarousel @ref="_carousel"
+             Class="mud-width-full"
+             ItemsSource="@DetailData"
+             SelectedIndex="SelectedIndex"
+             SelectedIndexChanged="@((int index) => SelectedIndexChanged_Handle(index))"
+             BulletsColor="Color.Secondary"
+             ShowArrows="true"
+             ShowBullets="true"
+             AutoCycle="true">
+    <ItemTemplate>
+        <div class="d-flex flex-column flex-column justify-center" style="height:100%">
+            <MudIcon Class="mx-auto" Icon="@Icons.Custom.Brands.MudBlazor" Size="@Size.Large" />
+            <MudText Align="@Align.Center" Class="mx-auto">@context</MudText>
+        </div>
+    </ItemTemplate>
+</MudCarousel>
+
+
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public List<UpLoadFileModel> DetailData { get; set; } = new List<UpLoadFileModel>();
+    //Ref
+    MudCarousel<UpLoadFileModel> _carousel;
+    int SelectedIndex;
+
+
+    #region Load data
+
+    void OnCancel()
+    {
+        MudDialog.Close();
+    }
+
+    async void SelectedIndexChanged_Handle(int index)
+    {
+        SelectedIndex = index;
+
+        //Load image from DB
+        var request = new Resource.Services.String_Request();
+        var Credential = new Resource.Services.UserCredential()
+            {
+                Username = WebUserCredential.Username,
+                RoleID = WebUserCredential.RoleID,
+                AccessToken = WebUserCredential.AccessToken,
+                ApiKey = WebUserCredential.ApiKey
+            };
+        request.Credential = Credential;
+        //ClaimNo
+        request.StringValue = DetailData[index].ResourceID;
+        //Call api
+        var response = await resourceServiceClient.GetResourceFileAsync(request);
+        // Success
+        if (response != null && response.ReturnCode == GrpcReturnCode.OK)
+        {
+            DetailData[index].FileContent = response.Record.FileContent();
+        }
+    }
+
+
+
+    async void Add_ImagesHandle(List<UpLoadFileModel> uploadFiles)
+    {
+        await DisplayMain();
+    }
+
+    void ShowImageDetail(string resourceID)
+    {
+
+    }
+    #endregion
+
+
+    #region Screen items
+
+
+    //DownLoadFile
+    async void DownLoadFile(UpLoadFileModel dataRow)
+    {
+        //Download file content
+        if (dataRow.FileContent == null || dataRow.FileContent.Length == 0)
+        {
+            var request = new Resource.Services.String_Request();
+            var Credential = new Resource.Services.UserCredential()
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                };
+            request.Credential = Credential;
+            request.StringValue = dataRow.ResourceID;
+            //
+            var response = await resourceServiceClient.GetResourceFileAsync(request);
+            // Success
+            if (response != null && response.ReturnCode == GrpcReturnCode.OK)
+            {
+                dataRow.FileContent = ClassHelper.ByteArray_FromByteString(response.Record.FileContent);
+            }
+        }
+        if (dataRow.FileContent == null || dataRow.FileContent.Length == 0)
+        {
+            Snackbar.Add(MyMessage.Error_DownloadFile, Severity.Error);
+            return;
+        }
+
+        //call javascript function to download the file
+        await JsRuntime.InvokeVoidAsync("downloadFile", "application/octet-stream", Convert.ToBase64String(dataRow.FileContent), dataRow.FileName);
+    }
+
+    async void DeleteImage(string resourceID)
+    {
+        try
+        {
+            //Request
+            var request = new Resource.Services.String_Request();
+            var Credential = new Resource.Services.UserCredential()
+                {
+                    Username = WebUserCredential.Username,
+                    RoleID = WebUserCredential.RoleID,
+                    AccessToken = WebUserCredential.AccessToken,
+                    ApiKey = WebUserCredential.ApiKey
+                };
+            request.Credential = Credential;
+            //resourceID
+            request.StringValue = resourceID;
+            //Call api
+            var response = await resourceServiceClient.DeleteResourceFileAsync(request);
+            // Success
+            if (response != null && response.ReturnCode == GrpcReturnCode.OK)
+            {
+                //DetailData.RemoveAll(x => x.ResourceID == resourceID);
+                this.StateHasChanged();
+            }
+            else
+            {
+                Snackbar.Add(MyMessage.Error_DeleteFile, Severity.Error);
+            }
+        }
+        catch
+        {
+            Snackbar.Add(MyMessage.Error_DeleteFile, Severity.Error);
+        }
+    }
+
+    #endregion
+    //
+}

@@ -20,6 +20,6 @@ namespace BlazorApp.Client.BindingModels
         public string AccountID { get; set; } = "";
         public DateTime IssueDate { get; set; }
         public int UpdMode { get; set; }
-        public bool IsFileChanged { get; set; } = false;
+        public string RecNo { get; set; } = "";
     }
 }
