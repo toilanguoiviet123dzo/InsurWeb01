@@ -67,13 +67,13 @@ namespace BlazorApp.Server.Services
                     foreach (var record in request.Records)
                     {
                         var resourceFile = new grpcResourceFileModel();
-                        ClassHelper.CopyPropertiesData(request.Records, resourceFile);
+                        ClassHelper.CopyPropertiesData(record, resourceFile);
                         //
                         var resourceID = await SaveResourceFile(resourceFile);
                         //
                         var saveRes = new grpcSaveResourceFileResult();
                         saveRes.ResourceID = resourceID;
-                        saveRes.FileName = resourceFile.FileName;
+                        saveRes.RecNo = resourceFile.RecNo;
                         response.Results.Add(saveRes);
                     }
                 }
@@ -92,13 +92,10 @@ namespace BlazorApp.Server.Services
             string resourceID = "";
             try
             {
-                //Archive mode
-                resourceFile.ArchiveMode = ArchiveMode;
-
                 //archiveFolder
                 SettingMasterModel settingMaster;
                 string archiveFolder = "";
-                if (resourceFile.ArchiveMode == 2)
+                if (ArchiveMode == 2)
                 {
                     settingMaster = await SettingMaster.GetSetting("001");
                     archiveFolder = settingMaster == null ? "" : settingMaster.StringValue1;
@@ -109,6 +106,8 @@ namespace BlazorApp.Server.Services
                 {
                     var saveRecord = new mdResourceFile();
                     ClassHelper.CopyPropertiesData(resourceFile, saveRecord);
+                    //ArchiveMode
+                    saveRecord.ArchiveMode = ArchiveMode;
                     //Insert
                     if (resourceFile.UpdMode == 1)
                     {
@@ -116,17 +115,31 @@ namespace BlazorApp.Server.Services
                         saveRecord.ID = "";
                     }
                     saveRecord.IssueDate = DateTime.UtcNow;
+                    if (saveRecord.IsMakeThumbnail)
+                    {
+                        saveRecord.Thumbnail = ImageHelper.MakeThumbnail(saveRecord.FileContent, saveRecord.ThumbnailWidth, saveRecord.ThumbnailHeight);
+                        saveRecord.HasThumbnail = true;
+                    }
 
                     //Save to local file
-                    if (resourceFile.ArchiveMode == 2 && !string.IsNullOrWhiteSpace(archiveFolder))
+                    if (ArchiveMode == 2 && !string.IsNullOrWhiteSpace(archiveFolder))
                     {
+                        //Full
                         saveRecord.ServerFileName = saveRecord.ResourceID + "_" + saveRecord.FileName;
                         string fileName = archiveFolder + saveRecord.ServerFileName;
-                        //Save file
                         MyFile.Write_ToBinary(fileName, saveRecord.FileContent);
+
+                        //Thumbnail
+                        if (saveRecord.IsMakeThumbnail)
+                        {
+                            saveRecord.ServerThumbnailFileName = saveRecord.ResourceID + "_T_" + saveRecord.FileName;
+                            fileName = archiveFolder + saveRecord.ServerThumbnailFileName;
+                            MyFile.Write_ToBinary(fileName, saveRecord.Thumbnail);
+                        }
 
                         //Clear file content for DB
                         saveRecord.FileContent = null;
+                        saveRecord.Thumbnail = null;
                     }
                     //
                     await saveRecord.SaveAsync();
@@ -148,11 +161,18 @@ namespace BlazorApp.Server.Services
                         resourceID = findRecord.ResourceID;
 
                         //Delete local file
-                        if (resourceFile.ArchiveMode == 2 && !string.IsNullOrWhiteSpace(archiveFolder))
+                        if (findRecord.ArchiveMode == 2 && !string.IsNullOrWhiteSpace(archiveFolder))
                         {
-                            string fileName = archiveFolder + resourceFile.ServerFileName;
-                            //
+                            //Full image
+                            string fileName = archiveFolder + findRecord.ServerFileName;
                             MyFile.Delete(fileName);
+
+                            //Thumbnail
+                            if (findRecord.HasThumbnail)
+                            {
+                                fileName = archiveFolder + findRecord.ServerThumbnailFileName;
+                                MyFile.Delete(fileName);
+                            }
                         }
 
                         //Delete record
@@ -224,14 +244,25 @@ namespace BlazorApp.Server.Services
                     response.Record = new grpcResourceFileModel();
                     ClassHelper.CopyPropertiesData(findRecord, response.Record);
 
+                    //Full
+                    if (!request.IsGetFull) response.Record.FileContent = ByteString.Empty;
+                    //Full
+                    if (!request.IsGetThumbnail) response.Record.Thumbnail = ByteString.Empty;
+
                     //Load file content
                     if (findRecord.ArchiveMode == 2 && !string.IsNullOrWhiteSpace(archiveFolder))
                     {
-                        string fileName = archiveFolder + (request.IsThumbnail ? findRecord.ServerThumbnailFileName : findRecord.ServerFileName);
-                        //
-                        if (File.Exists(fileName))
+                        //Full
+                        if (request.IsGetFull)
                         {
-                            response.Record.FileContent = ClassHelper.ByteString_FromByteArray(MyFile.Load_ToByteArray(fileName));
+                            string fileName = archiveFolder + findRecord.ServerFileName;
+                            if (File.Exists(fileName)) response.Record.FileContent = ClassHelper.ByteString_FromByteArray(MyFile.Load_ToByteArray(fileName));
+                        }
+                        //Thumbnail
+                        if (request.IsGetThumbnail)
+                        {
+                            string fileName = archiveFolder + findRecord.ServerThumbnailFileName;
+                            if (File.Exists(fileName)) response.Record.Thumbnail = ClassHelper.ByteString_FromByteArray(MyFile.Load_ToByteArray(fileName));
                         }
                     }
                 }
@@ -282,12 +313,26 @@ namespace BlazorApp.Server.Services
                         var record = new grpcResourceFileModel();
                         ClassHelper.CopyPropertiesData(item, record);
 
+                        //Full
+                        if (!request.IsGetFull) record.FileContent = ByteString.Empty;
+                        //Full
+                        if (!request.IsGetThumbnail) record.Thumbnail = ByteString.Empty;
+
                         //Load file content
                         if (item.ArchiveMode == 2 && !string.IsNullOrWhiteSpace(archiveFolder))
                         {
-                            string fileName = archiveFolder + (request.IsThumbnail ? item.ServerThumbnailFileName : item.ServerFileName);
-                            //
-                            record.FileContent = ClassHelper.ByteString_FromByteArray(MyFile.Load_ToByteArray(fileName));
+                            //Full
+                            if (request.IsGetFull)
+                            {
+                                string fileName = archiveFolder + item.ServerFileName;
+                                if (File.Exists(fileName)) record.FileContent = ClassHelper.ByteString_FromByteArray(MyFile.Load_ToByteArray(fileName));
+                            }
+                            //Thumbnail
+                            if (request.IsGetThumbnail)
+                            {
+                                string fileName = archiveFolder + item.ServerThumbnailFileName;
+                                if (File.Exists(fileName)) record.Thumbnail = ClassHelper.ByteString_FromByteArray(MyFile.Load_ToByteArray(fileName));
+                            }
                         }
                         //
                         response.Records.Add(record);

@@ -32,7 +32,6 @@
            Class="@Class"
            Style="@Style"
            Tag="@Tag"
-           UserAttributes="@UserAttributes"
            MultiSelection="false"
            @attributes="@Attributes"
            Label="@Literal">
@@ -70,7 +69,6 @@
     [Parameter] public string Class { get; set; } = "";
     [Parameter] public string Style { get; set; } = "";
     [Parameter] public object Tag { get; set; }
-    [Parameter] public Dictionary<string, object> UserAttributes { get; set; }
     [Parameter] public string TextFieldName { get; set; } = "";
     //
     [Parameter] public List<TValue> Data { get; set; } = new List<TValue>();
@@ -116,6 +114,9 @@
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
+        //ReadOnly -> Disable
+        if (ReadOnly) Disabled = true;
+
         //Width
         if (!string.IsNullOrWhiteSpace(Width))
         {

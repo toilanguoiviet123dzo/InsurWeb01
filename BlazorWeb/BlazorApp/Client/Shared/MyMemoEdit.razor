@@ -17,7 +17,7 @@
               Disabled="@Disabled"
               ReadOnly="@ReadOnly"
               Lines="@Rows"
-              UserAttributes="@Attributes" />
+              @attributes="@Attributes" />
 
 
 @code {
@@ -52,6 +52,9 @@
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
+        //ReadOnly -> Disable
+        if (ReadOnly) Disabled = true;
+
         //Width
         if (!string.IsNullOrWhiteSpace(Width))
         {

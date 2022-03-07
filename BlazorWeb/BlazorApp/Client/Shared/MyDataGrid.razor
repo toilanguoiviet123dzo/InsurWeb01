@@ -83,20 +83,23 @@
         @RowTemplate(context)
     </RowTemplate>
     <PagerContent>
-        <MudPagination SelectedChanged="PageChanged" Count="@((_table.GetFilteredItemsCount() + _table.RowsPerPage - 1) / _table.RowsPerPage)" Class="pa-4"/>
+        <MudPagination SelectedChanged="PageChanged" Count="@((_table.GetFilteredItemsCount() + _table.RowsPerPage - 1) / _table.RowsPerPage)" Class="pa-4" />
     </PagerContent>
 </MudTable>
 
-<MudMessageBox @ref="mbox" Title="Cảnh báo" CancelText="Cancel">
-    <MessageContent>
-        <div Style="min-width:250px">
-            @MyMessage.Confirm_DeleteRow
-        </div>
-    </MessageContent>
-    <YesButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever">Delete!</MudButton>
-    </YesButton>
-</MudMessageBox>
+@if (MsgVisible)
+{
+    <MudMessageBox @ref="mbox" Title="Cảnh báo" CancelText="Cancel" IsVisible="@MsgVisible">
+        <MessageContent>
+            <div Style="min-width:250px">
+                @MyMessage.Confirm_DeleteRow
+            </div>
+        </MessageContent>
+        <YesButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever">Delete!</MudButton>
+        </YesButton>
+    </MudMessageBox>
+}
 
 
 @code {
@@ -184,6 +187,7 @@
     //Data
     string SearchString = "";
     MudMessageBox mbox { get; set; }
+    bool MsgVisible = false;
     private MudTable<T> _table;
     //
     protected override void OnParametersSet()

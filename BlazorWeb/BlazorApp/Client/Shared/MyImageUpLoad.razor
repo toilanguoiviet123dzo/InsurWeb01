@@ -10,14 +10,16 @@
 
 <MudFab HtmlTag="label"
         Color="Color.Secondary"
-        Icon="@Icons.Filled.Image"
-        Label="Load picture"
+        StartIcon="@Icons.Material.Filled.Add"
+        Size="Size.Medium"
         for="fileInput" />
 
 @code {
     [Parameter] public string OwnerID { get; set; } = "";
     [Parameter] public string CategoryID { get; set; } = "";
     [Parameter] public bool IsMakeThumbnail { get; set; } = true;
+    [Parameter] public int ThumbnailWidth { get; set; } = 250;
+    [Parameter] public int ThumbnailHeight { get; set; } = 250;
     [Parameter] public Int32 SecureLevel { get; set; } = 0;
     [Parameter] public EventCallback<List<UpLoadFileModel>> OnSubmit { get; set; }
     //
@@ -59,6 +61,8 @@
                 uploadItem.FileName = file.Name;
                 uploadItem.FileContent = ms.ToArray();
                 uploadItem.IsMakeThumbnail = IsMakeThumbnail;
+                uploadItem.ThumbnailWidth = ThumbnailWidth;
+                uploadItem.ThumbnailHeight = ThumbnailHeight;
                 uploadItem.SecureLevel = SecureLevel;
                 uploadItem.AccountID = WebUserCredential.Username;
                 uploadItem.IssueDate = DateTime.Now;
@@ -89,7 +93,7 @@
             // Call api
             var response = await resourceServiceClient.SaveResourceFilesAsync(request);
             // Success
-            if (response != null && response.ReturnCode != GrpcReturnCode.OK)
+            if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
                 if (response.Results != null && response.Results.Count > 0)
                 {

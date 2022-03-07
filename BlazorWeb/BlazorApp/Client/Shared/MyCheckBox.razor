@@ -7,11 +7,22 @@
              Style="@Style"
              Tag="@Tag"
              Color="Color.Primary">
-    @Literal
+    <ChildContent>
+        @if (!string.IsNullOrWhiteSpace(Literal))
+        {
+            @Literal
+        }
+        else
+        {
+            @ChildContent
+        }
+    </ChildContent>
 </MudCheckBox>
 
 
 @code {
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public bool TabStop { get; set; } = true;
     [Parameter] public string Literal { get; set; } = "";
     [Parameter] public bool Disabled { get; set; } = false;
     [Parameter] public bool ReadOnly { get; set; } = false;
@@ -25,6 +36,25 @@
     private async void CheckedChanged_Handle(bool newValue)
     {
         await CheckedChanged.InvokeAsync(newValue);
+    }
+
+    //Attributes
+    private Dictionary<string, object> Attributes { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        //ReadOnly -> Disable
+        if (ReadOnly) Disabled = true;
+
+        //ReadOnly
+        if (ReadOnly || !TabStop)
+        {
+            Attributes = new Dictionary<string, object>()
+                                            {
+                                                { "tabIndex", "-1" }
+                                            };
+        }
     }
 
 }

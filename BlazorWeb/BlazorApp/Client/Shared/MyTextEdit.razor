@@ -20,7 +20,7 @@
               Disabled="@Disabled"
               ReadOnly="@ReadOnly"
               InputType="@InputType"
-              UserAttributes="@Attributes" />
+              @attributes="@Attributes" />
 
 
 @code {
@@ -58,6 +58,10 @@
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
+
+        //Editable
+        if (ReadOnly) Disabled = false;
+
         //Width
         if (!string.IsNullOrWhiteSpace(Width))
         {

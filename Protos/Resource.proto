@@ -88,7 +88,8 @@ message GetResourceFiles_Request {
     string OwnerID = 2;
     string CategoryID = 3;
     string FileType = 4;
-    bool IsThumbnail = 5;
+    bool IsGetFull = 5;
+    bool IsGetThumbnail = 6;
 }
 message GetResourceFiles_Response {
     int32 ReturnCode = 1;
@@ -104,20 +105,25 @@ message grpcResourceFileModel {
     string FileType = 5;
     string Title = 6;
     string FileName = 7;
-    string ServerFileName = 8;
     bytes FileContent = 9;
+    bytes Thumbnail = 10;
     int32 SecureLevel = 11;
     string AccountID = 12;
     string RecNo = 13;
+    bool IsMakeThumbnail = 14;
+    int32 ThumbnailWidth = 15;
+    int32 ThumbnailHeight = 16;
+    bool HasThumbnail = 17;
     //
-    google.protobuf.Timestamp IssueDate = 14;
-    int32 UpdMode = 15;
+    google.protobuf.Timestamp IssueDate = 18;
+    int32 UpdMode = 19;
 }
 message GetResourceFile_Request {
     UserCredential Credential = 1;
     //
     string ResourceID = 2;
-    bool IsThumbnail = 3;
+    bool IsGetFull = 3;
+    bool IsGetThumbnail = 4;
 }
 
 

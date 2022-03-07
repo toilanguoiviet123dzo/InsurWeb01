@@ -25,7 +25,7 @@
                  Class="@Class"
                  Style="@Style"
                  Tag="@Tag"
-                 UserAttributes="@Attributes"/>
+                 @attributes="@Attributes"/>
 
 
 @code {
@@ -70,6 +70,9 @@
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
+
+        //ReadOnly -> Disable
+        if (ReadOnly) Disabled = true;
 
         //Set width
         if (!string.IsNullOrWhiteSpace(Width))

@@ -7,7 +7,7 @@
     }
 
     .mud-expand-panel .mud-expand-panel-header {
-        padding: 0 !important;
+        padding: 0 0 0 8px !important;
     }
 </style>
 
@@ -39,6 +39,7 @@
         {
             <MyButton OnClick="OnSubmit" Icon="@SubmitIcon" Color="SubmitColor" Literal="SubmitText" />
         }
+        @ActionButtons
     </DialogActions>
 </MudDialog>
 
@@ -46,6 +47,7 @@
 
     [Parameter] public string Title { get; set; } = "";
     [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public RenderFragment ActionButtons { get; set; }
     [Parameter] public bool ReadOnly { get; set; } = false;
     [Parameter] public bool IsShowCancelButton { get; set; } = true;
     [Parameter] public bool IsShowSubmitButton { get; set; } = true;

@@ -13,8 +13,11 @@ namespace BlazorApp.Client.BindingModels
         public string Title { get; set; } = "";
         public string FileName { get; set; } = "";
         public byte[] FileContent { get; set; } = new byte[] { };
-        public bool IsMakeThumbnail { get; set; }
         public byte[] Thumbnail { get; set; } = new byte[] { };
+        public bool IsMakeThumbnail { get; set; }
+        public int ThumbnailWidth { get; set; }
+        public int ThumbnailHeight { get; set; }
+        public bool HasThumbnail { get; set; }
         public int SecureLevel { get; set; }
         public string SecureLevelName { get; set; }
         public string AccountID { get; set; } = "";
