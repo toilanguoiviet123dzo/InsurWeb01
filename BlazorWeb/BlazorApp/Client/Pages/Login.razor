@@ -82,7 +82,6 @@
         var result = await AuthService.Login(model);
         if (result == true)
         {
-            await Get_BrowserInfo();
             NavManager.NavigateTo("/");
             _ = RequestNotificationSubscriptionAsync();
         }
@@ -90,20 +89,6 @@
         {
             errorMessage = "There is error on login.";
             showError = true;
-        }
-    }
-
-    async Task Get_BrowserInfo()
-    {
-        var info = await JsRuntime.InvokeAsync<BrowserDimension>("getDimensions");
-        if (info != null)
-        {
-            BrowserInfo.Height = info.Height;
-            BrowserInfo.Width = info.Width;
-            if (BrowserInfo.Width <= 768)
-            {
-                BrowserInfo.IsMobile = true;
-            }
         }
     }
 

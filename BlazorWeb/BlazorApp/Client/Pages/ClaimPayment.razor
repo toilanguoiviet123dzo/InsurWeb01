@@ -20,13 +20,15 @@
                 <div class="col-12 col-lg-2">
                     <MyTextEdit @bind-Text="Filter_CusPhone"
                                 Literal="Phone"
-                                Class="text-blue font-weight-bold" />
+                                IsFontBold="true"
+                                TextColor="@MyTextColor.Blue" />
                 </div>
                 <!--Số IMEI thiết bị-->
                 <div class="col-12 col-lg-2">
                     <MyTextEdit @bind-Text="Filter_DeviceIMEI"
                                 Literal="Số IMEI thiết bị"
-                                Class="text-purple font-weight-bold" />
+                                IsFontBold="true"
+                                TextColor="@MyTextColor.Blue" />
                 </div>
                 <!--Tên khách hàng-->
                 <div class="col-12 col-lg-2">
@@ -96,7 +98,7 @@
                                                       StatusCheck = newValue;
                                                       CheckName = newValue? "Xong" : "Chưa";
                                                   })">
-                                <label> @CheckName </label>
+                                @CheckName
                             </MyCheckBox>
                         </div>
                     </div>
@@ -117,8 +119,6 @@
             T="ClaimRequestListModel"
             Title="Danh sách yêu cầu bồi thường"
             Items="@DetailData"
-            IsAddNew="true"
-            IsDelete="true"
             OnViewRow="@((ClaimRequestListModel row) => OnViewRow_Handle(row))">
     <ColGroup>
         <col style="width: 5rem;" />
@@ -271,7 +271,7 @@
             }
             if (DetailData.Count == 0)
             {
-                Snackbar.Add(MyMessage.Error_NoData, Severity.Info);
+                Snackbar.Add(MyMessage.Warning_NoData, Severity.Warning);
             }
             if (grid != null) grid.EndLoadData();
         }
@@ -288,6 +288,7 @@
     void OnViewRow_Handle(ClaimRequestListModel row)
     {
         var parameters = new DialogParameters { ["ClaimNo"] = row.ClaimNo };
+        parameters.Add("ReadOnly", row.RowMode_View);
         ShowDetailForm(parameters);
     }
 

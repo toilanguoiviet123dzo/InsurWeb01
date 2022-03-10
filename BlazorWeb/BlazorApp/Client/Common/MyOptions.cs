@@ -16,7 +16,7 @@ namespace BlazorApp.Client.Common
                 Position = DialogPosition.Center,
                 CloseOnEscapeKey = true,
                 DisableBackdropClick = true,
-                CloseButton = true,
+                CloseButton = false,
                 FullWidth = true
             };
             return options;

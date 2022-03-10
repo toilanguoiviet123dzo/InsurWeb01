@@ -9,28 +9,26 @@
     .mud-expand-panel .mud-expand-panel-header {
         padding: 0 0 0 8px !important;
     }
+
+    .mud-dialog .mud-dialog-title {
+        padding: 0 !important;
+    }
 </style>
 
-<MudDialog @ref="@Ref"
-           Style="@($"max-height: {MaxHeight}; overflow-y: scroll")"
-           ClassActions="justify-center"
-           ClassContent="p-1"
-           IsVisibleChanged="@((value) => OnVisibleChanged(value))">
-    <TitleContent>
+<MudCard @ref="@Ref">
+    <MudCardHeader>
         <MudAppBar Fixed="false" Elevation="1" Dense="true">
             <MudText Typo="Typo.h6" Class="ml-4">
                 @Title
             </MudText>
-            <MudSpacer/>
+            <MudSpacer />
             <MudIconButton Class="mt-n2" Icon="@Icons.Material.Filled.Close" Color="Color.Error" Size="Size.Medium" OnClick="@(() => OnClose_Handle())"></MudIconButton>
         </MudAppBar>
-    </TitleContent>
-    <DialogContent>
-        <MudContainer>
-            @ChildContent
-        </MudContainer>
-    </DialogContent>
-    <DialogActions>
+    </MudCardHeader>
+    <MudCardContent Style="@($"max-height: {MaxHeight}; overflow-y: scroll")">
+        @ChildContent
+    </MudCardContent>
+    <MudCardActions Class="justify-center">
         @if (IsShowCancelButton)
         {
             <MyButton OnClick="OnCancel" Icon="@CancelIcon" Color="CancelColor" Literal="@CancelText" />
@@ -40,11 +38,10 @@
             <MyButton OnClick="OnSubmit" Icon="@SubmitIcon" Color="SubmitColor" Literal="@SubmitText" />
         }
         @ActionButtons
-    </DialogActions>
-</MudDialog>
+    </MudCardActions>
+</MudCard>
 
 @code {
-
     [Parameter] public string Title { get; set; } = "";
     [Parameter] public RenderFragment ChildContent { get; set; }
     [Parameter] public RenderFragment ActionButtons { get; set; }
@@ -83,8 +80,8 @@
     }
 
     //Ref
-    MudDialog Ref;
-    string MaxHeight = "90%";
+    MudCard Ref;
+    string MaxHeight = "800px";
 
     //Close
     async void OnClose_Handle()
@@ -97,6 +94,6 @@
         base.OnParametersSet();
 
         //Height
-        if (BrowserInfo.IsMobile) MaxHeight = "100%";
+        MaxHeight = Math.Round(BrowserInfo.Height * 0.8, 0) + "px";
     }
 }

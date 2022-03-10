@@ -20,13 +20,15 @@
                 <div class="col-12 col-lg-2">
                     <MyTextEdit @bind-Text="Filter_CusPhone"
                                 Literal="Phone"
-                                Class="text-blue font-weight-bold" />
+                                IsFontBold="true"
+                                TextColor="@MyTextColor.Blue" />
                 </div>
                 <!--Số IMEI thiết bị-->
                 <div class="col-12 col-lg-2">
                     <MyTextEdit @bind-Text="Filter_DeviceIMEI"
                                 Literal="Số IMEI thiết bị"
-                                Class="text-purple font-weight-bold" />
+                                IsFontBold="true"
+                                TextColor="@MyTextColor.Purple" />
                 </div>
                 <!--Tên khách hàng-->
                 <div class="col-12 col-lg-2">
@@ -96,7 +98,7 @@
                                                       StatusCheck = newValue;
                                                       CheckName = newValue? "Xong" : "Chưa";
                                                   })">
-                                <label> @CheckName </label>
+                                @CheckName
                             </MyCheckBox>
                         </div>
                     </div>
@@ -117,8 +119,6 @@
             T="ClaimRequestListModel"
             Title="Danh sách yêu cầu bồi thường"
             Items="@DetailData"
-            IsAddNew="true"
-            IsDelete="true"
             OnViewRow="@((ClaimRequestListModel row) => OnViewRow_Handle(row))">
     <ColGroup>
         <col style="width: 5rem;" />
@@ -180,7 +180,7 @@
     private string Filter_CusPhone = "";
     private string Filter_DeviceIMEI = "";
     private string Filter_CusFullname = "";
-    private CodeNameModel Filter_Status { get; set; } =  new CodeNameModel { CodeInt = 10, Name = "Trả hàng" };
+    private CodeNameModel Filter_Status { get; set; } = new CodeNameModel { CodeInt = 10, Name = "Trả hàng" };
     private CodeNameModel Filter_TimeFlag { get; set; }
     private DateTime Filter_StartDate { get; set; } = DateTime.Today.MinDate().ToLocalTime();
     private DateTime Filter_EndDate { get; set; } = DateTime.Today.MaxDate().ToLocalTime();
@@ -270,7 +270,7 @@
             }
             if (DetailData.Count == 0)
             {
-                Snackbar.Add(MyMessage.Error_NoData, Severity.Info);
+                Snackbar.Add(MyMessage.Warning_NoData, Severity.Warning);
             }
             if (grid != null) grid.EndLoadData();
         }
@@ -287,6 +287,7 @@
     void OnViewRow_Handle(ClaimRequestListModel row)
     {
         var parameters = new DialogParameters { ["ClaimNo"] = row.ClaimNo };
+        parameters.Add("ReadOnly", row.RowMode_View);
         ShowDetailForm(parameters);
     }
 

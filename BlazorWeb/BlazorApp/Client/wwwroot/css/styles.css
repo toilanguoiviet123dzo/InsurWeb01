@@ -46,6 +46,11 @@
 
 /*Text color END*/
 
+
+input:read-only {
+    pointer-events: none !important;
+}
+
 /*DevExtreme STT*/
 .dx-grid-summary-cell {
     color: navy;

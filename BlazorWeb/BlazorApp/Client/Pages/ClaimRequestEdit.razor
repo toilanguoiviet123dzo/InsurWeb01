@@ -24,7 +24,8 @@
                                     ReadOnly="true"
                                     Literal="Số tiếp nhận"
                                     Width="8rem"
-                                    Class="text-blue font-weight-bold" />
+                                    TextColor="@MyTextColor.Blue"
+                                    IsFontBold="true" />
                     </div>
 
                     <!--Ngày tiếp nhận-->
@@ -32,7 +33,7 @@
                         <MyDateTimeEdit @bind-Date="Model.ClaimDate"
                                         Literal="Ngày tiếp nhận"
                                         ReadOnly="true"
-                                        Class="text-blue" />
+                                        TextColor="@MyTextColor.Blue" />
                     </div>
                     <!--Người tiếp nhận-->
                     <div class="col-12 col-lg-3">
@@ -49,14 +50,14 @@
                         <MyTextEdit @ref="@RefPhone"
                                     Text="@Model.CusPhone"
                                     TextChanged="@((string x) => OnTextChanged_Phone(x))"
-                                    Literal="Điện thoại liên hệ"
-                                    Class="text-blue font-weight-bold"/>
+                                    TextColor="@MyTextColor.Blue"
+                                    Literal="Điện thoại liên hệ" />
                     </div>
                     <!--Tên khách hàng-->
                     <div class="col-12 col-lg-3">
-                        <MyTextEdit @bind-Text="Model.CusFullname"
-                                    Literal="Tên khách hàng"
-                                    Class="cusfullname-focus" />
+                        <MyTextEdit @ref="@RefCusFullname"
+                                    @bind-Text="Model.CusFullname"
+                                    Literal="Tên khách hàng" />
                     </div>
                     <!--Email-->
                     <div class="col-12 col-lg-3">
@@ -87,8 +88,9 @@
                     <!--Số IMEI thiết bị-->
                     <div class="col-12 col-lg-3">
                         <MyTextEdit @bind-Text="Model.DeviceIMEI"
-                                    Literal="Số IMEI thiết bị"
-                                    Class="text-purple font-weight-bold text-uppercase" />
+                                    IsUpperCase="true"
+                                    TextColor="@MyTextColor.Purple"
+                                    Literal="Số IMEI thiết bị" />
                     </div>
                     <!--Model-->
                     <div class="col-12 col-lg-3">
@@ -101,9 +103,9 @@
                 <div class="row">
                     <!--Địa chỉ nhận thiết bị-->
                     <div class="col-12 col-lg-6">
-                        <MyTextEdit @bind-Text="Model.PickupAddress"
-                                    Literal="Địa chỉ nhận thiết bị"
-                                    Class="pickupaddress-focus" />
+                        <MyTextEdit @ref="@RefPickupAddress"
+                                    @bind-Text="Model.PickupAddress"
+                                    Literal="Địa chỉ nhận thiết bị" />
                     </div>
                     <!--Địa chỉ trả thiết bị-->
                     <div class="col-12 col-lg-6">
@@ -122,13 +124,13 @@
                     <div class="col-12 col-lg-3">
                         <MyDateTimeEdit @bind-Date="Model.NotificationDate"
                                         Literal="Ngày KH thông báo"
-                                        Class="text-green" />
+                                        TextColor="@MyTextColor.Green" />
                     </div>
                     <!--Ngày sự cố-->
                     <div class="col-12 col-lg-3">
                         <MyDateTimeEdit @bind-Date="Model.IncidentDate"
                                         Literal="Ngày sự cố"
-                                        Class="text-maroon" />
+                                        TextColor="@MyTextColor.Maroon" />
                     </div>
                     <!--Kênh thông báo-->
                     <div class="col-12 col-lg-3">
@@ -199,21 +201,23 @@
                         <MyTextEdit Text="@Model.InsurContractNo"
                                     TextChanged="@((string x) => OnInsurContractNo_Changed(x))"
                                     Literal="Số hợp đồng"
-                                    Class="text-blue font-weight-bold text-uppercase" />
+                                    IsFontBold="true"
+                                    IsUpperCase="true"
+                                    TextColor="@MyTextColor.Blue" />
                     </div>
                     <!--Từ ngày-->
                     <div class="col-12 col-lg-2">
                         <MyDateTimeEdit @bind-Date="Model.InsurStartDate"
                                         Literal="Từ ngày"
                                         ReadOnly="true"
-                                        Class="text-green" />
+                                        TextColor="@MyTextColor.Green" />
                     </div>
                     <!--Đến ngày-->
                     <div class="col-12 col-lg-2">
                         <MyDateTimeEdit @bind-Date="Model.InsurEndDate"
                                         Literal="Đến ngày"
                                         ReadOnly="true"
-                                        Class="text-maroon" />
+                                        TextColor="@MyTextColor.Maroon" />
                     </div>
                 </div>
 
@@ -252,7 +256,8 @@
                         <MyNumEdit @bind-Value="Model.ContractAmount"
                                    Format="N0"
                                    ReadOnly="true"
-                                   Class="text-blue font-weight-bold"
+                                   IsFontBold="true"
+                                   TextColor="@MyTextColor.Blue"
                                    Literal="Giá trị hợp đồng" />
                     </div>
                     <!--Số tiền bảo hiểm còn lại-->
@@ -260,7 +265,8 @@
                         <MyNumEdit @bind-Value="Model.InsurAmount"
                                    Format="N0"
                                    ReadOnly="true"
-                                   Class="text-maroon font-weight-bold"
+                                   IsFontBold="true"
+                                   TextColor="@MyTextColor.Maroon"
                                    Literal="Tiền bảo hiểm còn lại" />
                     </div>
                 </div>
@@ -273,10 +279,10 @@
 
     [CascadingParameter] protected ProgramInfo Program { get; set; }
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public bool ReadOnly { get; set; } = false;
     //Parameters and events
     [Parameter] public string ClaimNo { get; set; } = "";
     //
-    bool ReadOnly;
     ClaimRequestModel Model = new ClaimRequestModel();
     //Master
     List<OptionListModel> ProductList = new List<OptionListModel>();
@@ -300,7 +306,9 @@
     MyComboBox<OptionListModel> RefInsure;
     MyComboBox<BranchMasterModel> RefBranch;
     MyTextEdit RefPhone;
+    MyTextEdit RefCusFullname;
     MyMemoEdit RefDamageCause;
+    MyTextEdit RefPickupAddress;
     //Css
     string PriorityCss = "";
 
@@ -438,6 +446,8 @@
                         Model.Estimations.Add(estRow);
                     }
                 }
+                //Update
+                Model.UpdMode = 2;
 
                 //CSS
                 PriorityCss = "";
@@ -466,7 +476,7 @@
         //Skip
         if (Model.AcceptStatus)
         {
-            Snackbar.Add(MyMessage.Error_DataReadOnly, Severity.Warning);
+            Snackbar.Add(MyMessage.Warning_DataReadOnly, Severity.Warning);
             return false;
         }
         //Phone
@@ -480,7 +490,7 @@
         if (string.IsNullOrWhiteSpace(Model.CusFullname))
         {
             Snackbar.Add("Bắt buột nhập: Tên khách hàng", Severity.Warning);
-            await JsRuntime.InvokeAsync<string>("focusEditor", "cusfullname-focus");
+            RefCusFullname.Focus();
             return false;
         }
         //TPA Product
@@ -494,7 +504,7 @@
         if (string.IsNullOrWhiteSpace(Model.PickupAddress))
         {
             Snackbar.Add("Bắt buột nhập: Địa chỉ nhận thiết bị", Severity.Warning);
-            await JsRuntime.InvokeAsync<string>("focusEditor", "pickupaddress-focus");
+            RefPickupAddress.Focus();
             return false;
         }
         //Kênh thông báo

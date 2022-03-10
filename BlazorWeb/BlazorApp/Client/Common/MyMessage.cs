@@ -9,9 +9,6 @@ namespace BlazorApp.Client.Common
     {
         //Error message
         public const string Error_LoadDataFailed = "Load dữ liệu thất bại";
-        public const string Error_DataReadOnly = "Không cho phép chỉnh sửa";
-        public const string Error_DeleteReadOnlyData = "Không cho phép xóa dữ liệu";
-        public const string Error_NoData = "Không có dữ liệu";
         public const string Error_SaveFailed = "Lưu dữ liệu thất bại";
         public const string Error_DeleteFailed = "Xóa dữ liệu thất bại";
         public const string Error_NoNetwork = "Không kết nối được với máy chủ";
@@ -20,6 +17,10 @@ namespace BlazorApp.Client.Common
         public const string Error_LoadFile = "Load file bị lỗi!";
         public const string Error_DeleteFile = "Xóa file thất bại";
 
+        //Warnning
+        public const string Warning_NoData = "Không có dữ liệu";
+        public const string Warning_DataReadOnly = "Không cho phép chỉnh sửa";
+        public const string Warning_DeleteReadOnlyData = "Không cho phép xóa dữ liệu";
 
         //Confirm message
         public const string Confirm_DeleteRow = "Xóa dòng dữ liệu?";

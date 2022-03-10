@@ -25,7 +25,8 @@
                                     ReadOnly="true"
                                     Literal="Số tiếp nhận"
                                     Width="8rem"
-                                    Class="text-blue font-weight-bold" />
+                                    IsFontBold="true"
+                                    TextColor="@MyTextColor.Blue" />
                     </div>
 
                     <!--Ngày tiếp nhận-->
@@ -33,7 +34,7 @@
                         <MyDateTimeEdit @bind-Date="Model.ClaimDate"
                                         Literal="Ngày tiếp nhận"
                                         ReadOnly="true"
-                                        Class="text-blue" />
+                                        TextColor="@MyTextColor.Blue" />
                     </div>
                     <!--Người tiếp nhận-->
                     <div class="col-12 col-lg-3">
@@ -49,15 +50,15 @@
                     <div class="col-12 col-lg-3">
                         <MyTextEdit Text="@Model.CusPhone"
                                     Literal="Điện thoại liên hệ"
-                                    Class="text-blue font-weight-bold"
+                                    IsFontBold="true"
+                                    TextColor="@MyTextColor.Blue"
                                     ReadOnly="true" />
                     </div>
                     <!--Tên khách hàng-->
                     <div class="col-12 col-lg-3">
                         <MyTextEdit @bind-Text="Model.CusFullname"
                                     Literal="Tên khách hàng"
-                                    ReadOnly="true"
-                                    Class="cusfullname-focus" />
+                                    ReadOnly="true" />
                     </div>
                     <!--Email-->
                     <div class="col-12 col-lg-3">
@@ -86,7 +87,8 @@
                         <MyTextEdit @bind-Text="Model.DeviceIMEI"
                                     Literal="Số IMEI thiết bị"
                                     ReadOnly="true"
-                                    Class="text-purple font-weight-bold" />
+                                    IsFontBold="true"
+                                    TextColor="@MyTextColor.Purple" />
                     </div>
                     <!--Model-->
                     <div class="col-12 col-lg-3">
@@ -119,8 +121,7 @@
                     <div class="col-12 col-lg-6">
                         <MyTextEdit @bind-Text="Model.PickupAddress"
                                     Literal="Địa chỉ nhận thiết bị"
-                                    ReadOnly="true"
-                                    Class="pickupaddress-focus" />
+                                    ReadOnly="true" />
                     </div>
                     <!--Địa chỉ trả thiết bị-->
                     <div class="col-12 col-lg-6">
@@ -141,14 +142,14 @@
                         <MyDateTimeEdit @bind-Date="Model.NotificationDate"
                                         Literal="Ngày KH thông báo"
                                         ReadOnly="true"
-                                        Class="text-green" />
+                                        TextColor="@MyTextColor.Green" />
                     </div>
                     <!--Ngày sự cố-->
                     <div class="col-12 col-lg-3">
                         <MyDateTimeEdit @bind-Date="Model.IncidentDate"
                                         Literal="Ngày sự cố"
                                         ReadOnly="true"
-                                        Class="text-maroon" />
+                                        TextColor="@MyTextColor.Maroon" />
                     </div>
                 </div>
 
@@ -205,14 +206,14 @@
                         <MyDateTimeEdit @bind-Date="Model.EstReqDate"
                                         Literal="Ngày yêu cầu báo giá"
                                         ReadOnly="true"
-                                        Class="text-green" />
+                                        TextColor="@MyTextColor.Green" />
                     </div>
                     <!--Ngày báo giá xong-->
                     <div class="col-12 col-lg-3">
                         <MyDateTimeEdit @bind-Date="Model.EstDoneDate"
                                         Literal="Ngày báo giá xong"
                                         ReadOnly="true"
-                                        Class="text-blue" />
+                                        TextColor="@MyTextColor.Blue" />
                     </div>
                 </div>
 
@@ -220,11 +221,11 @@
                 <div class="row mt-2">
                     <!--Check: yêu cầu báo giá-->
                     <div class="col-12 col-lg-3">
-                        <MyCheckBox @bind-Checked="@Model.EstimationReqStatus" Class="text-green" ReadOnly="true">Yêu cầu báo giá</MyCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.EstimationReqStatus" TextColor="@MyTextColor.Green" ReadOnly="true">Yêu cầu báo giá</MyCheckBox>
                     </div>
                     <!--Check: Đã báo giá-->
                     <div class="col-12 col-lg-3">
-                        <MyCheckBox @bind-Checked="@Model.EstimationStatus" Class="text-green" ReadOnly="@(!Model.EstimationReqStatus || Model.ApproveStatus && Model.Estimations.Count > 0)">Đã báo giá</MyCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.EstimationStatus" TextColor="@MyTextColor.Green" ReadOnly="@(!Model.EstimationReqStatus || Model.ApproveStatus && Model.Estimations.Count > 0)">Đã báo giá</MyCheckBox>
                     </div>
                 </div>
 
@@ -281,14 +282,16 @@
                     <div class="col-12 col-lg-2">
                         <MyNumEdit @bind-Value="Model.ClaimAmount"
                                    ReadOnly="true"
-                                   Class="text-blue font-weight-bold"
+                                   IsFontBold="true"
+                                   TextColor="@MyTextColor.Blue"
                                    Literal="Tiền bồi thường" />
                     </div>
                     <!--Tiền duyệt-->
                     <div class="col-12 col-lg-2">
                         <MyNumEdit @bind-Value="Model.ApproveAmount"
                                    ReadOnly="true"
-                                   Class="text-maroon font-weight-bold"
+                                   IsFontBold="true"
+                                   TextColor="@MyTextColor.Maroon"
                                    Literal="Tiền duyệt" />
                     </div>
                 </div>
@@ -299,18 +302,19 @@
                         <MyDateTimeEdit @bind-Date="Model.RepairDoneDate"
                                         Literal="Ngày sửa chữa xong"
                                         ReadOnly="true"
-                                        Class="text-maroon" />
+                                        TextColor="@MyTextColor.Maroon" />
                     </div>
                     <!--Check: Đã sửa xong-->
                     <div class="col-12 col-lg-2">
-                        <MyCheckBox @bind-Checked="@Model.RepairStatus" ReadOnly="@(!Model.EstimationStatus || Model.ReturnStatus1)" Class="text-green">Đã sửa xong</MyCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.RepairStatus" ReadOnly="@(!Model.EstimationStatus || Model.ReturnStatus1)" TextColor="@MyTextColor.Green">Đã sửa xong</MyCheckBox>
                     </div>
                     <!--Số IMEI thiết bị-->
                     <div class="col-12 col-lg-2">
                         <MyTextEdit @bind-Text="Model.NewDeviceIMEI"
                                     Literal="Số IMEI thiết bị mới"
                                     ReadOnly="@Model.ReturnStatus1"
-                                    Class="text-purple font-weight-bold" />
+                                    IsFontBold="true"
+                                    TextColor="@MyTextColor.Purple" />
                     </div>
                     <!--Model-->
                     <div class="col-12 col-lg-2">
@@ -350,11 +354,11 @@
                                         Literal="Ngày yêu cầu duyệt"
                                         ReadOnly="true"
                                         Width="100%"
-                                        Class="text-green" />
+                                        TextColor="@MyTextColor.Green" />
                     </div>
                     <!--Check: yêu cầu duyệt-->
                     <div class="col-12 col-lg-2">
-                        <MyCheckBox @bind-Checked="@Model.ApproveReqStatus" Class="text-green" ReadOnly="true">Yêu cầu duyệt</MyCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.ApproveReqStatus" TextColor="@MyTextColor.Green" ReadOnly="true">Yêu cầu duyệt</MyCheckBox>
                     </div>
                     <!--Ngày yêu cầu duyệt-->
                     <div class="col-12 col-lg-2">
@@ -362,11 +366,11 @@
                                         Literal="Ngày duyệt"
                                         Width="100%"
                                         ReadOnly="true"
-                                        Class="text-blue" />
+                                        TextColor="@MyTextColor.Blue" />
                     </div>
                     <!--Check: yêu cầu duyệt-->
                     <div class="col-12 col-lg-2">
-                        <MyCheckBox @bind-Checked="@Model.ApproveStatus" Class="text-green" ReadOnly="true">Đã duyệt</MyCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.ApproveStatus" TextColor="@MyTextColor.Green" ReadOnly="true">Đã duyệt</MyCheckBox>
                     </div>
                 </div>
 
@@ -403,11 +407,11 @@
                                         Literal="Ngày YC trả thiết bị"
                                         ReadOnly="true"
                                         Width="100%"
-                                        Class="text-green" />
+                                        TextColor="@MyTextColor.Green" />
                     </div>
                     <!--Check: yêu cầu trả hàng-->
                     <div class="col-12 col-lg-2">
-                        <MyCheckBox @bind-Checked="@Model.ReturnReqStatus" Class="text-green" ReadOnly="true">YC trả thiết bị</MyCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.ReturnReqStatus" TextColor="@MyTextColor.Green" ReadOnly="true">YC trả thiết bị</MyCheckBox>
                     </div>
                     <!--Ngày xuất hàng-->
                     <div class="col-12 col-lg-2">
@@ -415,11 +419,11 @@
                                         Literal="Ngày xuất thiết bị"
                                         Width="100%"
                                         ReadOnly="true"
-                                        Class="text-blue" />
+                                        TextColor="@MyTextColor.Blue" />
                     </div>
                     <!--Check: Đã xuất hàng-->
                     <div class="col-12 col-lg-2">
-                        <MyCheckBox @bind-Checked="@Model.ReturnStatus1" Class="text-blue" ReadOnly="true">Đã xuất thiết bị</MyCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.ReturnStatus1" TextColor="@MyTextColor.Blue" ReadOnly="true">Đã xuất thiết bị</MyCheckBox>
                     </div>
                     <!--Ngày trả hàng-->
                     <div class="col-12 col-lg-2">
@@ -427,11 +431,11 @@
                                         Literal="Ngày trả thiết bị"
                                         Width="100%"
                                         ReadOnly="true"
-                                        Class="text-maroon" />
+                                        TextColor="@MyTextColor.Maroon" />
                     </div>
                     <!--Check: Đã trả hàng-->
                     <div class="col-12 col-lg-2">
-                        <MyCheckBox @bind-Checked="@Model.ReturnStatus2" Class="text-maroon" ReadOnly="true">Đã trả thiết bị</MyCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.ReturnStatus2" TextColor="@MyTextColor.Maroon" ReadOnly="true">Đã trả thiết bị</MyCheckBox>
                     </div>
                 </div>
                 <!--Row 2-------------------------------------------------->
@@ -473,11 +477,11 @@
                                         Literal="Ngày yêu cầu chi trả"
                                         ReadOnly="true"
                                         Width="100%"
-                                        Class="text-green" />
+                                        TextColor="@MyTextColor.Green" />
                     </div>
                     <!--Check: yêu cầu chi trả-->
                     <div class="col-12 col-lg-2">
-                        <MyCheckBox @bind-Checked="@Model.PayReqStatus" Class="text-green" ReadOnly="true">YC chi trả</MyCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.PayReqStatus" TextColor="@MyTextColor.Green" ReadOnly="true">YC chi trả</MyCheckBox>
                     </div>
                     <!--Ngày chi trả-->
                     <div class="col-12 col-lg-2">
@@ -485,11 +489,11 @@
                                         Literal="Ngày chi trả"
                                         Width="100%"
                                         ReadOnly="true"
-                                        Class="text-maroon" />
+                                        TextColor="@MyTextColor.Maroon" />
                     </div>
                     <!--Check: Đã chi trả-->
                     <div class="col-12 col-lg-2">
-                        <MyCheckBox @bind-Checked="@Model.PayStatus" Class="text-maroon" ReadOnly="true">Đã chi trả</MyCheckBox>
+                        <MyCheckBox @bind-Checked="@Model.PayStatus" TextColor="@MyTextColor.Maroon" ReadOnly="true">Đã chi trả</MyCheckBox>
                     </div>
                     <!--Người chi trả-->
                     <div class="col-12 col-lg-3">
@@ -519,10 +523,10 @@
 @code {
     [CascadingParameter] protected ProgramInfo Program { get; set; }
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public bool ReadOnly { get; set; } = false;
     //Parameters and events
     [Parameter] public string ClaimNo { get; set; } = "";
     //
-    bool ReadOnly;
     ClaimRequestModel Model = new ClaimRequestModel();
     MyDataGrid<EstimationModel> grid;
 
@@ -613,7 +617,7 @@
                 PriorityCss = "";
                 if (Model.Priority == 2) PriorityCss = "bg-warning";
                 if (Model.Priority == 3) PriorityCss = "bg-danger";
-                //
+                //Update
                 Model.UpdMode = 2;
             }
 
@@ -645,7 +649,7 @@
         //Skip
         if (Model.PayStatus & Model.ReturnStatus2)
         {
-            Snackbar.Add(MyMessage.Error_DataReadOnly, Severity.Error);
+            Snackbar.Add(MyMessage.Warning_DataReadOnly, Severity.Warning);
             return false;
         }
         //

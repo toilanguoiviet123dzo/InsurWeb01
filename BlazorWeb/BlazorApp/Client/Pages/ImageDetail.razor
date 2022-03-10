@@ -14,7 +14,7 @@
 
 <MudCarousel @ref="_carousel"
              Class="mud-width-full"
-             Style="height:800px; overflow-y: scroll"
+             Style="@($"max-height: {MaxHeight}; overflow-y: scroll")"
              ItemsSource="@ImageList"
              SelectedIndex="SelectedIndex"
              SelectedIndexChanged="@((int index) => SelectedIndexChanged_Handle(index))"
@@ -48,12 +48,21 @@
     MudMessageBox mbox { get; set; }
     int SelectedIndex;
     bool MsgVisible = false;
+    string MaxHeight = "800px";
     UpLoadFileModel SelectedImage;
     //
     void OnCancel()
     {
         MudDialog.Close();
     }
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        //Height
+        MaxHeight = Math.Round(BrowserInfo.Height * 0.8, 0) + "px";
+    }
+
     protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();

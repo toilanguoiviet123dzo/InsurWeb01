@@ -49,7 +49,7 @@
         <MudTh>
             @if (IsAddNew)
             {
-                <MudFab Color="Color.Primary"
+                <MudFab Color="Color.Success"
                     StartIcon="@Icons.Material.Filled.Add"
                     Size="Size.Medium"
                     OnClick="@(() => OnAddRow_Handle())" />
@@ -99,7 +99,7 @@
     [Parameter] public bool IsAddNew { get; set; } = false;
     [Parameter] public bool IsDelete { get; set; } = false;
     [Parameter] public bool Dense { get; set; } = false;
-    [Parameter] public bool Bordered { get; set; } = false;
+    [Parameter] public bool Bordered { get; set; } = true;
     [Parameter] public bool Striped { get; set; } = true;
     [Parameter] public bool Loading { get; set; } = false;
     [Parameter] public bool HorizontalScrollbar { get; set; } = false;

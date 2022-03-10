@@ -67,7 +67,7 @@
                                                       StatusCheck = newValue;
                                                       CheckName = newValue? "Xong" : "Chưa";
                                                   })">
-                                <label> @CheckName </label>
+                                @CheckName
                             </MyCheckBox>
                         </div>
                     </div>
@@ -88,8 +88,6 @@
             T="ClaimRequestListModel"
             Title="Danh sách yêu cầu bồi thường"
             Items="@DetailData"
-            IsAddNew="true"
-            IsDelete="true"
             OnViewRow="@((ClaimRequestListModel row) => OnViewRow_Handle(row))">
     <ColGroup>
         <col style="width: 10rem;" />
@@ -209,7 +207,7 @@
             }
             if (DetailData.Count == 0)
             {
-                Snackbar.Add(MyMessage.Error_NoData, Severity.Info);
+                Snackbar.Add(MyMessage.Warning_NoData, Severity.Warning);
             }
             if (grid != null) grid.EndLoadData();
         }
@@ -226,6 +224,7 @@
     void OnViewRow_Handle(ClaimRequestListModel row)
     {
         var parameters = new DialogParameters { ["ClaimNo"] = row.ClaimNo };
+        parameters.Add("ReadOnly", row.RowMode_View);
         ShowDetailForm(parameters);
     }
 

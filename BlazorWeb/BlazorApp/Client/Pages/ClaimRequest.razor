@@ -20,13 +20,15 @@
                 <div class="col-12 col-lg-2">
                     <MyTextEdit @bind-Text="Filter_CusPhone"
                                 Literal="Phone"
-                                Class="text-blue font-weight-bold" />
+                                IsFontBold="true"
+                                TextColor="@MyTextColor.Blue" />
                 </div>
                 <!--Số IMEI thiết bị-->
                 <div class="col-12 col-lg-2">
                     <MyTextEdit @bind-Text="Filter_DeviceIMEI"
                                 Literal="Số IMEI thiết bị"
-                                Class="text-purple font-weight-bold" />
+                                IsFontBold="true"
+                                TextColor="@MyTextColor.Purple"/>
                 </div>
                 <!--Tên khách hàng-->
                 <div class="col-12 col-lg-2">
@@ -88,7 +90,7 @@
                     </div>
                 </div>
                 <!--Trạng thái-->
-                <div class="col-12 col-lg-2 pr-lg-3">
+                <div class="col-12 col-lg-3 pr-lg-3">
                     <div class="row align-items-end">
                         <div class="col-8">
                             <MyComboBox @bind-Value="Filter_Status"
@@ -104,7 +106,7 @@
                                                       StatusCheck = newValue;
                                                       CheckName = newValue? "Xong" : "Chưa";
                                                   })">
-                                <label> @CheckName </label>
+                                @CheckName
                             </MyCheckBox>
                         </div>
                     </div>
@@ -283,7 +285,7 @@
             }
             if (DetailData.Count == 0)
             {
-                Snackbar.Add(MyMessage.Error_NoData, Severity.Info);
+                Snackbar.Add(MyMessage.Warning_NoData, Severity.Warning);
             }
             //
             if (grid != null) grid.EndLoadData();
@@ -340,6 +342,7 @@
     void OnViewRow_Handle(ClaimRequestListModel row)
     {
         var parameters = new DialogParameters { ["ClaimNo"] = row.ClaimNo };
+        parameters.Add("ReadOnly", row.RowMode_View);
         ShowDetailForm(parameters);
     }
 
