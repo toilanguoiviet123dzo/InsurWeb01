@@ -33,11 +33,11 @@
     <DialogActions>
         @if (IsShowCancelButton)
         {
-            <MyButton OnClick="OnCancel" Icon="@CancelIcon" Color="CancelColor" Literal="CancelText" />
+            <MyButton OnClick="OnCancel" Icon="@CancelIcon" Color="CancelColor" Literal="@CancelText" />
         }
         @if (IsShowSubmitButton && !ReadOnly)
         {
-            <MyButton OnClick="OnSubmit" Icon="@SubmitIcon" Color="SubmitColor" Literal="SubmitText" />
+            <MyButton OnClick="OnSubmit" Icon="@SubmitIcon" Color="SubmitColor" Literal="@SubmitText" />
         }
         @ActionButtons
     </DialogActions>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -8,18 +9,17 @@ namespace Cores.Helpers
 {
     public static class ImageHelper
     {
-        //public static byte[] MakeThumbnail(byte[] myImage, int thumbWidth, int thumbHeight)
-        //{
-        //    using (MemoryStream ms = new MemoryStream())
-        //    using (Image thumbnail = Image.FromStream(new MemoryStream(myImage)).GetThumbnailImage(thumbWidth, thumbHeight, null, new IntPtr()))
-        //    {
-        //        thumbnail.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-        //        return ms.ToArray();
-        //    }
-        //}
+        public static List<string> ImageFileExtentionList = new List<string>() { "jpg", "jpeg", "jfif", "pjpeg", "pjp", "png", "bmp", "gif" };
+        public static bool IsImage(string fileExtension)
+        {
+            return ImageFileExtentionList.Contains(fileExtension); 
+        }
 
         public static byte[] MakeThumbnail(byte[] myImage, int thumbWidth, int thumbHeight)
         {
+            //Skip check
+            if (myImage == null || myImage.Length == 0) return new byte[0];
+
             //Create image
             Image image = Image.FromStream(new MemoryStream(myImage));
             int originalWidth = image.Width;

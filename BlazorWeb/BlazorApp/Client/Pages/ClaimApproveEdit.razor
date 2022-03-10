@@ -597,6 +597,7 @@
     {
         try
         {
+            if (grid != null) grid.BeginLoadData();
             //Request
             var request = new Claim.Services.String_Request();
             var Credential = new Claim.Services.UserCredential()
@@ -640,7 +641,7 @@
             }
 
             //Refresh layout
-            if (grid != null) grid.Refresh();
+            if (grid != null) grid.EndLoadData();
             StateHasChanged();
         }
         catch

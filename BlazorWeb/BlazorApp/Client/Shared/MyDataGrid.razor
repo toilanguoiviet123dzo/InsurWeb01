@@ -1,4 +1,5 @@
 ﻿@using System.Reflection
+@inject IDialogService DialogService
 @typeparam T
 
 <style>
@@ -87,21 +88,6 @@
     </PagerContent>
 </MudTable>
 
-@if (MsgVisible)
-{
-    <MudMessageBox @ref="mbox" Title="Cảnh báo" CancelText="Cancel" IsVisible="@MsgVisible">
-        <MessageContent>
-            <div Style="min-width:250px">
-                @MyMessage.Confirm_DeleteRow
-            </div>
-        </MessageContent>
-        <YesButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever">Delete!</MudButton>
-        </YesButton>
-    </MudMessageBox>
-}
-
-
 @code {
     [Parameter] public IEnumerable<T> Items { get; set; }
     [Parameter] public string Title { get; set; } = "";
@@ -158,8 +144,12 @@
     [Parameter] public EventCallback<T> OnDeleteRow { get; set; }
     private async void OnDeleteRow_Handle(T row)
     {
-        bool? result = await mbox.Show();
-        StateHasChanged();
+        bool? result = await DialogService.ShowMessageBox(
+            "Cảnh báo",
+            "Bạn có muốn xóa dòng dữ liệu!",
+            yesText: "Delete!", noText: null, cancelText: "Cancel",
+            MyOptions.GetMessageBoxOptions());
+
         //OK
         if (result != null && result == true)
         {
@@ -187,7 +177,6 @@
     //Data
     string SearchString = "";
     MudMessageBox mbox { get; set; }
-    bool MsgVisible = false;
     private MudTable<T> _table;
     //
     protected override void OnParametersSet()
@@ -233,6 +222,7 @@
     public void EndLoadData()
     {
         Loading = false;
+        this.StateHasChanged();
     }
     public void Refresh()
     {

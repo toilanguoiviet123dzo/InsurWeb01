@@ -71,6 +71,7 @@
     {
         try
         {
+            if (grid != null) grid.BeginLoadData();
             //Filter
             var requestString = new Claim.Services.Empty_Request()
                 {
@@ -97,8 +98,8 @@
                     //
                     DetailData.Add(dataRow);
                 }
-                grid.Refresh();
             }
+            if (grid != null) grid.EndLoadData();
         }
         catch
         {

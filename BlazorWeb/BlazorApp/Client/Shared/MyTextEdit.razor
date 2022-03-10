@@ -43,6 +43,7 @@
     [Parameter] public Adornment Adornment { get; set; } = Adornment.None;
     [Parameter] public string AdornmentIcon { get; set; } = "";
     [Parameter] public string AdornmentText { get; set; } = "";
+    [Parameter] public bool IsUpperCase { get; set; } = false;
 
     //TextChanged
     [Parameter] public string Text { get; set; } = "";
@@ -66,8 +67,13 @@
         if (!string.IsNullOrWhiteSpace(Width))
         {
             FullWidth = false;
-            Style = $"width:{Width}; {Style}";
+            if (!Style.Contains($"width:{Width};")) Style = $"width:{Width}; {Style}";
         }
+
+        //IsUpperCase
+        if (!Style.Contains("text-transform: uppercase;")) Style = $"text-transform: uppercase; {Style}";
+
+        //Text Color
 
         //Skip Tab
         if (ReadOnly || !TabStop)

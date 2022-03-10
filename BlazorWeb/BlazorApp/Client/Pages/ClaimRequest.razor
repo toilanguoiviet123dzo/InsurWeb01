@@ -222,7 +222,7 @@
     {
         try
         {
-            grid.BeginLoadData();
+            if (grid != null) grid.BeginLoadData();
 
             //Filter
             var request = new Claim.Services.GetClaimRequestList_Request();
@@ -286,8 +286,7 @@
                 Snackbar.Add(MyMessage.Error_NoData, Severity.Info);
             }
             //
-            grid.EndLoadData();
-            //this.StateHasChanged();
+            if (grid != null) grid.EndLoadData();
         }
         catch
         {

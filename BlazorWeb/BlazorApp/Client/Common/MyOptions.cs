@@ -35,5 +35,19 @@ namespace BlazorApp.Client.Common
             };
             return options;
         }
+
+        public static DialogOptions GetMessageBoxOptions(MaxWidth size = MaxWidth.ExtraSmall)
+        {
+            var options = new DialogOptions()
+            {
+                MaxWidth = size,
+                Position = DialogPosition.Center,
+                CloseOnEscapeKey = true,
+                DisableBackdropClick = true,
+                CloseButton = false,
+                FullWidth = true
+            };
+            return options;
+        }
     }
 }

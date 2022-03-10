@@ -39,14 +39,17 @@
                                             };
     }
 
-    IList<IBrowserFile> files = new List<IBrowserFile>();
+    //IList<IBrowserFile> files = new List<IBrowserFile>();
     async Task LoadFile(InputFileChangeEventArgs e)
     {
         try
         {
+            //Clear
+            ReturnImageList.Clear();
+            //
             foreach (var file in e.GetMultipleFiles())
             {
-                files.Add(file);
+                //files.Add(file);
                 //Read file
                 Stream stream = file.OpenReadStream(10000000);
                 MemoryStream ms = new MemoryStream();

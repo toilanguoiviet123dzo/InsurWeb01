@@ -121,7 +121,7 @@
         if (!string.IsNullOrWhiteSpace(Width))
         {
             FullWidth = false;
-            Style = $"width:{Width}; {Style}";
+            if (!Style.Contains($"width:{Width};")) Style = $"width:{Width}; {Style}";
         }
 
         //ReadOnly

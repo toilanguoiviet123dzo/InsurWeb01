@@ -51,6 +51,7 @@
     {
         try
         {
+            if (grid != null) grid.BeginLoadData();
             var requestOptionListHeader = new Empty_Request()
             {
                 Credential = new UserCredential()
@@ -76,6 +77,7 @@
                     DetailData.Add(dataRow);
                 }
             }
+            if (grid != null) grid.EndLoadData();
         }
         catch
         {

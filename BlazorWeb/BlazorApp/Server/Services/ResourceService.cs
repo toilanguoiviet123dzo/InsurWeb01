@@ -115,7 +115,7 @@ namespace BlazorApp.Server.Services
                         saveRecord.ID = "";
                     }
                     saveRecord.IssueDate = DateTime.UtcNow;
-                    if (saveRecord.IsMakeThumbnail)
+                    if (saveRecord.IsMakeThumbnail && ImageHelper.IsImage(saveRecord.FileType))
                     {
                         saveRecord.Thumbnail = ImageHelper.MakeThumbnail(saveRecord.FileContent, saveRecord.ThumbnailWidth, saveRecord.ThumbnailHeight);
                         saveRecord.HasThumbnail = true;
@@ -198,7 +198,42 @@ namespace BlazorApp.Server.Services
             response.ReturnCode = GrpcReturnCode.OK;
             try
             {
-                await DB.DeleteAsync<mdResourceFile>(request.StringValue);
+                //Get ServerFileName
+                var findRecord = await DB.Find<mdResourceFile>()
+                                      .Match(a => a.ResourceID == request.StringValue)
+                                      .ExecuteFirstAsync();
+                if (findRecord != null)
+                {
+                    //Delete local file
+                    if (findRecord.ArchiveMode == 2)
+                    {
+                        //archiveFolder
+                        SettingMasterModel settingMaster;
+                        string archiveFolder = "";
+                        if (ArchiveMode == 2)
+                        {
+                            settingMaster = await SettingMaster.GetSetting("001");
+                            archiveFolder = settingMaster == null ? "" : settingMaster.StringValue1;
+                        }
+                        if (!string.IsNullOrWhiteSpace(archiveFolder))
+                        {
+                            //Full image
+                            string fileName = archiveFolder + findRecord.ServerFileName;
+                            MyFile.Delete(fileName);
+
+                            //Thumbnail
+                            if (findRecord.HasThumbnail)
+                            {
+                                fileName = archiveFolder + findRecord.ServerThumbnailFileName;
+                                MyFile.Delete(fileName);
+                            }
+                        }
+                    }
+
+                    //Delete record
+                    await DB.DeleteAsync<mdResourceFile>(findRecord.ID);
+                }
+
             }
             catch (Exception ex)
             {
@@ -376,9 +411,16 @@ namespace BlazorApp.Server.Services
                         //Remove file
                         if (item.ArchiveMode == 2 && !string.IsNullOrWhiteSpace(archiveFolder))
                         {
+                            //Full image
                             string fileName = archiveFolder + item.ServerFileName;
-                            //
                             MyFile.Delete(fileName);
+
+                            //Thumbnail
+                            if (item.HasThumbnail)
+                            {
+                                fileName = archiveFolder + item.ServerThumbnailFileName;
+                                MyFile.Delete(fileName);
+                            }
                         }
                     });
                 }

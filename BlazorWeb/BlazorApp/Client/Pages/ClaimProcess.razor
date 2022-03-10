@@ -211,6 +211,7 @@
     {
         try
         {
+            if (grid != null) grid.BeginLoadData();
             //Filter
             var request = new Claim.Services.GetClaimRequestList_Request();
             request.Credential = new Claim.Services.UserCredential()
@@ -271,7 +272,7 @@
             {
                 Snackbar.Add(MyMessage.Error_NoData, Severity.Info);
             }
-            grid.Refresh();
+            if (grid != null) grid.EndLoadData();
         }
         catch
         {

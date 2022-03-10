@@ -35,12 +35,13 @@ namespace Cores.Utilities
             byte[] buff = null;
             try
             {
-                FileStream fs = new FileStream(fileName,
-                                           FileMode.Open,
-                                           FileAccess.Read);
-                BinaryReader br = new BinaryReader(fs);
-                long numBytes = new FileInfo(fileName).Length;
-                buff = br.ReadBytes((int)numBytes);
+                //FileStream fs = new FileStream(fileName,
+                //                           FileMode.Open,
+                //                           FileAccess.Read);
+                //BinaryReader br = new BinaryReader(fs);
+                //long numBytes = new FileInfo(fileName).Length;
+                //buff = br.ReadBytes((int)numBytes);
+                buff = File.ReadAllBytes(fileName);
             }
             catch
             {

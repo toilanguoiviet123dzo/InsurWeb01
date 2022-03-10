@@ -30,7 +30,7 @@
         //Set width
         if (!string.IsNullOrWhiteSpace(Width))
         {
-            Style = $"width:{Width}; {Style}";
+            if (!Style.Contains($"width:{Width};")) Style = $"width:{Width}; {Style}";
         }
     }
 }
