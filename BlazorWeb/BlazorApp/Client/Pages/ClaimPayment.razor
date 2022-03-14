@@ -117,7 +117,7 @@
 <!--Grid-->
 <MyDataGrid @ref="@grid"
             T="ClaimRequestListModel"
-            Title="Danh sách yêu cầu bồi thường"
+            Title="Danh sách chi trả bồi thường"
             Items="@DetailData"
             OnViewRow="@((ClaimRequestListModel row) => OnViewRow_Handle(row))">
     <ColGroup>
@@ -240,7 +240,7 @@
             request.StartDate = Filter_StartDate.ToTimestampFromLocalTime();
             request.EndDate = Filter_EndDate.ToTimestampFromLocalTime();
             //
-            var response = await ClaimServiceClient.GetApproveListAsync(request);
+            var response = await ClaimServiceClient.GetPaymentListAsync(request);
             if (response != null && response.ReturnCode == GrpcReturnCode.OK)
             {
                 if (response.ClaimRequests != null)

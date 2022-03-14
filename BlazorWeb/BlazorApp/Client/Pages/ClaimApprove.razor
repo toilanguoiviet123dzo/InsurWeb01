@@ -117,7 +117,7 @@
 <!--Grid-->
 <MyDataGrid @ref="@grid"
             T="ClaimRequestListModel"
-            Title="Danh sách yêu cầu bồi thường"
+            Title="Danh sách duyệt yêu cầu bồi thường"
             Items="@DetailData"
             OnViewRow="@((ClaimRequestListModel row) => OnViewRow_Handle(row))">
     <ColGroup>
@@ -294,7 +294,7 @@
 
     async void ShowDetailForm(DialogParameters parameters)
     {
-        var result = await DialogService.Show<ClaimRequestEdit>("", parameters, MyOptions.GetMyFormOptions(MaxWidth.Large)).Result;
+        var result = await DialogService.Show<ClaimApproveEdit>("", parameters, MyOptions.GetMyFormOptions(MaxWidth.Large)).Result;
         if (!result.Cancelled)
         {
             await DisplayMain();

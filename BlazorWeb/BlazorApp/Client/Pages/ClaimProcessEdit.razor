@@ -136,7 +136,7 @@
             </MyPanel>
 
             <!--Thông tin hư hỏng-->
-            <MyPanel Title="Thông tin hư hỏng">
+            <MyPanel Title="Thông tin hư hỏng" IsInitiallyExpanded="false">
                 <div class="container-fluid">
                     <!--Row 1-------------------------------------------------->
                     <div class="row">
@@ -195,7 +195,7 @@
             </MyPanel>
 
             <!--Thông tin hợp đồng-->
-            <MyPanel Title="Thông tin hợp đồng">
+            <MyPanel Title="Thông tin hợp đồng" IsInitiallyExpanded="false">
                 <div class="container-fluid">
                     <!--Row 1-------------------------------------------------->
                     <div class="row">
@@ -260,7 +260,7 @@
             </MyPanel>
 
             <!--Thông tin lấy thiết bị-->
-            <MyPanel Title="Thông tin lấy thiết bị">
+            <MyPanel Title="Thông tin lấy thiết bị" IsInitiallyExpanded="false" @ref="RefPickupInfo">
                 <div class="container-fluid">
                     <!--Row 1-------------------------------------------------->
                     <div class="row">
@@ -344,7 +344,7 @@
             </MyPanel>
 
             <!--Thông tin kiểm tra-->
-            <MyPanel Title="Thông tin kiểm tra">
+            <MyPanel Title="Thông tin kiểm tra" IsInitiallyExpanded="false" @ref="RefCheckInfo">
                 <div class="container-fluid">
                     <!--Row 1-------------------------------------------------->
                     <div class="row">
@@ -414,7 +414,7 @@
             </MyPanel>
 
             <!--Thông báo giá & sửa chữa-->
-            <MyPanel Title="Thông báo giá & sửa chữa">
+            <MyPanel Title="Thông báo giá & sửa chữa" IsInitiallyExpanded="false" @ref="RefRepairInfo">
                 <div class="container-fluid">
                     <!--Row 1-------------------------------------------------->
                     <div class="row">
@@ -495,7 +495,7 @@
                                 <MudTd Style="text-align:center">@context.IssueDate.ToString("dd/MM/yyyy HH:mm")</MudTd>
                                 <MudTd Style="font-weight:bold; text-transform: uppercase;">@context.ItemCode</MudTd>
                                 <MudTd>@context.ItemName</MudTd>
-                                <MudTd><MudCheckBox @bind-Checked="@context.IsReplace" Color="Color.Primary"></MudCheckBox></MudTd>
+                                <MudTd><MudCheckBox @bind-Checked="@context.IsReplace" Color="Color.Secondary"></MudCheckBox></MudTd>
                                 <MudTd Style="text-align:right; color:blue; font-weight:bold">@context.Quantity.ToString("N0")</MudTd>
                                 <MudTd Style="text-align:right; color:green; font-weight:bold">@context.UnitPrice.ToString("N0")</MudTd>
                                 <MudTd Style="text-align:right; color:navy; font-weight:bold">@context.Amount.ToString("N0")</MudTd>
@@ -525,10 +525,12 @@
                         </div>
                         <!--Tiền chiết khấu-->
                         <div class="col-12 col-lg-2">
-                            <MyNumEdit Value="Model.DeductibleAmount"
+                            <MyNumEdit @bind-Value="Model.DeductibleAmount"
+                                       T="double"
                                        ReadOnly="@Model.PayStatus"
                                        IsFontBold="true"
                                        TextColor="@MyTextColor.Red"
+                                       Format="N0"
                                        Literal="Tiền chiết khấu" />
                         </div>
                         <!--Tiền đền bù-->
@@ -599,7 +601,7 @@
             </MyPanel>
 
             <!--Thông tin duyệt-->
-            <MyPanel Title="Thông tin duyệt">
+            <MyPanel Title="Thông tin duyệt" IsInitiallyExpanded="false" @ref="RefApproveInfo">
                 <div class="container-fluid">
                     <!--Row 1-------------------------------------------------->
                     <div class="row align-items-end mt-1">
@@ -660,7 +662,7 @@
             </MyPanel>
 
             <!--Thông tin trả thiết bị-->
-            <MyPanel Title="Thông tin trả thiết bị">
+            <MyPanel Title="Thông tin trả thiết bị" IsInitiallyExpanded="false" @ref="RefReturnInfo">
                 <div class="container-fluid">
                     <!--Row 1-------------------------------------------------->
                     <div class="row align-items-end mt-1">
@@ -738,7 +740,7 @@
             </MyPanel>
 
             <!--Thông tin chi trả-->
-            <MyPanel Title="Thông tin chi trả">
+            <MyPanel Title="Thông tin chi trả" IsInitiallyExpanded="false" @ref="RefPayInfo">
                 <div class="container-fluid">
                     <!--Row 1-------------------------------------------------->
                     <div class="row align-items-end mt-1">
@@ -835,14 +837,12 @@
     MyMemoEdit RefDamageCause;
     //Css
     private string PriorityCss = "";
-    private bool DamageInfoCollapse = true;
-    private bool InsureInfoCollapse = true;
-    private bool PickupInfoCollapse = true;
-    private bool CheckInfoCollapse = true;
-    private bool RepairInfoCollapse = true;
-    private bool ApproveInfoCollapse = true;
-    private bool ReturnInfoCollapse = true;
-    private bool PayInfoCollapse = true;
+    MyPanel RefPickupInfo;
+    MyPanel RefCheckInfo;
+    MyPanel RefRepairInfo;
+    MyPanel RefApproveInfo;
+    MyPanel RefReturnInfo;
+    MyPanel RefPayInfo;
     //Readonly
     private bool ApproveAmount_ReadOnly = true;
     //Confirm
@@ -937,18 +937,18 @@
                 Model.UpdMode = 2;
             }
 
-            //show pickup
-            if (!Model.PickupStatus2) PickupInfoCollapse = false;
-            //show check
-            if (Model.PickupStatus2 && !Model.CheckStatus) CheckInfoCollapse = false;
-            //show Repair
-            if (Model.CheckStatus && !Model.RepairStatus) RepairInfoCollapse = false;
-            //show Approve
-            if (Model.EstimationStatus && !Model.ApproveStatus) ApproveInfoCollapse = false;
-            //show Return
-            if (Model.RepairStatus && !Model.ReturnStatus2) ReturnInfoCollapse = false;
-            //show Payment
-            if (Model.RepairStatus && !Model.PayStatus) PayInfoCollapse = false;
+            //Show pickup
+            if (!Model.PickupStatus1) RefPickupInfo.Expand();
+            //Show check
+            if (Model.PickupStatus2 && !Model.CheckStatus) RefCheckInfo.Expand();
+            //Show Repair
+            if (Model.CheckStatus && !Model.ApproveStatus) RefRepairInfo.Expand();
+            //Show Approve
+            if (Model.EstimationStatus && !Model.ApproveStatus) RefApproveInfo.Expand();
+            //Show Return
+            if (Model.RepairStatus && !Model.ReturnStatus2) RefReturnInfo.Expand();
+            //Show Payment
+            if (Model.RepairStatus && !Model.PayStatus) RefPayInfo.Expand();
 
             //Refresh layout
             if (grid != null) grid.EndLoadData();
@@ -1107,11 +1107,11 @@
         MudDialog.Cancel();
     }
 
-    //
+    //ShowImages
     async void ShowImages()
     {
         var parameters = new DialogParameters();
-        parameters.Add("OwnerID", ClaimNo);
+        parameters.Add("OwnerID", Model.ClaimNo);
         parameters.Add("CategoryID", "1");
         //
         var result = await DialogService.Show<ImagesView>("", parameters, MyOptions.GetEditFormOptions(MaxWidth.Large)).Result;

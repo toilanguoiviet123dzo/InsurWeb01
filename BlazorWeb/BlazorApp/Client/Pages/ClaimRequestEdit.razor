@@ -7,272 +7,278 @@
 @inject VoucherService voucherService;
 @inject IJSRuntime JsRuntime;
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <MyForm Title="Yêu cầu bồi thường"
         ReadOnly="@ReadOnly"
         OnCancelClick="CloseMain"
         OnSubmitClick="SaveMain">
-    <MyPanels>
-        <!--Thông tin chung-->
-        <MyPanel Title="Thông tin chung">
-            <div class="container-fluid">
-                <!--Row 1-------------------------------------------------->
-                <div class="row">
-                    <!--Số tiếp nhận-->
-                    <div class="col-12 col-lg-3">
-                        <MyTextEdit @bind-Text="Model.ClaimNo"
-                                    ReadOnly="true"
-                                    Literal="Số tiếp nhận"
-                                    Width="8rem"
-                                    TextColor="@MyTextColor.Blue"
-                                    IsFontBold="true" />
-                    </div>
-
-                    <!--Ngày tiếp nhận-->
-                    <div class="col-12 col-lg-3">
-                        <MyDateTimeEdit @bind-Date="Model.ClaimDate"
-                                        Literal="Ngày tiếp nhận"
+    <ChildContent>
+        <MyPanels>
+            <!--Thông tin chung-->
+            <MyPanel Title="Thông tin chung">
+                <div class="container-fluid">
+                    <!--Row 1-------------------------------------------------->
+                    <div class="row">
+                        <!--Số tiếp nhận-->
+                        <div class="col-12 col-lg-3">
+                            <MyTextEdit @bind-Text="Model.ClaimNo"
                                         ReadOnly="true"
-                                        TextColor="@MyTextColor.Blue" />
-                    </div>
-                    <!--Người tiếp nhận-->
-                    <div class="col-12 col-lg-3">
-                        <MyTextEdit @bind-Text="Model.ClaimAccountName"
-                                    ReadOnly="true"
-                                    Literal="Người tiếp nhận" />
-                    </div>
-                </div>
+                                        Literal="Số tiếp nhận"
+                                        Width="8rem"
+                                        TextColor="@MyTextColor.Blue"
+                                        IsFontBold="true" />
+                        </div>
 
-                <!--Row 2-------------------------------------------------->
-                <div class="row">
-                    <!--Phone-->
-                    <div class="col-12 col-lg-3">
-                        <MyTextEdit @ref="@RefPhone"
-                                    Text="@Model.CusPhone"
-                                    TextChanged="@((string x) => OnTextChanged_Phone(x))"
-                                    TextColor="@MyTextColor.Blue"
-                                    Literal="Điện thoại liên hệ" />
+                        <!--Ngày tiếp nhận-->
+                        <div class="col-12 col-lg-3">
+                            <MyDateTimeEdit @bind-Date="Model.ClaimDate"
+                                            Literal="Ngày tiếp nhận"
+                                            ReadOnly="true"
+                                            TextColor="@MyTextColor.Blue" />
+                        </div>
+                        <!--Người tiếp nhận-->
+                        <div class="col-12 col-lg-3">
+                            <MyTextEdit @bind-Text="Model.ClaimAccountName"
+                                        ReadOnly="true"
+                                        Literal="Người tiếp nhận" />
+                        </div>
                     </div>
-                    <!--Tên khách hàng-->
-                    <div class="col-12 col-lg-3">
-                        <MyTextEdit @ref="@RefCusFullname"
-                                    @bind-Text="Model.CusFullname"
-                                    Literal="Tên khách hàng" />
-                    </div>
-                    <!--Email-->
-                    <div class="col-12 col-lg-3">
-                        <MyTextEdit @bind-Text="Model.CusEmail"
-                                    Literal="Email" />
-                    </div>
-                    <!--Số CMND/CCCD-->
-                    <div class="col-12 col-lg-3">
-                        <MyTextEdit @bind-Text="Model.CusCardID"
-                                    Literal="Số CMND/CCCD" />
-                    </div>
-                </div>
 
-                <!--Row 3-------------------------------------------------->
-                <div class="row">
-                    <!--Loại sản phẩm-->
-                    <div class="col-12 col-lg-3">
-                        <MyComboBox @ref="RefProduct"
-                                    @bind-Value="SelectedProduct"
-                                    Data="ProductList"
-                                    TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                    SelectedItemChanged="@((OptionListModel selectedRow) => {
+                    <!--Row 2-------------------------------------------------->
+                    <div class="row">
+                        <!--Phone-->
+                        <div class="col-12 col-lg-3">
+                            <MyTextEdit @ref="@RefPhone"
+                                        Text="@Model.CusPhone"
+                                        TextChanged="@((string x) => OnTextChanged_Phone(x))"
+                                        TextColor="@MyTextColor.Blue"
+                                        Literal="Điện thoại liên hệ" />
+                        </div>
+                        <!--Tên khách hàng-->
+                        <div class="col-12 col-lg-3">
+                            <MyTextEdit @ref="@RefCusFullname"
+                                        @bind-Text="Model.CusFullname"
+                                        Literal="Tên khách hàng" />
+                        </div>
+                        <!--Email-->
+                        <div class="col-12 col-lg-3">
+                            <MyTextEdit @bind-Text="Model.CusEmail"
+                                        Literal="Email" />
+                        </div>
+                        <!--Số CMND/CCCD-->
+                        <div class="col-12 col-lg-3">
+                            <MyTextEdit @bind-Text="Model.CusCardID"
+                                        Literal="Số CMND/CCCD" />
+                        </div>
+                    </div>
+
+                    <!--Row 3-------------------------------------------------->
+                    <div class="row">
+                        <!--Loại sản phẩm-->
+                        <div class="col-12 col-lg-3">
+                            <MyComboBox @ref="RefProduct"
+                                        @bind-Value="SelectedProduct"
+                                        Data="ProductList"
+                                        TextFieldName="@(nameof(OptionListModel.ItemName))"
+                                        SelectedItemChanged="@((OptionListModel selectedRow) => {
                                                    Model.TPAProductID = selectedRow.ItemCode;
                                                    Model.TPAProductName = selectedRow.ItemName;
                                                 })"
-                                    Literal="Loại sản phẩm" />
+                                        Literal="Loại sản phẩm" />
+                        </div>
+                        <!--Số IMEI thiết bị-->
+                        <div class="col-12 col-lg-3">
+                            <MyTextEdit @bind-Text="Model.DeviceIMEI"
+                                        IsUpperCase="true"
+                                        TextColor="@MyTextColor.Purple"
+                                        Literal="Số IMEI thiết bị" />
+                        </div>
+                        <!--Model-->
+                        <div class="col-12 col-lg-3">
+                            <MyTextEdit @bind-Text="Model.DeviceModel"
+                                        Literal="Model" />
+                        </div>
                     </div>
-                    <!--Số IMEI thiết bị-->
-                    <div class="col-12 col-lg-3">
-                        <MyTextEdit @bind-Text="Model.DeviceIMEI"
-                                    IsUpperCase="true"
-                                    TextColor="@MyTextColor.Purple"
-                                    Literal="Số IMEI thiết bị" />
-                    </div>
-                    <!--Model-->
-                    <div class="col-12 col-lg-3">
-                        <MyTextEdit @bind-Text="Model.DeviceModel"
-                                    Literal="Model" />
-                    </div>
-                </div>
 
-                <!--Row 4-------------------------------------------------->
-                <div class="row">
-                    <!--Địa chỉ nhận thiết bị-->
-                    <div class="col-12 col-lg-6">
-                        <MyTextEdit @ref="@RefPickupAddress"
-                                    @bind-Text="Model.PickupAddress"
-                                    Literal="Địa chỉ nhận thiết bị" />
-                    </div>
-                    <!--Địa chỉ trả thiết bị-->
-                    <div class="col-12 col-lg-6">
-                        <MyTextEdit @bind-Text="Model.ReturnAddress"
-                                    Literal="Địa chỉ trả thiết bị" />
+                    <!--Row 4-------------------------------------------------->
+                    <div class="row">
+                        <!--Địa chỉ nhận thiết bị-->
+                        <div class="col-12 col-lg-6">
+                            <MyTextEdit @ref="@RefPickupAddress"
+                                        @bind-Text="Model.PickupAddress"
+                                        Literal="Địa chỉ nhận thiết bị" />
+                        </div>
+                        <!--Địa chỉ trả thiết bị-->
+                        <div class="col-12 col-lg-6">
+                            <MyTextEdit @bind-Text="Model.ReturnAddress"
+                                        Literal="Địa chỉ trả thiết bị" />
+                        </div>
                     </div>
                 </div>
-            </div>
-        </MyPanel>
-        <!--Thông tin hư hỏng-->
-        <MyPanel Title="Thông tin hư hỏng">
-            <div class="container-fluid">
-                <!--Row 1-------------------------------------------------->
-                <div class="row">
-                    <!--Ngày KH thông báo-->
-                    <div class="col-12 col-lg-3">
-                        <MyDateTimeEdit @bind-Date="Model.NotificationDate"
-                                        Literal="Ngày KH thông báo"
-                                        TextColor="@MyTextColor.Green" />
-                    </div>
-                    <!--Ngày sự cố-->
-                    <div class="col-12 col-lg-3">
-                        <MyDateTimeEdit @bind-Date="Model.IncidentDate"
-                                        Literal="Ngày sự cố"
-                                        TextColor="@MyTextColor.Maroon" />
-                    </div>
-                    <!--Kênh thông báo-->
-                    <div class="col-12 col-lg-3">
-                        <MyComboBox @ref="RefChannel"
-                                    @bind-Value="SelectedChannel"
-                                    Data="ChannelList"
-                                    TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                    SelectedItemChanged="@((OptionListModel selectedRow) => {
+            </MyPanel>
+            <!--Thông tin hư hỏng-->
+            <MyPanel Title="Thông tin hư hỏng">
+                <div class="container-fluid">
+                    <!--Row 1-------------------------------------------------->
+                    <div class="row">
+                        <!--Ngày KH thông báo-->
+                        <div class="col-12 col-lg-3">
+                            <MyDateTimeEdit @bind-Date="Model.NotificationDate"
+                                            Literal="Ngày KH thông báo"
+                                            TextColor="@MyTextColor.Green" />
+                        </div>
+                        <!--Ngày sự cố-->
+                        <div class="col-12 col-lg-3">
+                            <MyDateTimeEdit @bind-Date="Model.IncidentDate"
+                                            Literal="Ngày sự cố"
+                                            TextColor="@MyTextColor.Maroon" />
+                        </div>
+                        <!--Kênh thông báo-->
+                        <div class="col-12 col-lg-3">
+                            <MyComboBox @ref="RefChannel"
+                                        @bind-Value="SelectedChannel"
+                                        Data="ChannelList"
+                                        TextFieldName="@(nameof(OptionListModel.ItemName))"
+                                        SelectedItemChanged="@((OptionListModel selectedRow) => {
                                                             Model.NotificationChannelID = selectedRow.ItemCode;
                                                             Model.NotificationChannelName = selectedRow.ItemName;
                                                         })"
-                                    Literal="Kênh thông báo" />
-                    </div>
-                    <!--Loại hư hỏng-->
-                    <div class="col-12 col-lg-3">
-                        <MyComboBox @ref="RefDamageType"
-                                    @bind-Value="SelectedDamageCause"
-                                    Data="DamageCauseList"
-                                    TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                    SelectedItemChanged="@((OptionListModel selectedRow) => {
+                                        Literal="Kênh thông báo" />
+                        </div>
+                        <!--Loại hư hỏng-->
+                        <div class="col-12 col-lg-3">
+                            <MyComboBox @ref="RefDamageType"
+                                        @bind-Value="SelectedDamageCause"
+                                        Data="DamageCauseList"
+                                        TextFieldName="@(nameof(OptionListModel.ItemName))"
+                                        SelectedItemChanged="@((OptionListModel selectedRow) => {
                                                        Model.DamageType = selectedRow.ItemCode;
                                                        Model.DamageTypeName = selectedRow.ItemName;
                                                  })"
-                                    Literal="Loại hư hỏng" />
+                                        Literal="Loại hư hỏng" />
+                        </div>
                     </div>
-                </div>
 
-                <!--Row 2-------------------------------------------------->
-                <div class="row">
-                    <!--Nguyên nhân hư hỏng-->
-                    <div class="col-12 col-lg-7">
-                        @*<MyMuteLabel Literal="Nguyên nhân hư hỏng" />*@
-                        <MyMemoEdit @ref="RefDamageCause"
-                                    @bind-Text="Model.DamageCause"
-                                    Rows="5"
-                                    Literal="Nguyên nhân hư hỏng" />
+                    <!--Row 2-------------------------------------------------->
+                    <div class="row">
+                        <!--Nguyên nhân hư hỏng-->
+                        <div class="col-12 col-lg-7">
+                            @*<MyMuteLabel Literal="Nguyên nhân hư hỏng" />*@
+                            <MyMemoEdit @ref="RefDamageCause"
+                                        @bind-Text="Model.DamageCause"
+                                        Rows="5"
+                                        Literal="Nguyên nhân hư hỏng" />
+                        </div>
+                        <!--Ghi chú-->
+                        <div class="col-12 col-lg-5">
+                            <MyMemoEdit @bind-Text="Model.AcceptNotes"
+                                        Rows="5"
+                                        Literal="Ghi chú" />
+                        </div>
                     </div>
-                    <!--Ghi chú-->
-                    <div class="col-12 col-lg-5">
-                        <MyMemoEdit @bind-Text="Model.AcceptNotes"
-                                    Rows="5"
-                                    Literal="Ghi chú" />
-                    </div>
-                </div>
-            </div><!--End container-->
-        </MyPanel>
+                </div><!--End container-->
+            </MyPanel>
 
-        <!--Thông hợp tin đồng-->
-        <MyPanel Title="Thông hợp tin đồng">
-            <div class="container-fluid">
-                <!--Row 1-------------------------------------------------->
-                <div class="row">
-                    <!--Công ty bảo hiểm-->
-                    <div class="col-12 col-lg-3">
-                        <MyComboBox @ref="RefInsure"
-                                    @bind-Value="SelectedInsure"
-                                    Data="InsureList"
-                                    TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                    SelectedItemChanged="@((OptionListModel selectedRow) => {
+            <!--Thông hợp tin đồng-->
+            <MyPanel Title="Thông hợp tin đồng">
+                <div class="container-fluid">
+                    <!--Row 1-------------------------------------------------->
+                    <div class="row">
+                        <!--Công ty bảo hiểm-->
+                        <div class="col-12 col-lg-3">
+                            <MyComboBox @ref="RefInsure"
+                                        @bind-Value="SelectedInsure"
+                                        Data="InsureList"
+                                        TextFieldName="@(nameof(OptionListModel.ItemName))"
+                                        SelectedItemChanged="@((OptionListModel selectedRow) => {
                                                        Model.InsurCompanyID = selectedRow.ItemCode;
                                                        Model.InsurCompanyName = selectedRow.ItemName;
                                                        OnInsurCompanyID_Changed(Model.InsurCompanyID);
                                                  })"
-                                    Literal="Công ty bảo hiểm" />
+                                        Literal="Công ty bảo hiểm" />
+                        </div>
+                        <!--Số hợp đồng-->
+                        <div class="col-12 col-lg-3">
+                            <MyTextEdit Text="@Model.InsurContractNo"
+                                        TextChanged="@((string x) => OnInsurContractNo_Changed(x))"
+                                        Literal="Số hợp đồng"
+                                        IsFontBold="true"
+                                        IsUpperCase="true"
+                                        TextColor="@MyTextColor.Blue" />
+                        </div>
+                        <!--Từ ngày-->
+                        <div class="col-12 col-lg-2">
+                            <MyDateTimeEdit @bind-Date="Model.InsurStartDate"
+                                            Literal="Từ ngày"
+                                            ReadOnly="true"
+                                            TextColor="@MyTextColor.Green" />
+                        </div>
+                        <!--Đến ngày-->
+                        <div class="col-12 col-lg-2">
+                            <MyDateTimeEdit @bind-Date="Model.InsurEndDate"
+                                            Literal="Đến ngày"
+                                            ReadOnly="true"
+                                            TextColor="@MyTextColor.Maroon" />
+                        </div>
                     </div>
-                    <!--Số hợp đồng-->
-                    <div class="col-12 col-lg-3">
-                        <MyTextEdit Text="@Model.InsurContractNo"
-                                    TextChanged="@((string x) => OnInsurContractNo_Changed(x))"
-                                    Literal="Số hợp đồng"
-                                    IsFontBold="true"
-                                    IsUpperCase="true"
-                                    TextColor="@MyTextColor.Blue" />
-                    </div>
-                    <!--Từ ngày-->
-                    <div class="col-12 col-lg-2">
-                        <MyDateTimeEdit @bind-Date="Model.InsurStartDate"
-                                        Literal="Từ ngày"
-                                        ReadOnly="true"
-                                        TextColor="@MyTextColor.Green" />
-                    </div>
-                    <!--Đến ngày-->
-                    <div class="col-12 col-lg-2">
-                        <MyDateTimeEdit @bind-Date="Model.InsurEndDate"
-                                        Literal="Đến ngày"
-                                        ReadOnly="true"
-                                        TextColor="@MyTextColor.Maroon" />
-                    </div>
-                </div>
 
-                <!--Row 2-------------------------------------------------->
-                <div class="row">
-                    <!--Chi nhánh bồi thường-->
-                    <div class="col-12 col-lg-3">
-                        <MyComboBox @ref="RefBranch"
-                                    @bind-Value="SelectedBranch"
-                                    Data="BranchList"
-                                    TextFieldName="@(nameof(BranchMasterModel.BranchName))"
-                                    SelectedItemChanged="@((BranchMasterModel selectedRow) => {
+                    <!--Row 2-------------------------------------------------->
+                    <div class="row">
+                        <!--Chi nhánh bồi thường-->
+                        <div class="col-12 col-lg-3">
+                            <MyComboBox @ref="RefBranch"
+                                        @bind-Value="SelectedBranch"
+                                        Data="BranchList"
+                                        TextFieldName="@(nameof(BranchMasterModel.BranchName))"
+                                        SelectedItemChanged="@((BranchMasterModel selectedRow) => {
                                                        Model.BrancheID = selectedRow.BranchID;
                                                        Model.BrancheName = selectedRow.BranchName;
                                                  })"
-                                    Literal="Chi nhánh bồi thường" />
-                    </div>
-                    <!--Mức độ ưu tiên-->
-                    <div class="col-12 col-lg-3">
-                        <MyComboBox @ref="RefPriority"
-                                    @bind-Value="SelectedPriority"
-                                    Data="PriorityList"
-                                    TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                    SelectedItemChanged="@((OptionListModel selectedRow) => {
+                                        Literal="Chi nhánh bồi thường" />
+                        </div>
+                        <!--Mức độ ưu tiên-->
+                        <div class="col-12 col-lg-3">
+                            <MyComboBox @ref="RefPriority"
+                                        @bind-Value="SelectedPriority"
+                                        Data="PriorityList"
+                                        TextFieldName="@(nameof(OptionListModel.ItemName))"
+                                        SelectedItemChanged="@((OptionListModel selectedRow) => {
                                                        Model.Priority = selectedRow.IntCode;
                                                        PriorityCss = "";
                                                        if (Model.Priority == 2) PriorityCss = "bg-warning";
                                                        if (Model.Priority == 3) PriorityCss = "bg-danger";
                                                        this.StateHasChanged();
                                                  })"
-                                    Class="@PriorityCss"
-                                    Literal="Mức độ ưu tiên" />
+                                        Class="@PriorityCss"
+                                        Literal="Mức độ ưu tiên" />
+                        </div>
+                        <!--Giá trị hợp đồng-->
+                        <div class="col-12 col-lg-2">
+                            <MyNumEdit @bind-Value="Model.ContractAmount"
+                                       Format="N0"
+                                       ReadOnly="true"
+                                       IsFontBold="true"
+                                       TextColor="@MyTextColor.Blue"
+                                       Literal="Giá trị hợp đồng" />
+                        </div>
+                        <!--Số tiền bảo hiểm còn lại-->
+                        <div class="col-12 col-lg-2">
+                            <MyNumEdit @bind-Value="Model.InsurAmount"
+                                       Format="N0"
+                                       ReadOnly="true"
+                                       IsFontBold="true"
+                                       TextColor="@MyTextColor.Maroon"
+                                       Literal="Tiền bảo hiểm còn lại" />
+                        </div>
                     </div>
-                    <!--Giá trị hợp đồng-->
-                    <div class="col-12 col-lg-2">
-                        <MyNumEdit @bind-Value="Model.ContractAmount"
-                                   Format="N0"
-                                   ReadOnly="true"
-                                   IsFontBold="true"
-                                   TextColor="@MyTextColor.Blue"
-                                   Literal="Giá trị hợp đồng" />
-                    </div>
-                    <!--Số tiền bảo hiểm còn lại-->
-                    <div class="col-12 col-lg-2">
-                        <MyNumEdit @bind-Value="Model.InsurAmount"
-                                   Format="N0"
-                                   ReadOnly="true"
-                                   IsFontBold="true"
-                                   TextColor="@MyTextColor.Maroon"
-                                   Literal="Tiền bảo hiểm còn lại" />
-                    </div>
-                </div>
-            </div><!--End container-->
-        </MyPanel>
-    </MyPanels>
+                </div><!--End container-->
+            </MyPanel>
+        </MyPanels>
+    </ChildContent>
+    <ActionButtons>
+        <MyButton Color="Color.Success" Icon="@Icons.Material.Filled.Image" Literal="Ảnh đính kèm" OnClick="ShowImages" />
+    </ActionButtons>
 </MyForm>
 
 @code {
@@ -686,7 +692,15 @@
         }
     }
     //
-
+    //ShowImages
+    async void ShowImages()
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("OwnerID", Model.ClaimNo);
+        parameters.Add("CategoryID", "1");
+        //
+        var result = await DialogService.Show<ImagesView>("", parameters, MyOptions.GetEditFormOptions(MaxWidth.Large)).Result;
+    }
 
     #endregion
 

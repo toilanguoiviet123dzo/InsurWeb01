@@ -86,36 +86,36 @@
 <!--Grid-->
 <MyDataGrid @ref="@grid"
             T="ClaimRequestListModel"
-            Title="Danh sách yêu cầu bồi thường"
+            Title="Danh sách trả thiết bị"
             Items="@DetailData"
             OnViewRow="@((ClaimRequestListModel row) => OnViewRow_Handle(row))">
     <ColGroup>
+        <col style="width: 8rem;" />
+        <col style="width: 8rem;" />
         <col style="width: 10rem;" />
         <col />
         <col style="width: 8rem;" />
         <col style="width: 6rem;" />
         <col style="width: 5rem;" />
         <col style="width: 5rem;" />
-        <col style="width: 8rem;" />
-        <col style="width: 8rem;" />
     </ColGroup>
     <HeaderContent>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortBy="new Func<ClaimRequestListModel, object>(x=>x.ClaimNo)">Số tiếp nhận</MudTableSortLabel></MudTh>
+        <MudTh>Trạng thái</MudTh>
         <MudTh>Model thiết bị</MudTh>
         <MudTh>Địa chỉ trả thiết bị</MudTh>
         <MudTh>Tên khách hàng</MudTh>
         <MudTh>Điện thoại</MudTh>
-        <MudTh>Trạng thái</MudTh>
-        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortBy="new Func<ClaimRequestListModel, object>(x=>x.ClaimNo)">Số tiếp nhận</MudTableSortLabel></MudTh>
         <MudTh>Ngày YC duyệt</MudTh>
         <MudTh>Trung tâm bồi thường</MudTh>
     </HeaderContent>
     <RowTemplate>
+        <MudTd Style="text-align:center; color:blue; font-weight:bold">@context.ClaimNo</MudTd>
+        <MudTd Style="text-align:center; color:green; font-weight:bold">@context.StatusName</MudTd>
         <MudTd>@context.DeviceModel</MudTd>
         <MudTd>@context.ReturnAddress</MudTd>
         <MudTd>@context.CusFullname</MudTd>
         <MudTd Style="text-align:center">@context.CusPhone</MudTd>
-        <MudTd Style="text-align:center; color:green; font-weight:bold">@context.StatusName</MudTd>
-        <MudTd Style="text-align:center; color:blue; font-weight:bold">@context.ClaimNo</MudTd>
         <MudTd Style="text-align:center; color:green;">@context.ReturnReqDate.ToString("dd/MM/yyyy HH:mm")</MudTd>
         <MudTd>@context.BrancheName</MudTd>
     </RowTemplate>
@@ -230,7 +230,7 @@
 
     async void ShowDetailForm(DialogParameters parameters)
     {
-        var result = await DialogService.Show<ClaimRepairEdit>("", parameters, MyOptions.GetMyFormOptions(MaxWidth.Large)).Result;
+        var result = await DialogService.Show<ClaimReturnEdit>("", parameters, MyOptions.GetMyFormOptions(MaxWidth.Large)).Result;
         if (!result.Cancelled)
         {
             await DisplayMain();

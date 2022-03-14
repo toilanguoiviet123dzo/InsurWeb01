@@ -7,268 +7,273 @@
 @inject VoucherService voucherService;
 @inject IJSRuntime JsRuntime;
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
-<MyForm Title="Yêu cầu bồi thường"
+<MyForm Title="Cập nhật trả thiết bị"
         ReadOnly="@ReadOnly"
         OnCancelClick="CloseMain"
         OnSubmitClick="SaveMain">
-    <MyPanels>
-        <!--Thông tin chung-->
-        <MyPanel Title="Thông tin chung">
-            <div class="container-fluid">
-                <!--Row 1-------------------------------------------------->
-                <div class="row">
-                    <!--Số tiếp nhận-->
-                    <div class="col-12 col-lg-2">
-                        <MyTextEdit @bind-Text="Model.ClaimNo"
-                                    ReadOnly="true"
-                                    Literal="Số tiếp nhận"
-                                    Width="8rem"
-                                    IsFontBold="true"
-                                    TextColor="@MyTextColor.Blue" />
-                    </div>
-                    <!--Ngày tiếp nhận-->
-                    <div class="col-12 col-lg-2">
-                        <MyDateTimeEdit @bind-Date="Model.ClaimDate"
-                                        Literal="Ngày tiếp nhận"
+    <ChildContent>
+        <MyPanels>
+            <!--Thông tin chung-->
+            <MyPanel Title="Thông tin chung">
+                <div class="container-fluid">
+                    <!--Row 1-------------------------------------------------->
+                    <div class="row">
+                        <!--Số tiếp nhận-->
+                        <div class="col-12 col-lg-2">
+                            <MyTextEdit @bind-Text="Model.ClaimNo"
                                         ReadOnly="true"
+                                        Literal="Số tiếp nhận"
+                                        Width="8rem"
+                                        IsFontBold="true"
                                         TextColor="@MyTextColor.Blue" />
-                    </div>
-                    <!--Phụ trách bồi thường-->
-                    <div class="col-12 col-lg-3">
-                        <MyTextEdit @bind-Text="Model.PicAccountName"
-                                    ReadOnly="true"
-                                    Literal="Phụ trách bồi thường" />
-                    </div>
-                    <!--Phone phụ trách bồi thường-->
-                    <div class="col-12 col-lg-3">
-                        <MyTextEdit @bind-Text="Model.PicPhone"
-                                    ReadOnly="true"
-                                    Literal="Phone" />
-                    </div>
-                    <!--Mức độ ưu tiên-->
-                    <div class="col-12 col-lg-2">
-                        <MyComboBox @ref="RefPriority"
-                                    @bind-Value="SelectedPriority"
-                                    Data="PriorityList"
-                                    ReadOnly="true"
-                                    TextFieldName="@(nameof(OptionListModel.ItemName))"
-                                    SelectedItemChanged="@((OptionListModel selectedRow) => {
+                        </div>
+                        <!--Ngày tiếp nhận-->
+                        <div class="col-12 col-lg-2">
+                            <MyDateTimeEdit @bind-Date="Model.ClaimDate"
+                                            Literal="Ngày tiếp nhận"
+                                            ReadOnly="true"
+                                            TextColor="@MyTextColor.Blue" />
+                        </div>
+                        <!--Phụ trách bồi thường-->
+                        <div class="col-12 col-lg-3">
+                            <MyTextEdit @bind-Text="Model.PicAccountName"
+                                        ReadOnly="true"
+                                        Literal="Phụ trách bồi thường" />
+                        </div>
+                        <!--Phone phụ trách bồi thường-->
+                        <div class="col-12 col-lg-3">
+                            <MyTextEdit @bind-Text="Model.PicPhone"
+                                        ReadOnly="true"
+                                        Literal="Phone" />
+                        </div>
+                        <!--Mức độ ưu tiên-->
+                        <div class="col-12 col-lg-2">
+                            <MyComboBox @ref="RefPriority"
+                                        @bind-Value="SelectedPriority"
+                                        Data="PriorityList"
+                                        ReadOnly="true"
+                                        TextFieldName="@(nameof(OptionListModel.ItemName))"
+                                        SelectedItemChanged="@((OptionListModel selectedRow) => {
                                                    Model.Priority = selectedRow.IntCode;
                                                    PriorityCss = "";
                                                    if (Model.Priority == 2) PriorityCss = "bg-warning";
                                                    if (Model.Priority == 3) PriorityCss = "bg-danger";
                                                    this.StateHasChanged();
                                              })"
-                                    Class="@PriorityCss"
-                                    Literal="Mức độ ưu tiên" />
-                    </div>
-                </div>
-
-                <!--Row 2-------------------------------------------------->
-                <div class="row">
-                    <!--Tên khách hàng-->
-                    <div class="col-12 col-lg-3">
-                        <MyTextEdit @bind-Text="Model.CusFullname"
-                                    Literal="Tên khách hàng"
-                                    ReadOnly="true"/>
-                    </div>
-                    <!--Phone-->
-                    <div class="col-12 col-lg-3">
-                        <MyTextEdit Text="@Model.CusPhone"
-                                    Literal="Điện thoại liên hệ"
-                                    IsFontBold="true"
-                                    TextColor="@MyTextColor.Blue"
-                                    ReadOnly="true" />
-                    </div>
-                    <!--Email-->
-                    <div class="col-12 col-lg-3">
-                        <MyTextEdit @bind-Text="Model.CusEmail"
-                                    ReadOnly="true"
-                                    Literal="Email" />
-                    </div>
-                </div>
-
-                <!--Row 3-------------------------------------------------->
-                <div class="row">
-                    <!--Loại sản phẩm-->
-                    <div class="col-12 col-lg-3">
-                        <MyTextEdit @bind-Text="Model.TPAProductName"
-                                    Literal="Loại sản phẩm"
-                                    ReadOnly="true" />
-                    </div>
-                    <!--Số IMEI thiết bị-->
-                    <div class="col-12 col-lg-3">
-                        <MyTextEdit @bind-Text="Model.DeviceIMEI"
-                                    Literal="Số IMEI thiết bị"
-                                    ReadOnly="true"
-                                    IsFontBold="true"
-                                    TextColor="@MyTextColor.Purple"/>
-                    </div>
-                    <!--Model-->
-                    <div class="col-12 col-lg-3">
-                        <MyTextEdit @bind-Text="Model.DeviceModel"
-                                    ReadOnly="true"
-                                    Literal="Model" />
+                                        Class="@PriorityCss"
+                                        Literal="Mức độ ưu tiên" />
+                        </div>
                     </div>
 
-                </div>
-
-                <!--Row 4-------------------------------------------------->
-                <div class="row">
-                    <!--Địa chỉ trả thiết bị-->
-                    <div class="col-12 col-lg-6">
-                        <MyTextEdit @bind-Text="Model.PickupAddress"
-                                    Literal="Địa chỉ trả thiết bị"
-                                    ReadOnly="true"/>
-                    </div>
-                    <!--Địa chỉ xuất thiết bị-->
-                    <div class="col-12 col-lg-6">
-                        <MyTextEdit @bind-Text="TakeAddress"
-                                    ReadOnly="true"
-                                    Literal="Địa chỉ xuất thiết bị" />
-                    </div>
-                </div>
-            </div>
-        </MyPanel>
-        <!--Thông tin hư hỏng-->
-        <MyPanel Title="Thông tin hư hỏng">
-            <div class="container-fluid">
-                <!--Row 1-------------------------------------------------->
-                <div class="row">
-                    <!--Ngày KH thông báo-->
-                    <div class="col-12 col-lg-3">
-                        <MyDateTimeEdit @bind-Date="Model.NotificationDate"
-                                        Literal="Ngày KH thông báo"
+                    <!--Row 2-------------------------------------------------->
+                    <div class="row">
+                        <!--Tên khách hàng-->
+                        <div class="col-12 col-lg-3">
+                            <MyTextEdit @bind-Text="Model.CusFullname"
+                                        Literal="Tên khách hàng"
+                                        ReadOnly="true" />
+                        </div>
+                        <!--Phone-->
+                        <div class="col-12 col-lg-3">
+                            <MyTextEdit Text="@Model.CusPhone"
+                                        Literal="Điện thoại liên hệ"
+                                        IsFontBold="true"
+                                        TextColor="@MyTextColor.Blue"
+                                        ReadOnly="true" />
+                        </div>
+                        <!--Email-->
+                        <div class="col-12 col-lg-3">
+                            <MyTextEdit @bind-Text="Model.CusEmail"
                                         ReadOnly="true"
-                                        TextColor="@MyTextColor.Green" />
-                    </div>
-                </div>
-
-                <!--Row 2-------------------------------------------------->
-                <div class="row">
-                    <!--Nguyên nhân hư hỏng-->
-                    <div class="col-12 col-lg-7">
-                        <MyMemoEdit @ref="RefDamageCause"
-                                    @bind-Text="Model.DamageCause"
-                                    Rows="5"
-                                    ReadOnly="true"
-                                    Literal="Nguyên nhân hư hỏng" />
-                    </div>
-                    <!--Ghi chú-->
-                    <div class="col-12 col-lg-5">
-                        <MyMemoEdit @bind-Text="Model.AcceptNotes"
-                                    Rows="5"
-                                    ReadOnly="true"
-                                    Literal="Ghi chú" />
-                    </div>
-                </div>
-
-            </div><!--End container-->
-        </MyPanel>
-        <!--Thông tin sửa chữa-->
-        <MyPanel Title="Thông tin sửa chữa">
-            <div class="container-fluid">
-                <!--Row 1-------------------------------------------------->
-                <div class="row">
-                    <!--Nơi sửa chữa-->
-                    <div class="col-12 col-lg-3">
-                        <MyTextEdit @bind-Text="Model.RepairCompanyName"
-                                    ReadOnly="true"
-                                    Literal="Nơi sửa chữa" />
-                    </div>
-                    <!--Số IMEI thiết bị-->
-                    <div class="col-12 col-lg-3">
-                        <MyTextEdit @bind-Text="Model.NewDeviceIMEI"
-                                    Literal="Số IMEI thiết bị mới"
-                                    ReadOnly="true"
-                                    IsFontBold="true"
-                                    TextColor="@MyTextColor.Purple"/>
-                    </div>
-                    <!--Model-->
-                    <div class="col-12 col-lg-3">
-                        <MyTextEdit @bind-Text="Model.NewDeviceModel"
-                                    ReadOnly="true"
-                                    Literal="Model thiết bị mới" />
+                                        Literal="Email" />
+                        </div>
                     </div>
 
-                </div>
-
-                <!--Row 6-------------------------------------------------->
-                <div class="row">
-                    <!--Nội dung sửa chữa-->
-                    <div class="col-12">
-                        <MyMemoEdit @bind-Text="Model.RepairNotes"
-                                    Rows="3"
-                                    ReadOnly="true"
-                                    Literal="Nội dung sửa chữa" />
-                    </div>
-                </div>
-
-            </div><!--End container-->
-        </MyPanel>
-        <!--Thông tin trả thiết bị-->
-        <MyPanel Title="Thông tin trả thiết bị">
-            <div class="container-fluid">
-                <!--Row 1-------------------------------------------------->
-                <div class="row">
-                    <!--Ngày yêu cầu trả-->
-                    <div class="col-12 col-lg-3">
-                        <MyDateTimeEdit @bind-Date="Model.ReturnReqDate"
-                                        Literal="Ngày yêu cầu trả"
+                    <!--Row 3-------------------------------------------------->
+                    <div class="row">
+                        <!--Loại sản phẩm-->
+                        <div class="col-12 col-lg-3">
+                            <MyTextEdit @bind-Text="Model.TPAProductName"
+                                        Literal="Loại sản phẩm"
+                                        ReadOnly="true" />
+                        </div>
+                        <!--Số IMEI thiết bị-->
+                        <div class="col-12 col-lg-3">
+                            <MyTextEdit @bind-Text="Model.DeviceIMEI"
+                                        Literal="Số IMEI thiết bị"
                                         ReadOnly="true"
-                                        TextColor="@MyTextColor.Green" />
-                    </div>
-                    <!--Ngày xuất thiết bị-->
-                    <div class="col-12 col-lg-3">
-                        <MyDateTimeEdit @bind-Date="Model.ReturnDoneDate1"
-                                        Literal="Ngày xuất thiết bị"
+                                        IsFontBold="true"
+                                        TextColor="@MyTextColor.Purple" />
+                        </div>
+                        <!--Model-->
+                        <div class="col-12 col-lg-3">
+                            <MyTextEdit @bind-Text="Model.DeviceModel"
                                         ReadOnly="true"
-                                        TextColor="@MyTextColor.Blue" />
+                                        Literal="Model" />
+                        </div>
+
                     </div>
-                    <!--Ngày trả thiết bị-->
-                    <div class="col-12 col-lg-3">
-                        <MyDateTimeEdit @bind-Date="Model.ReturnDoneDate1"
-                                        Literal="Ngày trả thiết bị"
+
+                    <!--Row 4-------------------------------------------------->
+                    <div class="row">
+                        <!--Địa chỉ trả thiết bị-->
+                        <div class="col-12 col-lg-6">
+                            <MyTextEdit @bind-Text="Model.PickupAddress"
+                                        Literal="Địa chỉ trả thiết bị"
+                                        ReadOnly="true" />
+                        </div>
+                        <!--Địa chỉ xuất thiết bị-->
+                        <div class="col-12 col-lg-6">
+                            <MyTextEdit @bind-Text="TakeAddress"
                                         ReadOnly="true"
-                                        TextColor="@MyTextColor.Maroon" />
+                                        Literal="Địa chỉ xuất thiết bị" />
+                        </div>
                     </div>
                 </div>
-
-                <!--Row 2-------------------------------------------------->
-                <div class="row mt-2">
-                    <!--Check: đã trả thiết bị-->
-                    <div class="col-12 col-lg-3">
-                        <MyCheckBox @bind-Checked="@Model.ReturnStatus1"
-                                    TextColor="@MyTextColor.Blue">
-                            Đã lấy thiết bị
-                        </MyCheckBox>
+            </MyPanel>
+            <!--Thông tin hư hỏng-->
+            <MyPanel Title="Thông tin hư hỏng" IsInitiallyExpanded="false">
+                <div class="container-fluid">
+                    <!--Row 1-------------------------------------------------->
+                    <div class="row">
+                        <!--Ngày KH thông báo-->
+                        <div class="col-12 col-lg-3">
+                            <MyDateTimeEdit @bind-Date="Model.NotificationDate"
+                                            Literal="Ngày KH thông báo"
+                                            ReadOnly="true"
+                                            TextColor="@MyTextColor.Green" />
+                        </div>
                     </div>
 
-                    <!--Check: đã trả thiết bị-->
-                    <div class="col-12 col-lg-3">
-                        <MyCheckBox @bind-Checked="@Model.ReturnStatus2"
-                                    TextColor="@MyTextColor.Maroon"
-                                    ReadOnly="@(!Model.ReturnStatus1)">
-                            Đã nhập thiết bị
-                        </MyCheckBox>
+                    <!--Row 2-------------------------------------------------->
+                    <div class="row">
+                        <!--Nguyên nhân hư hỏng-->
+                        <div class="col-12 col-lg-7">
+                            <MyMemoEdit @ref="RefDamageCause"
+                                        @bind-Text="Model.DamageCause"
+                                        Rows="5"
+                                        ReadOnly="true"
+                                        Literal="Nguyên nhân hư hỏng" />
+                        </div>
+                        <!--Ghi chú-->
+                        <div class="col-12 col-lg-5">
+                            <MyMemoEdit @bind-Text="Model.AcceptNotes"
+                                        Rows="5"
+                                        ReadOnly="true"
+                                        Literal="Ghi chú" />
+                        </div>
                     </div>
-                </div>
 
-                <!--Row 3-------------------------------------------------->
-                <div class="row mt-1">
-                    <!--Ghi chú nhận thiết bị-->
-                    <div class="col-12">
-                        <MyMemoEdit @bind-Text="Model.ReturnNotes"
-                                    Rows="3"
-                                    Literal="Ghi chú trả thiết bị" />
+                </div><!--End container-->
+            </MyPanel>
+            <!--Thông tin sửa chữa-->
+            <MyPanel Title="Thông tin sửa chữa" IsInitiallyExpanded="false">
+                <div class="container-fluid">
+                    <!--Row 1-------------------------------------------------->
+                    <div class="row">
+                        <!--Nơi sửa chữa-->
+                        <div class="col-12 col-lg-3">
+                            <MyTextEdit @bind-Text="Model.RepairCompanyName"
+                                        ReadOnly="true"
+                                        Literal="Nơi sửa chữa" />
+                        </div>
+                        <!--Số IMEI thiết bị-->
+                        <div class="col-12 col-lg-3">
+                            <MyTextEdit @bind-Text="Model.NewDeviceIMEI"
+                                        Literal="Số IMEI thiết bị mới"
+                                        ReadOnly="true"
+                                        IsFontBold="true"
+                                        TextColor="@MyTextColor.Purple" />
+                        </div>
+                        <!--Model-->
+                        <div class="col-12 col-lg-3">
+                            <MyTextEdit @bind-Text="Model.NewDeviceModel"
+                                        ReadOnly="true"
+                                        Literal="Model thiết bị mới" />
+                        </div>
+
                     </div>
-                </div>
 
-            </div><!--End container-->
-        </MyPanel>
+                    <!--Row 6-------------------------------------------------->
+                    <div class="row">
+                        <!--Nội dung sửa chữa-->
+                        <div class="col-12">
+                            <MyMemoEdit @bind-Text="Model.RepairNotes"
+                                        Rows="3"
+                                        ReadOnly="true"
+                                        Literal="Nội dung sửa chữa" />
+                        </div>
+                    </div>
 
-    </MyPanels>
+                </div><!--End container-->
+            </MyPanel>
+            <!--Thông tin trả thiết bị-->
+            <MyPanel Title="Thông tin trả thiết bị">
+                <div class="container-fluid">
+                    <!--Row 1-------------------------------------------------->
+                    <div class="row">
+                        <!--Ngày yêu cầu trả-->
+                        <div class="col-12 col-lg-3">
+                            <MyDateTimeEdit @bind-Date="Model.ReturnReqDate"
+                                            Literal="Ngày yêu cầu trả"
+                                            ReadOnly="true"
+                                            TextColor="@MyTextColor.Green" />
+                        </div>
+                        <!--Ngày xuất thiết bị-->
+                        <div class="col-12 col-lg-3">
+                            <MyDateTimeEdit @bind-Date="Model.ReturnDoneDate1"
+                                            Literal="Ngày xuất thiết bị"
+                                            ReadOnly="true"
+                                            TextColor="@MyTextColor.Blue" />
+                        </div>
+                        <!--Ngày trả thiết bị-->
+                        <div class="col-12 col-lg-3">
+                            <MyDateTimeEdit @bind-Date="Model.ReturnDoneDate1"
+                                            Literal="Ngày trả thiết bị"
+                                            ReadOnly="true"
+                                            TextColor="@MyTextColor.Maroon" />
+                        </div>
+                    </div>
+
+                    <!--Row 2-------------------------------------------------->
+                    <div class="row mt-2">
+                        <!--Check: đã trả thiết bị-->
+                        <div class="col-12 col-lg-3">
+                            <MyCheckBox @bind-Checked="@Model.ReturnStatus1"
+                                        TextColor="@MyTextColor.Blue">
+                                Đã lấy thiết bị
+                            </MyCheckBox>
+                        </div>
+
+                        <!--Check: đã trả thiết bị-->
+                        <div class="col-12 col-lg-3">
+                            <MyCheckBox @bind-Checked="@Model.ReturnStatus2"
+                                        TextColor="@MyTextColor.Maroon"
+                                        ReadOnly="@(!Model.ReturnStatus1)">
+                                Đã trả thiết bị
+                            </MyCheckBox>
+                        </div>
+                    </div>
+
+                    <!--Row 3-------------------------------------------------->
+                    <div class="row mt-1">
+                        <!--Ghi chú nhận thiết bị-->
+                        <div class="col-12">
+                            <MyMemoEdit @bind-Text="Model.ReturnNotes"
+                                        Rows="3"
+                                        Literal="Ghi chú trả thiết bị" />
+                        </div>
+                    </div>
+
+                </div><!--End container-->
+            </MyPanel>
+        </MyPanels>
+    </ChildContent>
+    <ActionButtons>
+        <MyButton Color="Color.Success" Icon="@Icons.Material.Filled.Image" Literal="Ảnh đính kèm" OnClick="ShowImages" />
+    </ActionButtons>
 </MyForm>
 
 
@@ -290,8 +295,6 @@
     MyMemoEdit RefDamageCause;
     //Css
     private string PriorityCss = "";
-    private bool DamageInfoCollapse = true;
-    private bool RepairInfoCollapse = true;
     //
     private string TakeAddress = "";
 
@@ -437,11 +440,16 @@
     {
         MudDialog.Cancel();
     }
-    #endregion
 
-    #region Items
-
-
+    //ShowImages
+    async void ShowImages()
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("OwnerID", Model.ClaimNo);
+        parameters.Add("CategoryID", "1");
+        //
+        var result = await DialogService.Show<ImagesView>("", parameters, MyOptions.GetEditFormOptions(MaxWidth.Large)).Result;
+    }
     #endregion
 
 

@@ -1,0 +1,64 @@
+﻿syntax = "proto3";
+option csharp_namespace = "Insure.Services";
+import "google/protobuf/timestamp.proto";
+package grpcInsureService;
+
+//Services
+service grpcInsureService {    
+    //Save Insure
+    rpc GetProductDetail (String_Request) returns (GetProductDetail_Response);
+   
+}
+
+//======================================================
+// Common Messages
+//======================================================
+message UserCredential {
+    string Username = 1;
+    string RoleID = 2;
+    string AccessToken = 3;
+    string ApiKey = 4;
+}
+message Empty_Response {
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+}
+message Empty_Request {
+    UserCredential Credential = 1;
+}
+//
+message String_Request
+{
+    UserCredential Credential = 1;
+    //
+    string StringValue = 2;
+}
+message String_Response
+{
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    string StringValue = 3;
+}
+message Int_Response
+{
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    int32 IntValue = 3;
+}
+
+//
+//======================================================
+// Messages
+//======================================================
+message GetProductDetail_Response {
+    int32 ReturnCode = 1;
+    string MsgCode = 2;
+    //
+    string aaa = 3;
+    string bbb = 4;
+}
+
+
+

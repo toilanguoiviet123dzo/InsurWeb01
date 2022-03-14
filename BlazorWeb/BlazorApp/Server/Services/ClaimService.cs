@@ -358,6 +358,52 @@ namespace BlazorApp.Server.Services
             return await Task.FromResult(response);
         }
 
+        //-------------------------------------------------------------------------------------------------------/
+        // SaveClaimPayment
+        //-------------------------------------------------------------------------------------------------------/
+        public override async Task<Claim.Services.String_Response> SaveClaimPayment(SaveClaim_Request request, ServerCallContext context)
+        {
+            var response = new Claim.Services.String_Response();
+            response.ReturnCode = GrpcReturnCode.OK;
+            try
+            {
+                switch (request.ClaimRequest.UpdMode)
+                {
+                    //update
+                    case 2:
+                        var oldRecord = await DB.Find<mdClaimRequest>().OneAsync(request.ClaimRequest.ID);
+                        if (oldRecord != null)
+                        {
+                            ClassHelper.CopyPropertiesData(request.ClaimRequest, oldRecord);
+                            //Pickup
+                            oldRecord.PayDoneDate = request.ClaimRequest.PayDoneDate.ToDateTime();
+                            oldRecord.PayAccountID = request.ClaimRequest.PayAccountID;
+                            oldRecord.PayAccountName = request.ClaimRequest.PayAccountName;
+                            oldRecord.PayNotes = request.ClaimRequest.PayNotes;
+                            oldRecord.PayStatus = request.ClaimRequest.PayStatus;
+                            //
+                            await oldRecord.SaveAsync();
+                        }
+                        else
+                        {
+                            response.ReturnCode = GrpcReturnCode.Error_201;
+                        }
+                        break;
+                    //
+                    default:
+                        response.ReturnCode = GrpcReturnCode.Error_BadRequest; //UpdMode = blank
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ReturnCode = GrpcReturnCode.Error_ByServer;
+                response.MsgCode = ex.Message;
+                MyAppLog.WriteLog(MyConstant.LogLevel_Critical, "ClaimService", "SaveClaimLogistic", "Exception", response.ReturnCode, ex.Message);
+            }
+            return await Task.FromResult(response);
+        }
+
 
         //-------------------------------------------------------------------------------------------------------/
         // GetClaimRequest
@@ -716,6 +762,7 @@ namespace BlazorApp.Server.Services
                 bool status = request.StatusCheck ? true : false;
                 if (request.Status == 2) query.Match(a => a.PickupStatus1 == status);
                 if (request.Status == 3) query.Match(a => a.PickupStatus2 == status);
+
                 //Time range
                 //StartDate
                 if (request.StartDate.ToDateTime().ToString("yyyyMMdd") != DateTime.Today.MinShortDateString())
