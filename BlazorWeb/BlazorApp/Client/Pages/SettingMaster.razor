@@ -125,7 +125,7 @@
 
             //Save to DB
             var saveRet = await SaveRow(retModel);
-            if (true)
+            if (saveRet)
             {
                 //Add to grid
                 DetailData.Add(retModel);
@@ -154,7 +154,7 @@
 
                 //Save to DB
                 var saveRet = await SaveRow(retModel);
-                if (true)
+                if (saveRet)
                 {
                     grid.Refresh();
                 }
@@ -170,7 +170,7 @@
 
         //Save to DB
         var saveRet = await SaveRow(row);
-        if (true)
+        if (saveRet)
         {
             DetailData.Remove(row);
             grid.Refresh();
